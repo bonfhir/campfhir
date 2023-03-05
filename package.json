@@ -1,0 +1,10 @@
+{
+  "name": "campfhir",
+  "packageManager": "yarn@3.3.1",
+  "private": true,
+  "repository": "https://github.com/bonfhir/campfhir.git",
+  "license": "APACHE-2.0",
+  "workspaces": [
+    "packages/*"
+  ]
+}

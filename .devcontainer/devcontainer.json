@@ -1,0 +1,92 @@
+{
+  "name": "Campfhir",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "devcontainer",
+  "workspaceFolder": "/workspace",
+  "overrideCommand": false,
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "cschleiden.vscode-github-actions",
+        "dbaeumer.vscode-eslint",
+        "eamodio.gitlens",
+        "EditorConfig.EditorConfig",
+        "esbenp.prettier-vscode",
+        "github.vscode-pull-request-github",
+        "ms-azuretools.vscode-docker",
+        "streetsidesoftware.code-spell-checker",
+        "usernamehw.errorlens",
+        "vivaxy.vscode-conventional-commits"
+      ],
+      "settings": {
+        "[javascript]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode",
+          "editor.formatOnSave": true,
+          "editor.codeActionsOnSave": {
+            "source.fixAll.eslint": true
+          }
+        },
+        "[json]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode",
+          "editor.formatOnSave": true
+        },
+        "[jsonc]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode",
+          "editor.formatOnSave": true
+        },
+        "[markdown]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode",
+          "editor.formatOnSave": true
+        },
+        "[typescript]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode",
+          "editor.formatOnSave": true,
+          "editor.codeActionsOnSave": {
+            "source.fixAll.eslint": true
+          }
+        },
+        "[typescriptreact]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode",
+          "editor.formatOnSave": true,
+          "editor.codeActionsOnSave": {
+            "source.fixAll.eslint": true
+          }
+        },
+        "conventionalCommits.scopes": ["campfhir-cli"],
+        "conventionalCommits.showEditor": true,
+        "cSpell.words": [],
+        "errorLens.enabledDiagnosticLevels": ["error", "warning"],
+        "explorer.fileNesting.enabled": true,
+        "explorer.fileNesting.expand": false,
+        "explorer.fileNesting.patterns": {
+          "*.cjs": "${basename}.spec.${extname}, ${basename}.stories.${extname}, ${basename}.test.${extname}",
+          "*.js": "${basename}.spec.${extname}, ${basename}.stories.${extname}, ${basename}.test.${extname}",
+          "*.jsx": "${basename}.spec.${extname}, ${basename}.stories.${extname}, ${basename}.test.${extname}",
+          "*.mjs": "${basename}.spec.${extname}, ${basename}.stories.${extname}, ${basename}.test.${extname}",
+          "*.ts": "${basename}.spec.${extname}, ${basename}.stories.${extname}, ${basename}.test.${extname}",
+          "*.tsx": "${basename}.spec.${extname}, ${basename}.stories.${extname}, ${basename}.test.${extname}",
+          "*.ts.hbs": "${capture}.ts"
+        },
+        "files.associations": {
+          "*.snap": "javascript"
+        },
+        "files.exclude": {
+          "**/.yarn": true
+        },
+        "explorer.excludeGitIgnore": true,
+        "git.branchProtection": ["main"],
+        "json.schemas": [
+          {
+            "fileMatch": ["*.fhir.json"],
+            "url": "./fhir.schema.json"
+          }
+        ],
+        "terminal.integrated.defaultProfile.linux": "zsh"
+      }
+    }
+  },
+
+  "postStartCommand": "yarn install --silent && git config --global --add safe.directory /workspace",
+
+  "remoteUser": "node"
+}
