@@ -6,5 +6,8 @@
   "license": "APACHE-2.0",
   "workspaces": [
     "packages/*"
-  ]
+  ],
+  "scripts": {
+    "seed": "yarn workspace @bonfhir/campfhir-cli dev import -f '/workspace/data/synthea_sample_data_fhir_r4_sep2019/*.json'"
+  }
 }
