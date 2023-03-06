@@ -11,7 +11,6 @@ import chalk from "chalk";
 import fg from "fast-glob";
 import { Bundle } from "fhir/r4";
 import Listr from "listr";
-import concat from "lodash/concat";
 import isArray from "lodash/isArray";
 import isObject from "lodash/isObject";
 import { readFile } from "node:fs/promises";
@@ -58,61 +57,62 @@ export default <CommandModule<unknown, ImportOptions>>{
   },
   handler: async (options) => {
     try {
-      const importFiles = await fg(options.files);
-      const importTasks = importFiles.map(
-        (file): Listr.ListrTask<ImportContext> => ({
-          title: `Import ${parse(file).base}`,
-          task: async (ctx) => {
-            const originalBundleContent = await readFile(file, {
-              encoding: "utf8",
-              flag: "r",
+      await new Listr<ImportContext>([
+        {
+          title: "Initialize client",
+          task: async (ctx, task) => {
+            task.title += `: ${ctx.options.medplumServerUrl}`;
+            const medplum = new MedplumClient({
+              baseUrl: ctx.options.medplumServerUrl,
+              fetch: fetch,
             });
-            const bundle = JSON.parse(originalBundleContent) as Bundle;
-            const searchBatch = buildSearchBatchByIdentifier(bundle);
-            const existingResourcesResponse = (await ctx.client.batch(
-              buildSearchBatchByIdentifier(bundle)
-            )) as Bundle<Bundle>;
-
-            const substitutionMapping = buildSubstitutionMapping(
-              searchBatch,
-              existingResourcesResponse
+            await medplum.startClientLogin(
+              ctx.options.medplumClientId,
+              ctx.options.medplumClientSecret
             );
 
-            bundle.entry = (bundle.entry || []).filter(
-              (entry) => !substitutionMapping[entry.fullUrl!]
-            );
-            updateBundleReferences(bundle, substitutionMapping);
-
-            await ctx.client.batch(bundle);
+            ctx.client = buildFhirRestfulClientAdapter(medplum);
+            await ctx.client.search("Patient");
+            return;
           },
-        })
-      );
-
-      await new Listr<ImportContext>(
-        concat(
-          [
-            {
-              title: "Initialize client",
-              task: async (ctx, task) => {
-                task.title += `: ${ctx.options.medplumServerUrl}`;
-                const medplum = new MedplumClient({
-                  baseUrl: ctx.options.medplumServerUrl,
-                  fetch: fetch,
+        },
+        {
+          title: "Import files",
+          task: async (ctx, task) => {
+            const importFiles = await fg(options.files);
+            for (const [index, file] of importFiles.entries()) {
+              task.title = `Import ${parse(file).base} (${index + 1}/${
+                importFiles.length
+              })`;
+              try {
+                const originalBundleContent = await readFile(file, {
+                  encoding: "utf8",
+                  flag: "r",
                 });
-                await medplum.startClientLogin(
-                  ctx.options.medplumClientId,
-                  ctx.options.medplumClientSecret
+                const bundle = JSON.parse(originalBundleContent) as Bundle;
+                const searchBatch = buildSearchBatchByIdentifier(bundle);
+                const existingResourcesResponse = (await ctx.client.batch(
+                  buildSearchBatchByIdentifier(bundle)
+                )) as Bundle<Bundle>;
+
+                const substitutionMapping = buildSubstitutionMapping(
+                  searchBatch,
+                  existingResourcesResponse
                 );
 
-                ctx.client = buildFhirRestfulClientAdapter(medplum);
-                await ctx.client.search("Patient");
-                return;
-              },
-            },
-          ],
-          importTasks
-        )
-      ).run({ options } as unknown as ImportContext);
+                bundle.entry = (bundle.entry || []).filter(
+                  (entry) => !substitutionMapping[entry.fullUrl!]
+                );
+                updateBundleReferences(bundle, substitutionMapping);
+
+                await ctx.client.batch(bundle);
+              } catch (error) {
+                console.error({ error });
+              }
+            }
+          },
+        },
+      ]).run({ options } as unknown as ImportContext);
     } catch (error) {
       console.log({ error });
       console.error(chalk.red(error));
