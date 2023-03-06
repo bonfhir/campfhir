@@ -1,0 +1,7 @@
+
+{"prompt": "How many patients?", "completion": "/Patient?_summary=count"}
+{"prompt": "How many active patients is there?", "completion": "/Patient?status=active&_summary=count"}
+{"prompt": "List patients with Hypertension", "completion": "/Patient?_has:Condition:subject:code=http://snomed.info/sct|59621000,http://loinc.org|45643-4"}
+{"prompt": "Find patients that had a visit in the last 3 months", "completion": "/Patient?_has:Encounter:subject:date=gt[Today - 3 months]"}
+{"prompt": "Find patient named John", "completion": "/Patient?name=John"}
+{"prompt": "How many final risk assessments do I have?", "completion": "/RiskAssessment?status=final&_summary=count"}

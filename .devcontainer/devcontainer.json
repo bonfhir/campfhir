@@ -52,7 +52,7 @@
             "source.fixAll.eslint": true
           }
         },
-        "conventionalCommits.scopes": ["campfhir-cli"],
+        "conventionalCommits.scopes": ["campfhir-cli", "prompts"],
         "conventionalCommits.showEditor": true,
         "cSpell.words": [],
         "errorLens.enabledDiagnosticLevels": ["error", "warning"],
