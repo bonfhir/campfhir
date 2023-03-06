@@ -5,8 +5,7 @@ import {
   FhirRestfulClient,
   fhirSearch,
 } from "@bonfhir/core/r4b";
-import { buildFhirRestfulClientAdapter } from "@bonfhir/medplum/r4b";
-import { MedplumClient } from "@medplum/core";
+import { MedplumClientOptions } from "@medplum/core";
 import chalk from "chalk";
 import fg from "fast-glob";
 import { Bundle } from "fhir/r4";
@@ -16,12 +15,10 @@ import isObject from "lodash/isObject";
 import { readFile } from "node:fs/promises";
 import { parse } from "node:path";
 import { CommandModule } from "yargs";
+import { InitializeClient } from "./tasks/initialize-client";
 
-interface ImportOptions {
+interface ImportOptions extends MedplumClientOptions {
   files: string;
-  medplumServerUrl: string;
-  medplumClientId: string;
-  medplumClientSecret: string;
 }
 
 interface ImportContext {
@@ -58,24 +55,7 @@ export default <CommandModule<unknown, ImportOptions>>{
   handler: async (options) => {
     try {
       await new Listr<ImportContext>([
-        {
-          title: "Initialize client",
-          task: async (ctx, task) => {
-            task.title += `: ${ctx.options.medplumServerUrl}`;
-            const medplum = new MedplumClient({
-              baseUrl: ctx.options.medplumServerUrl,
-              fetch: fetch,
-            });
-            await medplum.startClientLogin(
-              ctx.options.medplumClientId,
-              ctx.options.medplumClientSecret
-            );
-
-            ctx.client = buildFhirRestfulClientAdapter(medplum);
-            await ctx.client.search("Patient");
-            return;
-          },
-        },
+        InitializeClient as any,
         {
           title: "Import files",
           task: async (ctx, task) => {

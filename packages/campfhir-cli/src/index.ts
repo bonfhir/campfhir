@@ -3,12 +3,14 @@
 import chalk from "chalk";
 import yargs from "yargs";
 import importCmd from "./commands/import";
+import verifyPrompts from "./commands/verify-prompts";
 
 try {
   yargs()
     .scriptName("campfhir")
     .demand(1, chalk.red("Error: Must provide a valid command"))
     .command(importCmd)
+    .command(verifyPrompts)
     .help("h")
     .alias("h", "help")
     .strictCommands()
