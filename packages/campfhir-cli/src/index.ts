@@ -2,6 +2,7 @@
 
 import chalk from "chalk";
 import yargs from "yargs";
+import assistant from "./commands/assistant";
 import importCmd from "./commands/import";
 import verifyPrompts from "./commands/verify-prompts";
 
@@ -11,6 +12,7 @@ try {
     .demand(1, chalk.red("Error: Must provide a valid command"))
     .command(importCmd)
     .command(verifyPrompts)
+    .command(assistant)
     .help("h")
     .alias("h", "help")
     .strictCommands()
