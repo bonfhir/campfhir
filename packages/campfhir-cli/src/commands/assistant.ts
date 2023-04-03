@@ -22,6 +22,14 @@ async function loadTrainingData() {
     .map((x) => JSON.parse(x));
 }
 
+const CLASSES = [
+  "Patient",
+  "RiskAssessment",
+  "Practitioner",
+  "Appointment",
+  "CarePlan",
+];
+
 export default <CommandModule>{
   command: "assistant",
   describe: "FHIR AI assistant",
@@ -29,7 +37,7 @@ export default <CommandModule>{
     const examples = await loadTrainingData();
     const exampleFormatterTemplate = "Q: {prompt} ||| api: {completion}";
     const instructions = `** INSTRUCTIONS **
-The only known api classes valid for answer are: Patient, RiskAssessment, Practitioner, Appointment, CarePlan.
+The only known api classes valid for answer are: {classes}.
 All other classes are unknown.
 Classes names are case insensitive. There are no subclasses or roles derived from the known classes.
 If you are asked for an unknown class you should answer: "Sorry, I don't know about CLASS", interpolating "CLASS" with the unknown class name.
@@ -49,13 +57,13 @@ If you are asked for an unknown class you should answer: "Sorry, I don't know ab
       prefix: instructions,
       exampleSeparator: "\n\n",
       templateFormat: "f-string",
-      inputVariables: [],
+      inputVariables: ["classes"],
     });
 
     //console.log("fewShotPrompt: ", fewShotPrompt);
 
     const instructionPrompt = SystemMessagePromptTemplate.fromTemplate(
-      await fewShotPrompt.format({})
+      await fewShotPrompt.format({ classes: CLASSES })
     );
     const questionPrompt = HumanMessagePromptTemplate.fromTemplate(
       "What API path would answer the question below?\nQ: {question} ||| api:"
