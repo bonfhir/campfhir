@@ -1,17 +1,20 @@
 import dotenv from "dotenv";
 import { readFile } from "fs/promises";
 
-import { LLMChain } from "langchain";
-import { ChatOpenAI } from "langchain/chat_models";
-import {
-  ChatPromptTemplate,
-  HumanMessagePromptTemplate,
-  SystemMessagePromptTemplate,
-} from "langchain/prompts";
 import prompts from "prompts";
 import { CommandModule } from "yargs";
 
-import { FewShotPromptTemplate, PromptTemplate } from "langchain/prompts";
+import { ConversationChain } from "langchain/chains";
+import { ChatOpenAI } from "langchain/chat_models";
+import { BufferMemory } from "langchain/memory";
+import {
+  ChatPromptTemplate,
+  FewShotPromptTemplate,
+  HumanMessagePromptTemplate,
+  MessagesPlaceholder,
+  PromptTemplate,
+  SystemMessagePromptTemplate,
+} from "langchain/prompts";
 
 const trainingDataFilePath = "/workspace/data/prompts.jsonl";
 async function loadTrainingData() {
@@ -30,6 +33,22 @@ const CLASSES = [
   "CarePlan",
 ];
 
+const CLASS_PARAMS = {
+  Patient: ["active", "name", "gender", "_summary"],
+  Practitioner: ["active", "name", "gender", "_summary"],
+  RiskAssessment: ["risk", "_summary"],
+  Appointment: ["status", "start", "end", "participant"],
+  CarePlan: ["status", "intent", "title", "period", "activity"],
+};
+function knowClassesAndParams() {
+  return Object.entries(CLASS_PARAMS)
+    .map((entry) => {
+      const [className, params] = entry;
+      return `CLASS: ${className}, PARAM: ${params.join(", ")}`;
+    })
+    .join("\n");
+}
+
 export default <CommandModule>{
   command: "assistant",
   describe: "FHIR AI assistant",
@@ -37,10 +56,22 @@ export default <CommandModule>{
     const examples = await loadTrainingData();
     const exampleFormatterTemplate = "Q: {prompt} ||| api: {completion}";
     const instructions = `** INSTRUCTIONS **
-The only known api classes valid for answer are: {classes}.
-All other classes are unknown.
-Classes names are case insensitive. There are no subclasses or roles derived from the known classes.
-If you are asked for an unknown class you should answer: "Sorry, I don't know about CLASS", interpolating "CLASS" with the unknown class name.
+The following is a friendly conversation between a human and an AI. The AI is talkative and provides lots of specific details from its context.  The AI is a technical medical assistant.  If the AI does not know the answer to a question, it truthfully says it does not know.
+
+The answers are API paths.
+The structure of the API paths is:
+/CLASS?PARAM_1=VALUE_1&PARAM_2=VALUE_2
+There is only one CLASS per path.
+There can be an infinite number of PARAM_N=VALUE_N pairs.
+Each CLASS has its own specific set of allowed PARAM keys.
+Here are the known CLASS & PARAM combinations.
+
+{classesAndParams}
+
+All other CLASS are unknown.  All other CLASS & PARAM combinations are unknown.
+CLASS names are case insensitive. There are no subclasses or roles derived from the known CLASS.
+Only known CLASS & PARAM combination can be used in answers.
+If you are asked for an unknown CLASS or PARAM you should answer: "Sorry, I don't know about UNKNOWN", interpolating "UNKNOWN" with the unknown CLASS or PARAM name.
 
 ** EXAMPLES**`;
 
@@ -49,7 +80,7 @@ If you are asked for an unknown class you should answer: "Sorry, I don't know ab
       template: exampleFormatterTemplate,
     });
 
-    // console.log("examplePrompt: ", examplePrompt);
+    console.log("examplePrompt: ", examplePrompt);
 
     const fewShotPrompt = new FewShotPromptTemplate({
       examples,
@@ -57,29 +88,40 @@ If you are asked for an unknown class you should answer: "Sorry, I don't know ab
       prefix: instructions,
       exampleSeparator: "\n\n",
       templateFormat: "f-string",
-      inputVariables: ["classes"],
+      inputVariables: ["classesAndParams"],
     });
 
-    //console.log("fewShotPrompt: ", fewShotPrompt);
+    console.log("fewShotPrompt: ", fewShotPrompt);
 
     const instructionPrompt = SystemMessagePromptTemplate.fromTemplate(
-      await fewShotPrompt.format({ classes: CLASSES })
+      await fewShotPrompt.format({ classesAndParams: knowClassesAndParams() })
     );
+    console.log("instructionPrompt: ", instructionPrompt);
     const questionPrompt = HumanMessagePromptTemplate.fromTemplate(
       "What API path would answer the question below?\nQ: {question} ||| api:"
     );
     const chatPrompt = ChatPromptTemplate.fromPromptMessages([
       instructionPrompt,
+      new MessagesPlaceholder("history"),
       questionPrompt,
     ]);
-    //console.log("chatPrompt: ", chatPrompt);
+    console.log("chatPrompt: ", chatPrompt);
 
     dotenv.config(); // get the OpenAPI key from .env file
 
     const chat = new ChatOpenAI({ temperature: 0 });
-    // console.log("chat: ", chat);
+    console.log("chat: ", chat);
 
-    const chain = new LLMChain({ llm: chat, prompt: chatPrompt });
+    const memory = new BufferMemory({
+      returnMessages: true,
+      memoryKey: "history",
+    });
+
+    const conversation = new ConversationChain({
+      llm: chat,
+      prompt: chatPrompt,
+      memory,
+    });
 
     while (true) {
       const query = await prompts({
@@ -88,7 +130,12 @@ If you are asked for an unknown class you should answer: "Sorry, I don't know ab
         message: "Q", // pass Chatbot message here?
       });
 
-      const result = await chain.call({ question: query.question });
+      if (["quit", "exit"].includes(query.question)) {
+        console.log("\nbye-bye 👋\n");
+        process.exit(0); // exit on exit or quit
+      }
+
+      const result = await conversation.predict({ question: query.question });
       console.log("result: ", result);
     }
   },
