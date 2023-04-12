@@ -1,24 +1,11 @@
-import {
-  FewShotPromptTemplate,
-  PromptTemplate,
-  SystemMessagePromptTemplate,
-} from "langchain/prompts";
+import { FewShotPromptTemplate, PromptTemplate } from "langchain/prompts";
 
 import { loadJSONL } from "../helpers/jsonl";
 
 const fhirURLTrainingDataPath = "/workspace/data/prompts.jsonl";
 const exampleFormatterTemplate = "Q: {prompt} ||| fhirURL: {completion}";
-const instructions = `* OPERATION {instructionName} INSTRUCTIONS *
-The AI is a JSON answering BOT.  The AI answers are output as JSON objects intended for machine consumption.
-If the AI does not know the answer to a question, it truthfully says it does not know.
-
-The operation {instructionName} questions are labeled with a [{instructionName}] prefix.
-
-The operation {instructionName} answers are provided as a JSON object.
-Valid FHIR URL answers are provided in the JSON object's "fhirUrl" key.
-Invalid FHIR URL answers are provided in the JSON object's "error" key.
-
-The structure of the FHIR URL is:
+const instructions = `The answers are found by querying the FHIR API.  The FHIR API is a RESTful API that is used to query medical data.
+The FHIR API is accessed by constructing a FHIR URL. The structure of the FHIR URL is:
 
 CLASS?PARAM_1=VALUE_1&PARAM_2=VALUE_2
 
@@ -37,9 +24,8 @@ If you are asked for an unknown CLASS or PARAM you should answer: "Sorry, I don'
 ** EXAMPLES**`;
 
 export async function extrapolateFhirUrlInstructions(
-  instructionName: string,
   knowClassesAndParams: any
-): Promise<SystemMessagePromptTemplate> {
+): Promise<string> {
   const examplePrompt = new PromptTemplate({
     inputVariables: ["prompt", "completion"],
     template: exampleFormatterTemplate,
@@ -54,17 +40,10 @@ export async function extrapolateFhirUrlInstructions(
     prefix: instructions,
     exampleSeparator: "\n\n",
     templateFormat: "f-string",
-    inputVariables: ["classesAndParams", "instructionName"],
+    inputVariables: ["classesAndParams"],
   });
 
-  console.log("fewShotPrompt: ", fewShotPrompt);
-
-  const instructionPrompt = SystemMessagePromptTemplate.fromTemplate(
-    await fewShotPrompt.format({
-      classesAndParams: knowClassesAndParams,
-      instructionName,
-    })
-  );
-
-  return instructionPrompt;
+  return await fewShotPrompt.format({
+    classesAndParams: knowClassesAndParams,
+  });
 }
