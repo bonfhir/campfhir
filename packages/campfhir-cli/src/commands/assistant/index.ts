@@ -12,8 +12,10 @@ import {
   SystemMessagePromptTemplate,
 } from "langchain/prompts";
 
+import { type AgentStep, type ChainValues } from "langchain/schema";
+
 import { extrapolateFhirUrlInstructions } from "./prompts/extrapolateFhirUrl";
-import { MedplumFhirAPI } from "./tools/medplumFhirAPI";
+import { FhirAPI, fhirJsonTools } from "./tools/medplumFhirAPI";
 
 const CLASS_PARAMS = {
   Patient: ["active", "name", "gender", "_summary"],
@@ -37,7 +39,7 @@ export default <CommandModule>{
   handler: async (_options) => {
     dotenv.config(); // OpenAI + Medplum config from .env file
 
-    const tools = [new MedplumFhirAPI()];
+    const tools = [new FhirAPI(), ...fhirJsonTools()]; // TODO needs a JSON tool here for better parsing?
     const fhirInstructions = await extrapolateFhirUrlInstructions(
       knowClassesAndParams()
     );
@@ -45,7 +47,8 @@ export default <CommandModule>{
 Answer the following questions as best you can.  You are a medical assistant answering questions from healthcare professionals.
 
 ${fhirInstructions}You have access to the following tools:`;
-    const agentPromptSuffix = `Begin!`;
+    const agentPromptSuffix = `Let’s think step-by-step.
+Begin!`;
     const agentPrompt = ZeroShotAgent.createPrompt(tools, {
       prefix: agentPromptPrefix,
       suffix: agentPromptSuffix,
@@ -78,7 +81,11 @@ This was your previous work (but I haven't seen any of it! I only see what you r
       allowedTools: tools.map((tool) => tool.name),
     });
 
-    const executor = AgentExecutor.fromAgentAndTools({ agent, tools });
+    const executor = AgentExecutor.fromAgentAndTools({
+      agent,
+      tools,
+      returnIntermediateSteps: true,
+    });
 
     for (;;) {
       // loop until exit/quit
@@ -94,8 +101,16 @@ This was your previous work (but I haven't seen any of it! I only see what you r
       }
 
       try {
-        const response = await executor.run(query.question);
+        const response: ChainValues = await executor.call({
+          input: query.question,
+        });
         console.log("response: ", response);
+
+        response.intermediateSteps?.forEach((step: AgentStep) => {
+          console.log(`💠 ${step.action.log}\n`);
+        });
+
+        console.log("🔰 ", response.output);
       } catch (error) {
         console.log("error response: ", error);
         return;
