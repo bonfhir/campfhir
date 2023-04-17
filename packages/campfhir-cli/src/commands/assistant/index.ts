@@ -15,7 +15,7 @@ import {
 import { type AgentStep, type ChainValues } from "langchain/schema";
 
 import { extrapolateFhirUrlInstructions } from "./prompts/extrapolateFhirUrl";
-import { FhirAPI, fhirJsonTools } from "./tools/medplumFhirAPI";
+import { FhirApiToolkit } from "./tools/medplumFhirAPI";
 
 const CLASS_PARAMS = {
   Patient: ["active", "name", "gender", "_summary"],
@@ -39,15 +39,17 @@ export default <CommandModule>{
   handler: async (_options) => {
     dotenv.config(); // OpenAI + Medplum config from .env file
 
-    const tools = [new FhirAPI(), ...fhirJsonTools()]; // TODO needs a JSON tool here for better parsing?
+    const toolkit = new FhirApiToolkit();
+    const tools = toolkit.tools;
     const fhirInstructions = await extrapolateFhirUrlInstructions(
       knowClassesAndParams()
     );
     const agentPromptPrefix = `** INSTRUCTIONS **
-Answer the following questions as best you can.  You are a medical assistant answering questions from healthcare professionals.
+Answer the following questions as best you can.  You can use the FHIR API tool to get the data you need.  You can also use the JSON Explorer tool to explore the FHIR SearchSet Bundle response object converted to a JSON string.
+If no FIHR data is available, you can simply answer that question with "no data".
 
 ${fhirInstructions}You have access to the following tools:`;
-    const agentPromptSuffix = `Let’s think step-by-step.
+    const agentPromptSuffix = `The output format for every question should follow the above mentioned format where the "Final Answer:" should be a summarization of the relevant FHIR data.
 Begin!`;
     const agentPrompt = ZeroShotAgent.createPrompt(tools, {
       prefix: agentPromptPrefix,
@@ -61,7 +63,7 @@ Begin!`;
     const agentScratchpadPrompt =
       HumanMessagePromptTemplate.fromTemplate(`{input}
 
-This was your previous work (but I haven't seen any of it! I only see what you return as final answer):
+Scratchpad:
 {agent_scratchpad}`);
 
     const chatAgentPrompt = ChatPromptTemplate.fromPromptMessages([
@@ -92,7 +94,7 @@ This was your previous work (but I haven't seen any of it! I only see what you r
       const query = await prompts({
         type: "text",
         name: "question",
-        message: "Q", // pass Chatbot message here?
+        message: "💬",
       });
 
       if (["quit", "exit"].includes(query.question)) {
@@ -113,7 +115,7 @@ This was your previous work (but I haven't seen any of it! I only see what you r
         console.log("🔰 ", response.output);
       } catch (error) {
         console.log("error response: ", error);
-        return;
+        // return;
       }
     }
   },
