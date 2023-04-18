@@ -45,12 +45,24 @@ export default <CommandModule>{
       knowClassesAndParams()
     );
     const agentPromptPrefix = `** INSTRUCTIONS **
-Answer the following questions as best you can.  You can use the FHIR API tool to get the data you need.  You can also use the JSON Explorer tool to explore the FHIR SearchSet Bundle response object converted to a JSON string.
+Answer the following questions as best you can.
+Think before answering.
+Two types of questions are supported:
+
+1. FHIR specifications:
+These questions are about the FHIR class & protocol specifications.
+For example, "What are the FHIR Patient properties names?" or "What are FHIR SearchSet bundles?"
+You can use your general knowledge of FHIR to answer these questions.
+
+2. FHIR data:
+These questions are answered by querying a FHIR API server.
+For example, "What are the active patients?" or "What are the active practitioners?".
+You can use the FHIR API tool to get the data you need.
+You can also use the JSON Explorer tool to explore the FHIR SearchSet Bundle response object converted to a JSON string.
 If no FIHR data is available, you can simply answer that question with "no data".
 
 ${fhirInstructions}You have access to the following tools:`;
-    const agentPromptSuffix = `The output format for every question should follow the above mentioned format where the "Final Answer:" should be a summarization of the relevant FHIR data.
-Begin!`;
+    const agentPromptSuffix = `Begin!`;
     const agentPrompt = ZeroShotAgent.createPrompt(tools, {
       prefix: agentPromptPrefix,
       suffix: agentPromptSuffix,
@@ -61,9 +73,10 @@ Begin!`;
     console.log("agentInstructionPrompt: ", agentInstructionPrompt);
 
     const agentScratchpadPrompt =
-      HumanMessagePromptTemplate.fromTemplate(`{input}
+      HumanMessagePromptTemplate.fromTemplate(`** INPUT **
+{input}
 
-Scratchpad:
+** SCRATCHPAD **
 {agent_scratchpad}`);
 
     const chatAgentPrompt = ChatPromptTemplate.fromPromptMessages([
@@ -76,7 +89,11 @@ Scratchpad:
     const chat = new ChatOpenAI({ temperature: 0 });
     console.log("chat: ", chat);
 
-    const llmChain = new LLMChain({ llm: chat, prompt: chatAgentPrompt });
+    const llmChain = new LLMChain({
+      llm: chat,
+      prompt: chatAgentPrompt,
+      verbose: true,
+    });
 
     const agent = new ZeroShotAgent({
       llmChain,

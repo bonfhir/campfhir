@@ -1,6 +1,5 @@
 import { createJsonAgent, JsonToolkit } from "langchain/agents";
-import { DynamicTool, JsonObject, JsonSpec, Tool } from "langchain/tools";
-import { JSON_EXPLORER_DESCRIPTION } from "../prompts/jsonExplorer";
+import { JsonObject, JsonSpec, Tool } from "langchain/tools";
 
 import { getFHIR } from "../helpers/fhir";
 // tslint:disable-next-line
@@ -45,16 +44,16 @@ export class FhirApiToolkit {
     );
     this.tools = [
       new FhirAPI(),
-      new DynamicTool({
-        name: "json_explorer",
-        func: async (input: string) => {
-          console.log("JSON EXPLORER INPUT: ", input);
-          const result = await jsonAgent.call({ input });
-          console.log("JSON EXPLORER RESULT: ", result);
-          return result.output as string;
-        },
-        description: JSON_EXPLORER_DESCRIPTION,
-      }),
+      // new DynamicTool({
+      //   name: "FhirApiDocumentation",
+      //   func: async (input: string) => {
+      //     console.log("FHIR API DOC INPUT: ", input);
+      //     const result = await jsonAgent.call({ input });
+      //     console.log("FHIR API DOC RESULT: ", result);
+      //     return result.output as string;
+      //   },
+      //   description: FHIR_API_DOCS_DESCRIPTION,
+      // }),
     ];
   }
 }
