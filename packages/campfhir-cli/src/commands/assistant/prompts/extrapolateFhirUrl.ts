@@ -4,8 +4,11 @@ import { loadJSONL } from "../helpers/jsonl";
 
 const fhirURLTrainingDataPath = "/workspace/data/prompts.jsonl";
 const exampleFormatterTemplate = "Q: {prompt} ||| fhirURL: {completion}";
-const instructions = `The answers are found by querying the FHIR API.  The FHIR API is a RESTful API that is used to query medical data.
-The FHIR API is accessed by constructing a FHIR URL. The structure of the FHIR URL is:
+const instructions = `You are asked to answer a medical assistant natural language question by providing the FHIR URL that would be used to query the FHIR API to answer the question.
+The FHIR URL is a relative URL that can be used to query the FHIR API.
+You should answer with a single FHIR URL string.
+
+** FHIR URL FORMAT **
 
 CLASS?PARAM_1=VALUE_1&PARAM_2=VALUE_2
 

@@ -14,24 +14,7 @@ import {
 
 import { type AgentStep, type ChainValues } from "langchain/schema";
 
-import { extrapolateFhirUrlInstructions } from "./prompts/extrapolateFhirUrl";
 import { FhirApiToolkit } from "./tools/medplumFhirAPI";
-
-const CLASS_PARAMS = {
-  Patient: ["active", "name", "gender", "_summary"],
-  Practitioner: ["active", "name", "gender", "_summary"],
-  RiskAssessment: ["risk", "_summary"],
-  Appointment: ["status", "start", "end", "participant"],
-  CarePlan: ["status", "intent", "title", "period", "activity"],
-};
-function knowClassesAndParams() {
-  return Object.entries(CLASS_PARAMS)
-    .map((entry) => {
-      const [className, params] = entry;
-      return `CLASS: ${className}, PARAM: ${params.join(", ")}`;
-    })
-    .join("\n");
-}
 
 export default <CommandModule>{
   command: "assistant",
@@ -41,13 +24,11 @@ export default <CommandModule>{
 
     const toolkit = new FhirApiToolkit();
     const tools = toolkit.tools;
-    const fhirInstructions = await extrapolateFhirUrlInstructions(
-      knowClassesAndParams()
-    );
+
     const agentPromptPrefix = `** INSTRUCTIONS **
-Answer the following questions as best you can.
-Think before answering.
-Two types of questions are supported:
+You are a medical assistant answering questions about medical data stored in a FHIR API server.
+Answer the questions as best you can. Always provide a complete summarized answer.
+You can answer questions about the FHIR data and the FHIR specifications:
 
 1. FHIR specifications:
 These questions are about the FHIR class & protocol specifications.
@@ -57,12 +38,14 @@ You can use your general knowledge of FHIR to answer these questions.
 2. FHIR data:
 These questions are answered by querying a FHIR API server.
 For example, "What are the active patients?" or "What are the active practitioners?".
-You can use the FHIR API tool to get the data you need.
-You can also use the JSON Explorer tool to explore the FHIR SearchSet Bundle response object converted to a JSON string.
+You must use the FHIR URL tool to find the FHIR URL for the query.  You should not try to figure out the FHIR URL yourself.  Always use the FHIR URL tool to find any FHIR URL.
+You must use the FHIR API tool to query the data you need.
 If no FIHR data is available, you can simply answer that question with "no data".
 
-${fhirInstructions}You have access to the following tools:`;
-    const agentPromptSuffix = `Begin!`;
+All other question types are not supported and sound be answered with "I don't know".
+
+You have access to the following tools:`;
+    const agentPromptSuffix = `Think before answering.\nBegin!`;
     const agentPrompt = ZeroShotAgent.createPrompt(tools, {
       prefix: agentPromptPrefix,
       suffix: agentPromptSuffix,
