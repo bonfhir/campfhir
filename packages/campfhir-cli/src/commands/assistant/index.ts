@@ -52,8 +52,8 @@ You have access to the following tools:`;
     });
 
     const agentInstructionPrompt = new SystemMessagePromptTemplate(agentPrompt);
-    console.log("agentPrompt: ", agentPrompt);
-    console.log("agentInstructionPrompt: ", agentInstructionPrompt);
+    // console.log("agentPrompt: ", agentPrompt);
+    // console.log("agentInstructionPrompt: ", agentInstructionPrompt);
 
     const agentScratchpadPrompt =
       HumanMessagePromptTemplate.fromTemplate(`** INPUT **
@@ -67,10 +67,10 @@ You have access to the following tools:`;
       agentScratchpadPrompt,
     ]);
 
-    console.log("chatPrompt: ", chatAgentPrompt);
+    // console.log("chatPrompt: ", chatAgentPrompt);
 
     const chat = new ChatOpenAI({ temperature: 0 });
-    console.log("chat: ", chat);
+    // console.log("chat: ", chat);
 
     const llmChain = new LLMChain({
       llm: chat,
