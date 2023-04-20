@@ -430,6 +430,7 @@ __metadata:
     "@bonfhir/prettier-config": ^1.0.0
     "@bonfhir/typescript-config": ^1.0.1-alpha.0
     "@medplum/core": ^2.0.5
+    "@supabase/supabase-js": ^2.10.0
     "@swc/cli": ^0.1.59
     "@swc/core": ^1.3.24
     "@swc/jest": ^0.2.24
@@ -1218,12 +1219,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@supabase/gotrue-js@npm:^2.22.0":
-  version: 2.22.3
-  resolution: "@supabase/gotrue-js@npm:2.22.3"
+"@supabase/gotrue-js@npm:^2.23.0":
+  version: 2.23.0
+  resolution: "@supabase/gotrue-js@npm:2.23.0"
   dependencies:
     cross-fetch: ^3.1.5
-  checksum: b3c16fcf124bbfa634285ae2fd525f81f74928bc959f16f23464275d3da64d8fb21d9721dfd4973437894e5a11d35088eaea21c0b98fde860e77640037aaa6e3
+  checksum: 6e99bcef4144797e39b6480e1e3db125f51c676111a0b291f142230067b2f599f3bbc59ef3d21d536061faa221469bae21a6a277b7885da0e8bca58ea10320d6
   languageName: node
   linkType: hard
 
@@ -1256,17 +1257,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@supabase/supabase-js@npm:^2.20.0":
-  version: 2.20.0
-  resolution: "@supabase/supabase-js@npm:2.20.0"
+"@supabase/supabase-js@npm:^2.10.0":
+  version: 2.21.0
+  resolution: "@supabase/supabase-js@npm:2.21.0"
   dependencies:
     "@supabase/functions-js": ^2.1.0
-    "@supabase/gotrue-js": ^2.22.0
+    "@supabase/gotrue-js": ^2.23.0
     "@supabase/postgrest-js": ^1.1.1
     "@supabase/realtime-js": ^2.7.2
     "@supabase/storage-js": ^2.5.1
     cross-fetch: ^3.1.5
-  checksum: 6795d2cfe6c1f009a9f0499368f731266e80f9113487a77a91e4e1bfd9b7e97c410b10579d3fc99362486c3cc27b822375a0ab0ced684ef2a73cfac9b7304438
+  checksum: 806beaf54308e22b51b5c65d28f4515cd9b053eb7808f14817c18e054028c695373ab69e1d12fb85f4091746cc9fa281352d48c18e7b8a52028f9b8966a70487
   languageName: node
   linkType: hard
 
@@ -2383,8 +2384,6 @@ __metadata:
 "campfhir@workspace:.":
   version: 0.0.0-use.local
   resolution: "campfhir@workspace:."
-  dependencies:
-    "@supabase/supabase-js": ^2.20.0
   languageName: unknown
   linkType: soft
 
