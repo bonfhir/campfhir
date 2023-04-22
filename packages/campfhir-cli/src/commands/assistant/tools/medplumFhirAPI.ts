@@ -9,17 +9,92 @@ import medplumOpenAPI from "/workspace/data/medplum-openapi.json" assert { type:
 import { extrapolateFhirUrlInstructions } from "../prompts/extrapolateFhirUrl";
 
 const CLASS_PARAMS = {
-  Patient: ["active", "name", "gender"],
-  Practitioner: ["active", "name", "gender"],
-  RiskAssessment: ["risk", "_summary"],
-  Appointment: ["status", "start", "end", "participant"],
+  Patient: [
+    "active",
+    "name",
+    "gender",
+    "family",
+    "birthdate",
+    "address",
+    "address-city",
+    "address-country",
+    "address-postalcode",
+    "address-state",
+    "death-date",
+    "email",
+    "general-practitioner",
+    "given",
+    "identifier",
+    "phone",
+    "telecom",
+  ],
+  Practitioner: [
+    "active",
+    "name",
+    "gender",
+    "address",
+    "address-city",
+    "address-country",
+    "address-postalcode",
+    "address-state",
+    "email",
+  ],
+  RiskAssessment: ["risk"],
+  Appointment: [
+    "status",
+    "start",
+    "end",
+    "participant",
+    "actor",
+    "appointment-type",
+    "date",
+    "identifier",
+    "location",
+    "patient",
+    "practitioner",
+    "reason-code",
+    "reason-reference",
+    "service-category",
+    "service-type",
+    "slot",
+    "specialty",
+    "subject",
+  ],
   CarePlan: ["status", "intent", "title", "period", "activity"],
+  Observation: [
+    "status",
+    "category",
+    "code",
+    "value",
+    "subject",
+    "effective",
+    "issued",
+    "patient",
+    "performer",
+    "encounter",
+    "date",
+  ],
 };
+const UNIVERSAL_PARAMS = [
+  "_summary",
+  "_id",
+  "_profile",
+  "_type",
+  "_count",
+  "_offset",
+  "_format",
+  "_pretty",
+  "_summary",
+  "_elements",
+];
 function knowClassesAndParams() {
   return Object.entries(CLASS_PARAMS)
     .map((entry) => {
       const [className, params] = entry;
-      return `CLASS: ${className}, PARAM: ${params.join(", ")}`;
+      return `CLASS: ${className}, PARAM: ${[
+        ...params,
+        ...UNIVERSAL_PARAMS,
+      ].join(", ")}`;
     })
     .join("\n");
 }
@@ -29,14 +104,14 @@ export class FhirURL extends Tool {
     "Useful for finding the FHIR URL for a given FHIR resource.  The input to this tool should be a natural language query about some FHIR resource.  The output of this tool is a FHIR URL that can be used to query the FHIR API.";
 
   async _call(input: string): Promise<string> {
-    console.log("input: ", input);
+    console.log("FhirURL input: ", input);
     const instructions = await extrapolateFhirUrlInstructions(
       knowClassesAndParams()
     );
-    console.log("instructions: ", instructions);
+    // console.log("instructions: ", instructions);
 
     const template = `${instructions}\n\nBEGIN!\nQ: {input} ||| fhirURL:`;
-    console.log("template: ", template);
+    // console.log("template: ", template);
 
     const llm = new OpenAI({ temperature: 0 });
     const llmChain = new LLMChain({
@@ -45,7 +120,7 @@ export class FhirURL extends Tool {
     });
 
     const result = await llmChain.call({ input });
-    console.log("FHIR URL result: ", result);
+    console.log("FhirURL output: ", result);
     return result.text as string;
   }
 }
@@ -55,9 +130,12 @@ export class FhirAPI extends Tool {
 
   async _call(input: string): Promise<string> {
     try {
-      console.log("input: ", input);
+      console.log("FhirAPI input: ", input);
       const response = await getFHIR(input);
-      console.log(`getFHIR response: ${JSON.stringify(response, null, 2)}`);
+      console.log("FhirAPI output resource type: ", response.resourceType);
+      console.log("FhirAPI output total: ", response.total || 0);
+      console.log("FhirAPI output entry: ", response.entry?.length || 0);
+      // console.log(`getFHIR response: ${JSON.stringify(response, null, 2)}`);
 
       return JSON.stringify(response);
     } catch (error) {
