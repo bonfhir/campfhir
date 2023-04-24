@@ -54,6 +54,48 @@ function compileSearchParamsByResources(searchParamsSpec: any) {
   return searchParamsByResources;
 }
 
+function compileSearchParamsByBase(searchParamsSpec: any) {
+  const searchParamsByBase: any = {};
+  searchParamsSpec.entry.forEach((entry: any) => {
+    const resource = entry.resource;
+    resource.base.forEach((resourceType: string) => {
+      if (!searchParamsByBase[resourceType]) {
+        searchParamsByBase[resourceType] = {};
+      }
+      const {
+        id,
+        code,
+        type,
+        expression,
+        description,
+        xpath,
+        xpathUsage,
+        base,
+        comparator,
+        target,
+      } = resource;
+
+      const searchParams = {
+        id,
+        code,
+        type,
+        expression,
+        description,
+        xpath,
+        xpathUsage,
+        base,
+      };
+
+      if (comparator) searchParams["comparator"] = comparator;
+      if (target) searchParams["target"] = target;
+
+      searchParamsByBase[resourceType][code] = searchParams;
+    });
+  });
+
+  return searchParamsByBase;
+}
+
 function compileSearchParamsById(searchParamsSpec: any) {
   const searchParamsById: any = {};
   searchParamsSpec.entry.forEach((entry: any) => {
@@ -158,7 +200,8 @@ export default <CommandModule>{
       process.env.PUBLIC_SUPABASE_ANON_KEY || ""
     );
 
-    const registry = compileSearchParamsById(searchParamsSpec);
+    const byId = compileSearchParamsById(searchParamsSpec);
+    const byBase = compileSearchParamsByBase(searchParamsSpec);
 
     const docs = compileSearchParamsDocuments(searchParamsSpec);
     //console.log(docs);
@@ -205,19 +248,27 @@ export default <CommandModule>{
         response.forEach((doc: Document) => {
           console.log(doc.metadata.id);
           console.log(doc.pageContent);
-          console.log(registry[doc.metadata.id]);
+          console.log(byId[doc.metadata.id]);
         });
 
-        const classes = new Set(
-          response
-            .map((doc: Document) => {
-              const { base, target } = doc.metadata;
-              return [base, target];
-            })
-            .flat()
-            .filter((x: any) => x)
-        ).values();
-        console.log("classes: ", [...classes]);
+        const classes = [
+          ...new Set(
+            response
+              .map((doc: Document) => {
+                const { base, target } = doc.metadata;
+                return [base, target];
+              })
+              .flat()
+              .filter((x: any) => x)
+          ),
+        ];
+        console.log("classes: ", classes);
+
+        classes.forEach((resourceType: string) => {
+          console.log(resourceType);
+          const searchParams = byBase[resourceType];
+          console.log(Object.keys(searchParams));
+        });
       } catch (error) {
         console.log("error response: ", error);
         // return;
