@@ -1,3 +1,5 @@
+import * as fs from "fs";
+
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
 import { OpenAI } from "langchain";
 import { AgentExecutor, ZeroShotAgent } from "langchain/agents";
@@ -6,52 +8,53 @@ import { Document } from "langchain/document";
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 import { FewShotPromptTemplate, PromptTemplate } from "langchain/prompts";
 import { SupabaseHybridSearch } from "langchain/retrievers/supabase";
+import { type ChainValues } from "langchain/schema";
 import { Tool } from "langchain/tools";
 import { loadJSONL } from "../helpers/jsonl";
+import { LoggingOutputParser } from "../parsers/LoggingOutputParser";
+
 const fhirURLTrainingDataPath = "/workspace/data/prompts.jsonl";
 const exampleFormatterTemplate = "Q: {prompt} ||| fhirURL: {completion}";
 
 const instructions = `You are asked to answer a medical assistant natural language question by providing the FHIR URL that would be used to query the FHIR API to answer the question.
 The FHIR URL is a relative URL that can be used to query the FHIR API.
 
-You should answer with a single FHIR URL string.
+The Final Answer is a single FHIR URL string.
 
 ** FHIR URL FORMAT **
 
-ENDPOINT?PARAM_1=VALUE_1&PARAM_2=VALUE_2
+ENDPOINT?PARAMETER_1=VALUE_1&PARAMETER_2=VALUE_2
 
 There is only one ENDPOINT per URL.
-There can be an infinite number of PARAM_N=VALUE_N pairs.
-Each ENDPOINT has its own specific set of allowed PARAM keys.
+There can be an infinite number of PARAMETER_N=VALUE_N pairs.
 
 Here are the known ENDPOINT:
 
 {endpoints}
 
+The special ENDPOINT "Resource" defines common parameters that can be used with every other ENDPOINT.
+The special ENDPOINT "Resource" can be used in the tools inputs.
+The special ENDPOINT "Resource" cannot be used in answers.
+
 All other ENDPOINT are unknown.
 ENDPOINT names are case insensitive. There are no subclasses or roles derived from the known ENDPOINT.
 
-To solve find the answer, you must do the following:
-First, find the ENDPOINT that is most relevant to the question.  You must use the "endpointDefinition" tool to find the most relevant ENDPOINT.
-Second, find the relevant ENDPOINT PARAM_N=VALUE_N pairs that are most useful to the question. You must use the "paramDefinition" tool to find the most relevant PARAM_N=VALUE_N pairs.
-Third, combine the ENDPOINT and PARAM_N=VALUE_N pairs into a FHIR URL.
-
-Only ENDPOINT & PARAM combination returned by the "endpointDefinition" and "paramDefinition" tools are known.
-All other ENDPOINT & PARAM combinations are unknown.
-Only known ENDPOINT & PARAM combination can be used in answers.
-If you are asked for an unknown ENDPOINT or PARAM you should answer: "Sorry, I don't know about UNKNOWN", interpolating "UNKNOWN" with the unknown ENDPOINT or PARAM name.
+Each ENDPOINT has its own specific set of allowed PARAMETERs.
+Only ENDPOINT & PARAMETER combination returned by the "EndpointParams" and "EndpointParameterDetails" tools are known.
+All other ENDPOINT & PARAMETER combinations are unknown.
+Only known ENDPOINT & PARAMETER combination can be used in answers.
+If you are asked for an unknown ENDPOINT or PARAMETER you should answer: "Sorry, I don't know about UNKNOWN", interpolating "UNKNOWN" with the unknown ENDPOINT or PARAMETER name.
 
 ** EXAMPLES**
 `;
 
 async function extrapolateFhirUrl2Instructions(
-  endpoints: string[]
+  endpoints: string
 ): Promise<string> {
   const examplePrompt = new PromptTemplate({
     inputVariables: ["prompt", "completion"],
     template: exampleFormatterTemplate,
   });
-  console.log("examplePrompt: ", examplePrompt);
 
   const examples = await loadJSONL(fhirURLTrainingDataPath);
 
@@ -61,7 +64,7 @@ async function extrapolateFhirUrl2Instructions(
     prefix: instructions,
     exampleSeparator: "\n\n",
     templateFormat: "f-string",
-    inputVariables: ["classesAndParams"],
+    inputVariables: ["endpoints"],
   });
 
   return await fewShotPrompt.format({
@@ -101,49 +104,186 @@ async function retrieveKnowEndpointsFor(input: string): Promise<string[]> {
         .filter((x: any) => x)
     ),
   ];
-  console.log("endpoints: ", endpoints);
   return endpoints;
 }
 
+function prepareEndpointsString(endpoints: string[]) {
+  return endpoints
+    .map((endpoint) => {
+      return `- ${endpoint}`;
+    })
+    .join("\n");
+}
 export class FhirURL2 extends Tool {
   name = "FhirURL";
   description =
     "Useful for finding the FHIR URL for a given FHIR resource.  The input to this tool should be a natural language query about some FHIR resource.  The output of this tool is a FHIR URL that can be used to query the FHIR API.";
 
+  tools: Tool[];
+
+  constructor() {
+    super();
+    this.tools = [new EndpointParams(), new EndpointParameterDetails()];
+  }
   async _call(input: string): Promise<string> {
-    console.log("FhirURL2 input: ", input);
-
     const endpoints = await retrieveKnowEndpointsFor(input);
-    const instructions = await extrapolateFhirUrl2Instructions(endpoints);
 
-    const template = `${instructions}\n\nBEGIN!\nQ: {input} ||| fhirURL:`;
-    // console.log("template: ", template);
+    console.log("Selected endpoints:");
+    endpoints.forEach((endpoint) => {
+      console.log(`📍 ${endpoint}`);
+    });
+    console.log("\n");
+
+    const instructions = await extrapolateFhirUrl2Instructions(
+      prepareEndpointsString(endpoints)
+    );
+
+    const agentPromptPrefixTemplate = new PromptTemplate({
+      template: instructions,
+      inputVariables: [],
+    });
+    const agentPromptPrefix = await agentPromptPrefixTemplate.format({});
+
+    const agentPromptSuffix = `Question: {input}
+
+Think before answering.
+This was your previous work (but I haven't seen any of it! I only see what you return as final answer):
+{agent_scratchpad}`;
+    const agentPrompt = ZeroShotAgent.createPrompt(this.tools, {
+      prefix: agentPromptPrefix,
+      suffix: agentPromptSuffix,
+    });
 
     const llm = new OpenAI({ temperature: 0 });
     const llmChain = new LLMChain({
       llm,
-      prompt: new PromptTemplate({ template, inputVariables: ["input"] }),
-      verbose: true,
+      prompt: agentPrompt,
+      // verbose: true,
     });
-
-    const tools = [new EndpointDefinition(), new ParamDefinition()];
 
     const agent = new ZeroShotAgent({
       // how could this agent have memory
       llmChain,
-      allowedTools: tools.map((tool) => tool.name),
+      allowedTools: this.tools.map((tool) => tool.name),
+      outputParser: new LoggingOutputParser("FhirURL"),
     });
 
     const executor = AgentExecutor.fromAgentAndTools({
       agent,
-      tools,
+      tools: this.tools,
       returnIntermediateSteps: true,
     });
 
-    const result = await executor.run(input);
+    try {
+      const response: ChainValues = await executor.call({
+        input,
+      });
 
-    console.log("result: ", result);
+      return response.output;
+    } catch (error) {
+      console.log("error: ", error);
+      return `Sorry I don't know about: ${input}`;
+    }
+  }
+}
 
-    return result;
+function compileSearchParamsByBase(searchParamsSpec: any) {
+  const searchParamsByBase: any = {};
+  searchParamsSpec.entry.forEach((entry: any) => {
+    const resource = entry.resource;
+    resource.base.forEach((resourceType: string) => {
+      if (!searchParamsByBase[resourceType]) {
+        searchParamsByBase[resourceType] = {};
+      }
+      const {
+        id,
+        code,
+        type,
+        expression,
+        description,
+        xpath,
+        xpathUsage,
+        base,
+        comparator,
+        target,
+      } = resource;
+
+      const searchParams = {
+        id,
+        code,
+        type,
+        expression,
+        description,
+        xpath,
+        xpathUsage,
+        base,
+      };
+
+      if (comparator) searchParams["comparator"] = comparator;
+      if (target) searchParams["target"] = target;
+
+      searchParamsByBase[resourceType][code] = searchParams;
+    });
+  });
+
+  return searchParamsByBase;
+}
+
+class EndpointParams extends Tool {
+  name = "EndpointParams";
+  description =
+    "Useful for finding the valid parameters for a given FHIR ENDPOINT.  The input to this tool should be a FHIR ENDPOINT name.  The output of this tool is a JSON list of valid parameters for the given FHIR ENDPOINT.";
+
+  searchParamsByBase: any;
+
+  constructor() {
+    super();
+    const jsonText = fs.readFileSync(
+      "/workspace/data/fhir-r4b-search-parameters.json",
+      "utf8"
+    );
+    const searchParamsSpec = JSON.parse(jsonText);
+
+    this.searchParamsByBase = compileSearchParamsByBase(searchParamsSpec);
+  }
+
+  async _call(input: string): Promise<string> {
+    // TODO: take Resource endpoint into account
+    const baseParams = Object.values(this.searchParamsByBase[input] || {});
+    const params = baseParams.map((param: any) => {
+      return param.code;
+      //const { code, description } = param;
+      //return [input, code, description];
+    });
+    return JSON.stringify(params);
+  }
+}
+
+class EndpointParameterDetails extends Tool {
+  name = "EndpointParameterDetails";
+  description =
+    "Useful for finding the details of a given FHIR PARAMETER.  The input to this tool should be a FHIR ENDPOINT & PARAMETER name pair, joined by a column (:).  The input format is ENDPOINT:PARAMETER.  The output of this tool is the usage properties of the given FHIR PARAMETER, as JSON.";
+
+  searchParamsByBase: any;
+
+  constructor() {
+    super();
+    const jsonText = fs.readFileSync(
+      "/workspace/data/fhir-r4b-search-parameters.json",
+      "utf8"
+    );
+    const searchParamsSpec = JSON.parse(jsonText);
+
+    this.searchParamsByBase = compileSearchParamsByBase(searchParamsSpec);
+  }
+
+  async _call(input: string): Promise<string> {
+    if (!input.includes(":")) {
+      return "Error: input must be of the form <base>:<param>";
+    }
+
+    const [base, param] = input.split(":");
+    const paramSpec = this.searchParamsByBase[base as string][param as string];
+    return JSON.stringify(paramSpec);
   }
 }

@@ -12,8 +12,9 @@ import {
   SystemMessagePromptTemplate,
 } from "langchain/prompts";
 
-import { type AgentStep, type ChainValues } from "langchain/schema";
+import { type ChainValues } from "langchain/schema";
 
+import { LoggingOutputParser } from "./parsers/LoggingOutputParser";
 import { FhirApiToolkit } from "./tools/medplumFhirAPI";
 
 export default <CommandModule>{
@@ -26,19 +27,13 @@ export default <CommandModule>{
     const tools = toolkit.tools;
 
     const agentPromptPrefix = `** INSTRUCTIONS **
-You are a medical assistant answering questions about medical data stored in a FHIR API server.
+You are a medical assistant answering questions about medical data stored in a FHIR RESTful API server.
 Answer the questions as best you can. Always provide a complete summarized answer.
-You can answer questions about the FHIR data and the FHIR specifications:
 
-1. FHIR specifications:
-These questions are about the FHIR class & protocol specifications.
-For example, "What are the FHIR Patient properties names?" or "What are FHIR SearchSet bundles?"
-You can use your general knowledge of FHIR to answer these questions.
-
-2. FHIR data:
-These questions are answered by querying a FHIR API server.
+These questions are answered by querying a FHIR RESTful API server.
 For example, "What are the active patients?" or "What are the active practitioners?".
-You must use the FHIR URL tool to find the FHIR URL for the query.  You should not try to figure out the FHIR URL yourself.  Always use the FHIR URL tool to find any FHIR URL.
+You must use the FHIR URL tool to find the FHIR URL for the query.  The only valid FHIR URL are the ones output from the FHIR URL tool.  Always use the FHIR URL tool to find any FHIR URL.
+You should find the FHIR URL that returns the most precise & minimal data for the question.  If the question is about some resource property you should ask not only for the resource but also for the property.
 You must use the FHIR API tool to query the data you need.
 If no FIHR data is available, you can simply answer that question with "no data".
 
@@ -52,8 +47,6 @@ You have access to the following tools:`;
     });
 
     const agentInstructionPrompt = new SystemMessagePromptTemplate(agentPrompt);
-    // console.log("agentPrompt: ", agentPrompt);
-    // console.log("agentInstructionPrompt: ", agentInstructionPrompt);
 
     const agentScratchpadPrompt =
       HumanMessagePromptTemplate.fromTemplate(`** INPUT **
@@ -67,20 +60,18 @@ You have access to the following tools:`;
       agentScratchpadPrompt,
     ]);
 
-    // console.log("chatPrompt: ", chatAgentPrompt);
-
     const chat = new ChatOpenAI({ temperature: 0 });
-    // console.log("chat: ", chat);
 
     const llmChain = new LLMChain({
       llm: chat,
       prompt: chatAgentPrompt,
-      verbose: true,
+      // verbose: true,
     });
 
     const agent = new ZeroShotAgent({
       llmChain,
       allowedTools: tools.map((tool) => tool.name),
+      outputParser: new LoggingOutputParser("FHIR Assistant"),
     });
 
     const executor = AgentExecutor.fromAgentAndTools({
@@ -97,6 +88,8 @@ You have access to the following tools:`;
         message: "💬",
       });
 
+      console.log("");
+
       if (["quit", "exit"].includes(query.question)) {
         console.log("\nbye-bye 👋\n");
         process.exit(0); // exit on exit or quit
@@ -106,16 +99,10 @@ You have access to the following tools:`;
         const response: ChainValues = await executor.call({
           input: query.question,
         });
-        console.log("response: ", response);
 
-        response.intermediateSteps?.forEach((step: AgentStep) => {
-          console.log(`💠 ${step.action.log}\n`);
-        });
-
-        console.log("🔰 ", response.output);
+        console.log(`🔰 ${response.output}}\n`);
       } catch (error) {
         console.log("error response: ", error);
-        // return;
       }
     }
   },

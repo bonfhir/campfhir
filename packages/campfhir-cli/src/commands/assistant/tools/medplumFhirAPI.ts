@@ -1,7 +1,9 @@
-import { createJsonAgent, JsonToolkit } from "langchain/agents";
+import { JsonToolkit } from "langchain/agents";
 import { JsonObject, JsonSpec, Tool } from "langchain/tools";
 
 import { getFHIR } from "../helpers/fhir";
+import { FhirURL2 } from "./medplumFhirUrl";
+
 // tslint:disable-next-line
 import { LLMChain, OpenAI, PromptTemplate } from "langchain";
 import medplumOpenAPI from "/workspace/data/medplum-openapi.json" assert { type: "json" };
@@ -104,7 +106,7 @@ export class FhirURL extends Tool {
     "Useful for finding the FHIR URL for a given FHIR resource.  The input to this tool should be a natural language query about some FHIR resource.  The output of this tool is a FHIR URL that can be used to query the FHIR API.";
 
   async _call(input: string): Promise<string> {
-    console.log("FhirURL input: ", input);
+    //console.log("FhirURL input: ", input);
     const instructions = await extrapolateFhirUrlInstructions(
       knowClassesAndParams()
     );
@@ -130,11 +132,11 @@ export class FhirAPI extends Tool {
 
   async _call(input: string): Promise<string> {
     try {
-      console.log("FhirAPI input: ", input);
+      //console.log("FhirAPI input: ", input);
       const response = await getFHIR(input);
-      console.log("FhirAPI output resource type: ", response.resourceType);
-      console.log("FhirAPI output total: ", response.total || 0);
-      console.log("FhirAPI output entry: ", response.entry?.length || 0);
+      //console.log("FhirAPI output resource type: ", response.resourceType);
+      //console.log("FhirAPI output total: ", response.total || 0);
+      //console.log("FhirAPI output entry: ", response.entry?.length || 0);
       // console.log(`getFHIR response: ${JSON.stringify(response, null, 2)}`);
 
       return JSON.stringify(response);
@@ -156,26 +158,6 @@ export class FhirApiToolkit {
   tools: Tool[];
 
   constructor() {
-    // super();
-
-    const medplumApiSchema = medplumOpenAPI as JsonObject;
-    const jsonAgent = createJsonAgent(
-      new OpenAI({ temperature: 0 }),
-      new JsonToolkit(new JsonSpec(medplumApiSchema))
-    );
-    this.tools = [
-      new FhirAPI(),
-      new FhirURL(),
-      // new DynamicTool({
-      //   name: "FhirApiDocumentation",
-      //   func: async (input: string) => {
-      //     console.log("FHIR API DOC INPUT: ", input);
-      //     const result = await jsonAgent.call({ input });
-      //     console.log("FHIR API DOC RESULT: ", result);
-      //     return result.output as string;
-      //   },
-      //   description: FHIR_API_DOCS_DESCRIPTION,
-      // }),
-    ];
+    this.tools = [new FhirURL2(), new FhirAPI()];
   }
 }
