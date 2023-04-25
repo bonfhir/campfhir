@@ -28,6 +28,7 @@ export class LoggingOutputParser extends ZeroShotAgentOutputParser {
     } catch (error) {
       console.log("FhirUrlAgentParser error: ", error);
       console.log("FhirUrlAgentParser text: ", text);
+      console.log("FhirUrlAgentParser text type: ", typeof text);
       throw error;
     }
   }
