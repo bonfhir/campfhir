@@ -10,7 +10,8 @@ import { LLMChain } from "langchain/chains";
 import { type ChainValues } from "langchain/schema";
 
 import { LoggingOutputParser } from "./parsers/LoggingOutputParser";
-import { FhirApiToolkit } from "./tools/medplumFhirAPI";
+import { FhirAPI } from "./tools/FhirAPI";
+import { FhirURL } from "./tools/FhirURL";
 
 export default <CommandModule>{
   command: "assistant",
@@ -18,8 +19,7 @@ export default <CommandModule>{
   handler: async (_options) => {
     dotenv.config(); // OpenAI + Medplum config from .env file
 
-    const toolkit = new FhirApiToolkit();
-    const tools = toolkit.tools;
+    const tools = [new FhirURL(), new FhirAPI()];
 
     const agentPromptPrefix = `** INSTRUCTIONS **
 You are a medical assistant answering questions about medical data stored in a FHIR RESTful API server.
