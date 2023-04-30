@@ -276,3 +276,11 @@ export default <CommandModule>{
     }
   },
 };
+
+// TODO:
+// put the json store in a toolkit with store using tools
+// move the FHIR API tool to the FHIR URL tool with response testing logic
+// log session automatically to a file
+// current user tool
+// feed the prompt
+// instruct the summarizer on FHIR bundle basics

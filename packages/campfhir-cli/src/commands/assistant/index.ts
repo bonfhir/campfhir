@@ -15,11 +15,15 @@ import { FhirAPI } from "./tools/FhirAPI";
 import { FhirSummarizer, JSONResponseStore } from "./tools/FhirSummarizer";
 import { FhirURL } from "./tools/FhirURL";
 
+import { SessionLogger } from "./helpers/sessionLogger";
+
 export default <CommandModule>{
   command: "assistant",
   describe: "FHIR AI assistant",
   handler: async (_options) => {
     dotenv.config(); // OpenAI + Medplum config from .env file
+
+    SessionLogger.init({});
 
     const store = new JSONResponseStore();
 
@@ -93,21 +97,24 @@ This was your previous work (but I haven't seen any of it! I only see what you r
         message: "💬",
       });
 
-      console.log("");
-
       if (["quit", "exit"].includes(query.question)) {
         console.log("\nbye-bye 👋\n");
         process.exit(0); // exit on exit or quit
       }
+
+      SessionLogger.logQuestion(query.question);
 
       try {
         const response: ChainValues = await executor.call({
           input: query.question,
         });
 
-        console.log(`🔰 ${response.output}\n`);
+        const answer = `🔰 ${response.output}\n`;
+        SessionLogger.logAnswer(answer);
+        console.log(answer);
       } catch (error) {
         console.log("error response: ", error);
+        SessionLogger.log("error", error);
       }
     }
   },
