@@ -73,7 +73,7 @@ This was your previous work (but I haven't seen any of it! I only see what you r
     const llmChain = new LLMChain({
       llm,
       prompt: agentPrompt,
-      verbose: true,
+      // verbose: true,
     });
 
     const agent = new ZeroShotAgent({
@@ -119,3 +119,9 @@ This was your previous work (but I haven't seen any of it! I only see what you r
     }
   },
 };
+
+// TODO
+// adds output parser to summarizer
+// feed the prompt
+// add current user tool
+// instruct summarizer about FHIR basics

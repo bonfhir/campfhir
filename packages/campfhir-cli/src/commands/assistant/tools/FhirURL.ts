@@ -54,7 +54,7 @@ export class FhirURL extends Tool {
     const llmChain = new LLMChain({
       llm,
       prompt,
-      verbose: true,
+      //verbose: true,
     });
     const agent = new ZeroShotAgent({
       llmChain,

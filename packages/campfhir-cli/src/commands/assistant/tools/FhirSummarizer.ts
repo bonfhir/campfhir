@@ -1,23 +1,11 @@
 import { OpenAI } from "langchain";
-import { AgentExecutor, createJsonAgent, JsonToolkit } from "langchain/agents";
+import { AgentExecutor, JsonToolkit, ZeroShotAgent } from "langchain/agents";
 import { LLMChain } from "langchain/chains";
-import { ChatOpenAI } from "langchain/chat_models";
-import {
-  ChatPromptTemplate,
-  HumanMessagePromptTemplate,
-  SystemMessagePromptTemplate,
-} from "langchain/prompts";
+import { BufferMemory } from "langchain/memory";
 import { JsonObject, JsonSpec, Tool } from "langchain/tools";
 
-const template = `You are a medical assistant answering health practitioners questions.
-
-Answer the following question:
-
-"{question}"
-
-By summarizing the FHIR Restful API response data provided:
-
-"{data}"`;
+import { SessionLogger } from "../helpers/sessionLogger";
+import { LoggingOutputParser } from "../parsers/LoggingOutputParser";
 
 export class JSONResponseStore {
   jsonToolkit: JsonToolkit;
@@ -29,8 +17,61 @@ export class JSONResponseStore {
   }
 
   setResponse(json: JsonObject) {
+    SessionLogger.separator();
+    SessionLogger.log("JSON: ", json);
+    SessionLogger.separator();
     this.jsonSpec.obj = json;
   }
+}
+
+export const JSON_PREFIX = `You are an agent designed to interact with JSON responses from a FHIR Restful API server.
+Your goal is to return a final answer by interacting with the JSON.
+
+You have access to the following tools which help you learn more about the JSON you are interacting with.
+Only use the below tools. Only use the information returned by the below tools to construct your final answer.
+Do not make up any information that is not contained in the JSON.
+Your input to the tools should be in the form of in json pointer syntax (e.g. /key1/0/key2).
+You must escape a slash in a key with a ~1, and escape a tilde with a ~0.
+For example, to access the key /foo, you would use /~1foo
+You should only use keys that you know for a fact exist. You must validate that a key exists by seeing it previously when calling 'json_list_keys'.
+If you have not seen a key in one of those responses, you cannot use it.
+You should only add one key at a time to the path. You cannot add multiple keys at once.
+If you encounter a null or undefined value, go back to the previous key, look at the available keys, and try again.
+
+If the question does not seem to be related to the JSON, just return "I don't know" as the answer.
+If the question is about some totals, use the 'total' key to get the total.'
+If the question is about some resource, use the entry key to get to the array of resources.
+When in doubt, always begin your interaction with the 'json_list_keys' with an empty string as the input to see what keys exist in the JSON.
+
+Note that sometimes the value at a given path is large. In this case, you will get an error "Value is a large dictionary, should explore its keys directly".
+In this case, you should ALWAYS follow up by using the 'json_list_keys' tool to see what keys exist at that path.
+Do not simply refer the user to the JSON or a section of the JSON, as this is not a valid answer. Keep digging until you find the answer and explicitly return it.`;
+
+export const JSON_SUFFIX = `{chat_history}
+
+Question: {input}
+Thought: I should look at the keys that exist to see what I can query. I should use the 'json_list_keys' tool with an empty string as the input.
+{agent_scratchpad}`;
+
+function createFhirSummarizerAgent(llm: OpenAI, toolkit: JsonToolkit) {
+  const { tools } = toolkit;
+  const prompt = ZeroShotAgent.createPrompt(tools, {
+    prefix: JSON_PREFIX,
+    suffix: JSON_SUFFIX,
+    inputVariables: ["input", "agent_scratchpad", "chat_history"],
+  });
+  const chain = new LLMChain({ prompt, llm });
+  const agent = new ZeroShotAgent({
+    llmChain: chain,
+    allowedTools: tools.map((t) => t.name),
+    outputParser: new LoggingOutputParser("FhirSummarizer"),
+  });
+  const memory = new BufferMemory({ memoryKey: "chat_history" });
+  return AgentExecutor.fromAgentAndTools({
+    agent,
+    tools,
+    memory,
+  });
 }
 
 export class FhirSummarizer extends Tool {
@@ -43,7 +84,7 @@ export class FhirSummarizer extends Tool {
     super();
 
     const llm = new OpenAI({ temperature: 0 });
-    this.jsonAgentExecutor = createJsonAgent(llm, store.jsonToolkit);
+    this.jsonAgentExecutor = createFhirSummarizerAgent(llm, store.jsonToolkit);
   }
 
   async _call(input: string): Promise<string> {
@@ -54,34 +95,6 @@ export class FhirSummarizer extends Tool {
 
     console.log(`Got output ${result.output}`);
 
-    console.log(
-      `Got intermediate steps ${JSON.stringify(
-        result.intermediateSteps,
-        null,
-        2
-      )}`
-    );
-
     return result.output;
-  }
-
-  protected initializeChatChain(): LLMChain {
-    const systemMessagePromptTemplate =
-      SystemMessagePromptTemplate.fromTemplate(template);
-
-    const humanMessagePromptTemplate =
-      HumanMessagePromptTemplate.fromTemplate(`CONCISE SUMMARY:`);
-
-    const chat = new ChatOpenAI({ temperature: 0 });
-    const prompt = ChatPromptTemplate.fromPromptMessages([
-      systemMessagePromptTemplate,
-      humanMessagePromptTemplate,
-    ]);
-
-    return new LLMChain({
-      prompt,
-      llm: chat,
-      verbose: true,
-    });
   }
 }
