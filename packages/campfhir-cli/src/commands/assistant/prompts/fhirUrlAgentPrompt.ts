@@ -34,7 +34,9 @@ If you are asked for an unknown ENDPOINT or PARAMETER you should answer: "Sorry,
 ** EXAMPLES**
 `;
 
-const suffix = `Question: {input}
+const suffix = `{chat_history}
+
+Question: {input}
 
 Think before answering.
 This was your previous work (but I haven't seen any of it! I only see what you return as final answer):
@@ -67,5 +69,6 @@ export async function fhirUrlAgentPrompt(
   return ZeroShotAgent.createPrompt(tools, {
     prefix: instructionsWithExamples,
     suffix,
+    inputVariables: ["input", "chat_history", "agent_scratchpad"],
   });
 }

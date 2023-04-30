@@ -10,6 +10,7 @@ import { SupabaseHybridSearch } from "langchain/retrievers/supabase";
 import { type ChainValues } from "langchain/schema";
 import { Tool } from "langchain/tools";
 
+import { BufferMemory } from "langchain/memory";
 import { LoggingOutputParser } from "../parsers/LoggingOutputParser";
 import { fhirUrlAgentPrompt } from "../prompts/fhirUrlAgentPrompt";
 
@@ -53,18 +54,19 @@ export class FhirURL extends Tool {
     const llmChain = new LLMChain({
       llm,
       prompt,
-      // verbose: true,
+      verbose: true,
     });
     const agent = new ZeroShotAgent({
       llmChain,
       allowedTools: this.tools.map((tool) => tool.name),
       outputParser: new LoggingOutputParser("FhirURL"),
     });
-
+    const memory = new BufferMemory({ memoryKey: "chat_history" });
     return AgentExecutor.fromAgentAndTools({
       agent,
       tools: this.tools,
-      returnIntermediateSteps: true,
+      memory,
+      //returnIntermediateSteps: true,
     });
   }
 }
