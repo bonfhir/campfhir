@@ -3,9 +3,9 @@ import dotenv from "dotenv";
 import prompts from "prompts";
 import { CommandModule } from "yargs";
 
-import { OpenAI } from "langchain";
 import { AgentExecutor, ZeroShotAgent } from "langchain/agents";
 import { LLMChain } from "langchain/chains";
+import { OpenAI } from "langchain/llms/openai";
 import { BufferMemory } from "langchain/memory";
 
 import { type ChainValues } from "langchain/schema";
@@ -38,10 +38,12 @@ You are a medical assistant answering questions about medical data stored in a F
 
 To find the answer, you must do the following:
 First, you must find the FHIR URL that would be used to query the FHIR API to answer the question.
+When retrying the FHIR URL tool, you must keep the exact same question mention in the question that the previous answer was wrong and that you expect a different answer.
 
-Second, you must query the FHIR API with the FHIR URL to get the answer.
-Use the FhirAPI output hints to assess the coherence of the answer by looking at the the number of entries returned or at the total when summarizing.
-To be coherent, there should be at least one entry returned or a total over 0.
+Second, you must query the FHIR API with the FHIR URL to get the answer.  You must pass the exact URL from the previous step to the FhirAPI tool.
+Use the FhirAPI output hints to assess the coherence of the answer.
+A coherent count answer would have a total over 0.
+A coherent search answer would have at least one entry returned.
 
 If the answer is coherent, you must go to the FhirSummarizer tool. Else, you must go back to the FhirURL tool.
 Third, you must ask the FhirSummarizer for a summarization of the answer.
@@ -53,7 +55,7 @@ The url input to the FhirAPI tool should be the exact unmodified response from t
 The input to the FhirSummarizer tool should be the exact unmodified question from the user.
 The declared Final Answer should be the exact unmodified response from the FhirSummarizer tool.
 
-When repeating any tool, mention that the previous answer was not coherent and that you are trying again.
+When going back & repeating any question, you must mention in the question that the previous answer was wrong.
 
 You have access to the following tools:`;
     const agentPromptSuffix = `{chat_history}
@@ -119,9 +121,3 @@ This was your previous work (but I haven't seen any of it! I only see what you r
     }
   },
 };
-
-// TODO
-// adds output parser to summarizer
-// feed the prompt
-// add current user tool
-// instruct summarizer about FHIR basics

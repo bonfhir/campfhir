@@ -13,3 +13,7 @@
 {"prompt": "Find observations without any patient", "completion": "/Observation?patient:missing=true"}
 {"prompt": "Find patients born after 1975-01-01", "completion": "/Patient?birthdate=ge1975-01-01"}
 {"prompt": "Find observations with an integer value lower than 4", "completion": "/Observation?value-quantity=lt4" }
+{"prompt": "Find patient having ID 69f79094-577b-4825-8ba8-0e587b390269", "completion": "/Patient?_id=69f79094-577b-4825-8ba8-0e587b390269" }
+{"prompt": "How many encounters for patients having id 69f79094-577b-4825-8ba8-0e587b390269", "completion": "/Encounter?subject=69f79094-577b-4825-8ba8-0e587b390269&_summary=count" }
+// {"prompt": "What is the name of the organization with id 69f79094-577b-4825-8ba8-0e587b390269", "completion": "/Organization?_id=69f79094-577b-4825-8ba8-0e587b390269&_elements=id,name" }
+{"prompt": "List the diagnostics for a patient with id 69f79094-577b-4825-8ba8-0e587b390269", "completion": "Patient?_id=69f79094-577b-4825-8ba8-0e587b390269&_revinclude=DiagnosticReport.subject"}

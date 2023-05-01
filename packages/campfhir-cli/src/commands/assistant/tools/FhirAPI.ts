@@ -26,14 +26,15 @@ export class FhirAPI extends Tool {
 
       this.store.setResponse(response as JsonObject);
 
-      const hints = {};
-      if (response.total) {
-        hints["total"] = response.total;
-      } else if (response.entry?.length) {
-        hints["entry"] = response.entry.length;
-      } else {
-        hints["total"] = 0;
-        hints["entry"] = 0;
+      const hints = { entries: 0, total: 0 };
+      if (response.type === "searchset") {
+        if (response.total) {
+          hints["total"] = response.total;
+        } else if (response.entry?.length) {
+          hints["entries"] = response.entry.length;
+        }
+      } else if (response.class !== undefined) {
+        hints["entries"] = 1;
       }
 
       console.log(`getFHIR hints: ${JSON.stringify(hints, null, 2)}`);

@@ -1,11 +1,11 @@
 import * as fs from "fs";
 
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
-import { OpenAI } from "langchain";
 import { AgentExecutor, ZeroShotAgent } from "langchain/agents";
 import { LLMChain } from "langchain/chains";
 import { Document } from "langchain/document";
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
+import { OpenAI } from "langchain/llms/openai";
 import { SupabaseHybridSearch } from "langchain/retrievers/supabase";
 import { type ChainValues } from "langchain/schema";
 import { Tool } from "langchain/tools";
@@ -19,7 +19,7 @@ import { fhirUrlAgentPrompt } from "../prompts/fhirUrlAgentPrompt";
 export class FhirURL extends Tool {
   name = "FhirURL";
   description =
-    "Useful for finding the FHIR URL for a given FHIR resource.  The input to this tool should be a natural language query about some FHIR resource.  The output of this tool is a FHIR URL that can be used to query the FHIR API.";
+    "Useful for finding the FHIR URL for a given FHIR resource.  This tool can be retried with the same question asking for a different answer.  The input to this tool should be a natural language query about some FHIR resource.  The output of this tool is a non-deterministic FHIR URL that can be used to query the FHIR API.";
 
   tools: Tool[];
   executor: AgentExecutor | undefined;
@@ -57,7 +57,7 @@ export class FhirURL extends Tool {
     const llmChain = new LLMChain({
       llm,
       prompt,
-      //verbose: true,
+      // verbose: true,
     });
     const agent = new ZeroShotAgent({
       llmChain,
@@ -74,52 +74,130 @@ export class FhirURL extends Tool {
   }
 }
 
+function searchParamsFromResource(resource: {
+  id: string;
+  code: string;
+  type: string;
+  expression: string;
+  description: string;
+  xpath: string;
+  xpathUsage: string;
+  base: string[];
+  comparator: string[];
+  target: string[];
+}) {
+  const {
+    id,
+    code,
+    type,
+    expression,
+    description,
+    xpath,
+    xpathUsage,
+    base,
+    comparator,
+    target,
+  } = resource;
+
+  const searchParams = {
+    id,
+    code,
+    type,
+    expression,
+    description,
+    xpath,
+    xpathUsage,
+    base,
+    comparator: comparator || undefined,
+    target: target || undefined,
+  };
+
+  return searchParams;
+}
+
+const searchParamsWhitelist = [
+  "_id",
+  "_summary",
+  "_type",
+  "account",
+  "active",
+  "actor",
+  "address",
+  "appointment",
+  "birthdate",
+  "category",
+  "class",
+  "condition",
+  "date",
+  "diagnosis",
+  "email",
+  "encounter",
+  "family",
+  "gender",
+  "given",
+  "goal",
+  "intent",
+  "length",
+  "location-period",
+  "location",
+  "name",
+  "participant-type",
+  "participant",
+  "patient",
+  "performer",
+  "phone",
+  "practitioner",
+  "reason-code",
+  "service-provider",
+  "status",
+  "subject",
+  "title",
+  "topic",
+  "type",
+  "url",
+  "value",
+]; // TODO: add more
+// filtered to reduce the size of the tools responses
+function filterParamByWhitelist(entries: any[]) {
+  return entries.filter((entry: any) =>
+    searchParamsWhitelist.includes(entry.resource.code)
+  );
+}
+
+let paramsByBase: any;
 function compileSearchParamsByBase(searchParamsSpec: any) {
-  const searchParamsByBase: any = {};
-  searchParamsSpec.entry.forEach((entry: any) => {
-    const resource = entry.resource;
-    resource.base.forEach((resourceType: string) => {
-      if (!searchParamsByBase[resourceType]) {
-        searchParamsByBase[resourceType] = {};
-      }
-      const {
-        id,
-        code,
-        type,
-        expression,
-        description,
-        xpath,
-        xpathUsage,
-        base,
-        comparator,
-        target,
-      } = resource;
+  if (!paramsByBase) {
+    paramsByBase = {};
+    const resourceParams = filterParamByWhitelist(searchParamsSpec.entry)
+      .filter((entry: any) => entry.resource.base.includes("Resource"))
+      .reduce((acc: any, entry: any) => {
+        const resource = entry.resource;
+        const searchParams = searchParamsFromResource(resource);
+        acc[searchParams.code] = searchParams;
+        return acc;
+      }, {});
 
-      const searchParams = {
-        id,
-        code,
-        type,
-        expression,
-        description,
-        xpath,
-        xpathUsage,
-        base,
-      };
+    filterParamByWhitelist(searchParamsSpec.entry).forEach((entry: any) => {
+      const resource = entry.resource;
+      resource.base.forEach((resourceType: string) => {
+        if (!paramsByBase[resourceType]) {
+          paramsByBase[resourceType] = resourceParams;
+        }
 
-      if (comparator) searchParams["comparator"] = comparator;
-      if (target) searchParams["target"] = target;
+        const searchParams = searchParamsFromResource(resource);
 
-      searchParamsByBase[resourceType][code] = searchParams;
+        paramsByBase[resourceType][searchParams.code] = searchParams;
+      });
     });
-  });
+  }
 
-  return searchParamsByBase;
+  return paramsByBase;
 }
 
 class KnownEndpoints extends Tool {
   name = "KnownEndpoints";
   description =
-    "Useful for finding the known FHIR ENDPOINTS.  The input to this tool should be a natural language query about some FHIR resource.  The output of this tool is a JSON list of known FHIR ENDPOINTS.";
+    "Useful for finding the known FHIR ENDPOINTS.  The input to this tool should be a natural language query about some FHIR resource.  The output of this tool is a deterministic JSON list of known FHIR ENDPOINTS.";
 
   supabase: SupabaseClient;
   retriever: SupabaseHybridSearch | undefined;
@@ -174,7 +252,7 @@ class KnownEndpoints extends Tool {
 class EndpointParams extends Tool {
   name = "EndpointParams";
   description =
-    "Useful for finding the valid parameters for a given FHIR ENDPOINT.  The input to this tool should be a FHIR ENDPOINT name.  The output of this tool is a JSON list of valid parameters for the given FHIR ENDPOINT.";
+    "Useful for finding the valid parameters for a given FHIR ENDPOINT.  The input to this tool should be a FHIR ENDPOINT name.  The output of this tool is a deterministic JSON list of valid parameters for the given FHIR ENDPOINT.";
 
   searchParamsByBase: any;
 
@@ -190,21 +268,23 @@ class EndpointParams extends Tool {
   }
 
   async _call(input: string): Promise<string> {
-    // TODO: take Resource endpoint into account
-    const baseParams = Object.values(this.searchParamsByBase[input] || {});
-    const params = baseParams.map((param: any) => {
+    return JSON.stringify(this.paramsForBase(input));
+  }
+
+  protected paramsForBase(base: string): string[][] {
+    const baseParams = Object.values(this.searchParamsByBase[base] || {});
+    return baseParams.map((param: any) => {
       return param.code;
-      //const { code, description } = param;
-      //return [input, code, description];
+      // const { code, description } = param;
+      // return [base, code, description];
     });
-    return JSON.stringify(params);
   }
 }
 
 class EndpointParameterDetails extends Tool {
   name = "EndpointParameterDetails";
   description =
-    "Useful for finding the details of a given FHIR PARAMETER.  The input to this tool should be a FHIR ENDPOINT & PARAMETER name pair, joined by a column (:).  The input format is ENDPOINT:PARAMETER.  The output of this tool is the usage properties of the given FHIR PARAMETER, as JSON.";
+    "Useful for finding the details of a given FHIR PARAMETER.  The input to this tool should be a FHIR ENDPOINT & PARAMETER name pair, joined by a column (:).  The input format is ENDPOINT:PARAMETER.  The output of this tool is the deterministic usage properties of the given FHIR PARAMETER, as JSON.";
 
   searchParamsByBase: any;
 
