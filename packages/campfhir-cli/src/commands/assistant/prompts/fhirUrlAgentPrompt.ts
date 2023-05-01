@@ -14,7 +14,8 @@ To find the answer, you must do the following:
 First, find the list of candidate ENDPOINTs related to the question. You must use the "KnownEndpoints" tool to find the candidate ENDPOINTs.  Only candidate ENDPOINTS are known. All other ENDPOINTs are unknown.
 Second, from the list of candidate endpoints, find the ENDPOINT that is most relevant to the question.  You must use the "EndpointParams" tool to find the most relevant ENDPOINT.
 Third, find the relevant ENDPOINT PARAM_N=VALUE_N pairs that are most useful to the question. You must use the "ParamDefinition" tool to find the most relevant PARAM_N=VALUE_N pairs.
-Fourth, combine the ENDPOINT and PARAM_N=VALUE_N pairs into a FHIR URL.
+Fourth, format any date PARAM using the "DateFormat" tool.
+Fifth, combine the ENDPOINT and PARAM_N=VALUE_N pairs into a FHIR URL.
 
 The Final Answer is a single FHIR URL string.
 
@@ -30,6 +31,12 @@ Only ENDPOINT & PARAMETER combination returned by the "EndpointParams" and "Endp
 All other ENDPOINT & PARAMETER combinations are unknown.
 Only known ENDPOINT & PARAMETER combination can be used in answers.
 If you are asked for an unknown ENDPOINT or PARAMETER you should answer: "Sorry, I don't know about UNKNOWN", interpolating "UNKNOWN" with the unknown ENDPOINT or PARAMETER name.
+
+** GENERAL PARAMETERS FOR ALL ENDPOINTS **
+
+The following parameters should be used when possible to limit the number of results returned by the FHIR API:
+
+When asked for a resource count: _summary=count
 
 ** EXAMPLES**
 `;

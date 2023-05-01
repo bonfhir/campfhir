@@ -10,6 +10,8 @@ import { SupabaseHybridSearch } from "langchain/retrievers/supabase";
 import { type ChainValues } from "langchain/schema";
 import { Tool } from "langchain/tools";
 
+import dayjs from "dayjs";
+
 import { BufferMemory } from "langchain/memory";
 import { LoggingOutputParser } from "../parsers/LoggingOutputParser";
 import { fhirUrlAgentPrompt } from "../prompts/fhirUrlAgentPrompt";
@@ -28,6 +30,7 @@ export class FhirURL extends Tool {
       new KnownEndpoints(),
       new EndpointParams(),
       new EndpointParameterDetails(),
+      new DateFormat(),
     ];
   }
 
@@ -224,5 +227,15 @@ class EndpointParameterDetails extends Tool {
     const [base, param] = input.split(":");
     const paramSpec = this.searchParamsByBase[base as string][param as string];
     return JSON.stringify(paramSpec);
+  }
+}
+
+class DateFormat extends Tool {
+  name = "DateFormat";
+  description =
+    "Useful for formatting a date.  The input to this tool should be a date string.  The output of this tool is a date in the format YYYY-MM-DD.";
+
+  async _call(input: string): Promise<string> {
+    return dayjs(input).format("YYYY-MM-DD");
   }
 }
