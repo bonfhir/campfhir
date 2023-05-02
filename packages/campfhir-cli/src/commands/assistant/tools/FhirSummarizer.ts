@@ -55,7 +55,7 @@ Provide the source used to answer in the Final Answer.
 export const JSON_SUFFIX = `{chat_history}
 
 Question: {input}
-Thought: I should look at the keys that exist to see what I can query. I should use the 'json_list_keys' tool with an empty string as the input.
+Thought:  I should not repeat the same query twice.  I should look at the keys that exist to see what I can query. I should use the 'json_list_keys' tool with an empty string as the input.
 {agent_scratchpad}`;
 
 function createFhirSummarizerAgent(llm: OpenAI, toolkit: JsonToolkit) {
@@ -65,7 +65,11 @@ function createFhirSummarizerAgent(llm: OpenAI, toolkit: JsonToolkit) {
     suffix: JSON_SUFFIX,
     inputVariables: ["input", "agent_scratchpad", "chat_history"],
   });
-  const chain = new LLMChain({ prompt, llm });
+  const chain = new LLMChain({
+    prompt,
+    llm,
+    //verbose: true
+  });
   const agent = new ZeroShotAgent({
     llmChain: chain,
     allowedTools: tools.map((t) => t.name),

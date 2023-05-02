@@ -15,22 +15,29 @@ import dayjs from "dayjs";
 import { BufferMemory } from "langchain/memory";
 import { LoggingOutputParser } from "../parsers/LoggingOutputParser";
 import { fhirUrlAgentPrompt } from "../prompts/fhirUrlAgentPrompt";
+import { FhirAPI } from "./FhirAPI";
+import { FhirSummarizer, JSONResponseStore } from "./FhirSummarizer";
 
-export class FhirURL extends Tool {
-  name = "FhirURL";
+export class FhirQuestion extends Tool {
+  name = "FhirQuestion";
   description =
-    "Useful for finding the FHIR URL for a given FHIR resource.  This tool can be retried with the same question asking for a different answer.  The input to this tool should be a natural language query about some FHIR resource.  The output of this tool is a non-deterministic FHIR URL that can be used to query the FHIR API.";
+    "Useful for answering questions about medical data stored on a FHIR RESTful API server.  The input to this tool should be a natural language query about some FHIR resource.  The output of this tool is the summarized Fhir RESTFul API server response.";
 
   tools: Tool[];
   executor: AgentExecutor | undefined;
 
   constructor() {
     super();
+
+    const store = new JSONResponseStore();
+
     this.tools = [
       new KnownEndpoints(),
       new EndpointParams(),
       new EndpointParameterDetails(),
       new DateFormat(),
+      new FhirAPI(store),
+      new FhirSummarizer(store),
     ];
   }
 
@@ -62,7 +69,7 @@ export class FhirURL extends Tool {
     const agent = new ZeroShotAgent({
       llmChain,
       allowedTools: this.tools.map((tool) => tool.name),
-      outputParser: new LoggingOutputParser("FhirURL"),
+      outputParser: new LoggingOutputParser("FhirQuestion"),
     });
     const memory = new BufferMemory({ memoryKey: "chat_history" });
     return AgentExecutor.fromAgentAndTools({
