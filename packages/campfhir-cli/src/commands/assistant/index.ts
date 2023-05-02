@@ -11,7 +11,7 @@ import { BufferMemory } from "langchain/memory";
 import { type ChainValues } from "langchain/schema";
 
 import { LoggingOutputParser } from "./parsers/LoggingOutputParser";
-import { FhirQuestion } from "./tools/FhirURL";
+import { FhirQuestion } from "./tools/FhirQuestion";
 
 import { SessionLogger } from "./helpers/sessionLogger";
 

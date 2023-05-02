@@ -1,7 +1,7 @@
 import { JsonObject, Tool } from "langchain/tools";
 
-import { getFHIR } from "../helpers/fhir";
-import { JSONResponseStore } from "./FhirSummarizer";
+import { getFHIR } from "../../helpers/fhir";
+import { JSONResponseStore } from "./index";
 
 export class FhirAPI extends Tool {
   name = "FhirAPI";
