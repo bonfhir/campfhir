@@ -216,6 +216,7 @@ const searchParamsWhitelist = [
   "service-provider",
   "status",
   "subject",
+  "telecom",
   "title",
   "topic",
   "type",

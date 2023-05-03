@@ -1,7 +1,7 @@
 import { JsonToolkit, Toolkit } from "langchain/agents";
 import { JsonObject, JsonSpec, Tool } from "langchain/tools";
 
-import { FhirAPI } from "./FhirAPI";
+import { FhirAPIServer } from "./FhirAPI";
 import { FhirSummarizer } from "./FhirSummarizer";
 
 import { SessionLogger } from "../../helpers/sessionLogger";
@@ -14,7 +14,7 @@ export class FhirQueryToolkit extends Toolkit {
 
     const store = new JSONResponseStore();
 
-    this.tools = [new FhirAPI(store), new FhirSummarizer(store)];
+    this.tools = [new FhirAPIServer(store), new FhirSummarizer(store)];
   }
 }
 

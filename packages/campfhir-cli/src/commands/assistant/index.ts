@@ -40,7 +40,7 @@ You have access to the following tools:`;
 
 Question: {input}
 
-Think before answering.
+Think before answering.  Only use the tools output as answers.  If the tools has no answer, then say "I don't know".
 This was your previous work (but I haven't seen any of it! I only see what you return as final answer):
 {agent_scratchpad}`;
     const agentPrompt = ZeroShotAgent.createPrompt(tools, {

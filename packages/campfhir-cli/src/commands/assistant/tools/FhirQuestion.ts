@@ -5,9 +5,9 @@ import { OpenAI } from "langchain/llms/openai";
 import { type ChainValues } from "langchain/schema";
 import { Tool } from "langchain/tools";
 
-import { BufferMemory } from "langchain/memory";
+import { BufferWindowMemory } from "langchain/memory";
 import { LoggingOutputParser } from "../parsers/LoggingOutputParser";
-import { fhirUrlAgentPrompt } from "../prompts/fhirUrlAgentPrompt";
+import { fhirQuestionPrompt } from "../prompts/fhirQuestionPrompt";
 import { DateToolkit } from "./DateToolkit";
 
 import { FhirDocsToolkit } from "./FhirDocsToolkit";
@@ -54,7 +54,7 @@ export class FhirQuestion extends Tool {
 
   protected async initializeAgent() {
     const llm = new OpenAI({ temperature: 0 });
-    const prompt = await fhirUrlAgentPrompt(this.tools);
+    const prompt = await fhirQuestionPrompt(this.tools);
     const llmChain = new LLMChain({
       llm,
       prompt,
@@ -65,7 +65,7 @@ export class FhirQuestion extends Tool {
       allowedTools: this.tools.map((tool) => tool.name),
       outputParser: new LoggingOutputParser("FhirQuestion"),
     });
-    const memory = new BufferMemory({ memoryKey: "chat_history" });
+    const memory = new BufferWindowMemory({ memoryKey: "chat_history" });
     return AgentExecutor.fromAgentAndTools({
       agent,
       tools: this.tools,
