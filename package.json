@@ -9,6 +9,7 @@
   ],
   "scripts": {
     "seed": "yarn workspace @bonfhir/campfhir-cli dev import -f '/workspace/data/synthea_sample_data_fhir_r4_sep2019/*.json'",
-    "assistant": "yarn workspace @bonfhir/campfhir-cli dev assistant"
+    "assistant": "yarn workspace @bonfhir/campfhir-cli dev assistant",
+    "embed": "yarn workspace @bonfhir/campfhir-cli dev embed"
   }
 }

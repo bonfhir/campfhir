@@ -5,16 +5,15 @@ import { CommandModule } from "yargs";
 
 import { AgentExecutor, ZeroShotAgent } from "langchain/agents";
 import { LLMChain } from "langchain/chains";
-import { ChatOpenAI } from "langchain/chat_models";
-import {
-  ChatPromptTemplate,
-  HumanMessagePromptTemplate,
-  SystemMessagePromptTemplate,
-} from "langchain/prompts";
+import { OpenAI } from "langchain/llms/openai";
+import { BufferMemory } from "langchain/memory";
 
-import { type AgentStep, type ChainValues } from "langchain/schema";
+import { type ChainValues } from "langchain/schema";
 
-import { FhirApiToolkit } from "./tools/medplumFhirAPI";
+import { LoggingOutputParser } from "./parsers/LoggingOutputParser";
+import { FhirQuestion } from "./tools/FhirQuestion";
+
+import { SessionLogger } from "./helpers/sessionLogger";
 
 export default <CommandModule>{
   command: "assistant",
@@ -22,71 +21,53 @@ export default <CommandModule>{
   handler: async (_options) => {
     dotenv.config(); // OpenAI + Medplum config from .env file
 
-    const toolkit = new FhirApiToolkit();
-    const tools = toolkit.tools;
+    SessionLogger.init({});
+
+    const tools = [new FhirQuestion()];
 
     const agentPromptPrefix = `** INSTRUCTIONS **
-You are a medical assistant answering questions about medical data stored in a FHIR API server.
-Answer the questions as best you can. Always provide a complete summarized answer.
-You can answer questions about the FHIR data and the FHIR specifications:
+You are a medical assistant answering questions about medical data stored in a FHIR RESTful API server.
+All questions should be answered in the context of the medical data stored in the FHIR RESTful API server.
 
-1. FHIR specifications:
-These questions are about the FHIR class & protocol specifications.
-For example, "What are the FHIR Patient properties names?" or "What are FHIR SearchSet bundles?"
-You can use your general knowledge of FHIR to answer these questions.
+You must use the FhirQuestion tool to answer questions about medical data stored in a FHIR RESTful API server.
+For the Final Answer, You must summarize the FhirQuestion tool's response in the context of the users question.
 
-2. FHIR data:
-These questions are answered by querying a FHIR API server.
-For example, "What are the active patients?" or "What are the active practitioners?".
-You must use the FHIR URL tool to find the FHIR URL for the query.  You should not try to figure out the FHIR URL yourself.  Always use the FHIR URL tool to find any FHIR URL.
-You must use the FHIR API tool to query the data you need.
-If no FIHR data is available, you can simply answer that question with "no data".
-
-All other question types are not supported and sound be answered with "I don't know".
+The question input to the FhirQuestion tool should be the exact unmodified question from the user.
+When going back & repeating any question, you must mention in the tools question input that the previous answer was wrong.
 
 You have access to the following tools:`;
-    const agentPromptSuffix = `Think before answering.\nBegin!`;
+    const agentPromptSuffix = `{chat_history}
+
+Question: {input}
+
+Think before answering.
+This was your previous work (but I haven't seen any of it! I only see what you return as final answer):
+{agent_scratchpad}`;
     const agentPrompt = ZeroShotAgent.createPrompt(tools, {
       prefix: agentPromptPrefix,
       suffix: agentPromptSuffix,
+      inputVariables: ["input", "chat_history", "agent_scratchpad"],
     });
 
-    const agentInstructionPrompt = new SystemMessagePromptTemplate(agentPrompt);
-    // console.log("agentPrompt: ", agentPrompt);
-    // console.log("agentInstructionPrompt: ", agentInstructionPrompt);
-
-    const agentScratchpadPrompt =
-      HumanMessagePromptTemplate.fromTemplate(`** INPUT **
-{input}
-
-** SCRATCHPAD **
-{agent_scratchpad}`);
-
-    const chatAgentPrompt = ChatPromptTemplate.fromPromptMessages([
-      agentInstructionPrompt,
-      agentScratchpadPrompt,
-    ]);
-
-    // console.log("chatPrompt: ", chatAgentPrompt);
-
-    const chat = new ChatOpenAI({ temperature: 0 });
-    // console.log("chat: ", chat);
-
+    const llm = new OpenAI({ temperature: 0 });
+    const memory = new BufferMemory({ memoryKey: "chat_history" });
     const llmChain = new LLMChain({
-      llm: chat,
-      prompt: chatAgentPrompt,
-      verbose: true,
+      llm,
+      prompt: agentPrompt,
+      // verbose: true,
     });
 
     const agent = new ZeroShotAgent({
       llmChain,
       allowedTools: tools.map((tool) => tool.name),
+      outputParser: new LoggingOutputParser("FHIR Assistant"),
     });
 
     const executor = AgentExecutor.fromAgentAndTools({
       agent,
       tools,
-      returnIntermediateSteps: true,
+      memory,
+      //returnIntermediateSteps: true,
     });
 
     for (;;) {
@@ -102,20 +83,19 @@ You have access to the following tools:`;
         process.exit(0); // exit on exit or quit
       }
 
+      SessionLogger.logQuestion(query.question);
+
       try {
         const response: ChainValues = await executor.call({
           input: query.question,
         });
-        console.log("response: ", response);
 
-        response.intermediateSteps?.forEach((step: AgentStep) => {
-          console.log(`💠 ${step.action.log}\n`);
-        });
-
-        console.log("🔰 ", response.output);
+        const answer = `🔰 ${response.output}\n`;
+        SessionLogger.logAnswer(answer);
+        console.log(answer);
       } catch (error) {
         console.log("error response: ", error);
-        // return;
+        SessionLogger.log("error", error);
       }
     }
   },

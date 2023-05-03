@@ -3,6 +3,7 @@
 import chalk from "chalk";
 import yargs from "yargs";
 import assistant from "./commands/assistant";
+import embed from "./commands/embed";
 import importCmd from "./commands/import";
 import verifyPrompts from "./commands/verify-prompts";
 
@@ -13,6 +14,7 @@ try {
     .command(importCmd)
     .command(verifyPrompts)
     .command(assistant)
+    .command(embed)
     .help("h")
     .alias("h", "help")
     .strictCommands()

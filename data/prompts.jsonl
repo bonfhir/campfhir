@@ -7,3 +7,13 @@
 {"prompt": "How many risk assessments do I have?", "completion": "/RiskAssessment?_summary=count"}
 {"prompt": "How many risk assessments do I have with a high risk?", "completion": "/RiskAssessment?risk=high&_summary=count"}
 {"prompt": "How many risk assessments do I have with a low risk?", "completion": "/RiskAssessment?risk=low&_summary=count"}
+{"prompt": "List observations for a patient born on 1975-12-21 having family name Enthoven", "completion": "/Observation?patient.family=Enthoven&patient.birthdate=1975-12-21"}
+{"prompt": "Find patients born on 1975-12-21 having family name Enthoven", "completion": "/Patient?family=Enthoven&birthdate=1975-12-21"}
+{"prompt": "Find patients whose family name match exactly Enthoven", "completion": "/Patient?family:exact=Enthoven"}
+{"prompt": "Find observations without any patient", "completion": "/Observation?patient:missing=true"}
+{"prompt": "Find patients born after 1975-01-01", "completion": "/Patient?birthdate=ge1975-01-01"}
+{"prompt": "Find observations with an integer value lower than 4", "completion": "/Observation?value-quantity=lt4" }
+{"prompt": "Find patient having ID 69f79094-577b-4825-8ba8-0e587b390269", "completion": "/Patient?_id=69f79094-577b-4825-8ba8-0e587b390269" }
+{"prompt": "How many encounters for patients having id 69f79094-577b-4825-8ba8-0e587b390269", "completion": "/Encounter?subject=69f79094-577b-4825-8ba8-0e587b390269&_summary=count" }
+// {"prompt": "What is the name of the organization with id 69f79094-577b-4825-8ba8-0e587b390269", "completion": "/Organization?_id=69f79094-577b-4825-8ba8-0e587b390269&_elements=id,name" }
+{"prompt": "List the diagnostics for a patient with id 69f79094-577b-4825-8ba8-0e587b390269", "completion": "Patient?_id=69f79094-577b-4825-8ba8-0e587b390269&_revinclude=DiagnosticReport.subject"}
