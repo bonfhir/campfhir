@@ -10,8 +10,8 @@ import { fhirQuestionPrompt } from "../prompts/fhirQuestionPrompt";
 import { DateToolkit } from "./DateToolkit";
 
 import { createOpenAIInstance } from "../models/openai";
+import { FhirAPIServer } from "./FhirAPIServer";
 import { FhirDocsToolkit } from "./FhirDocsToolkit";
-import { FhirAPIServer2 } from "./FhirQueryToolkit/FhirAPI";
 
 export class FhirQuestion extends Tool {
   name = "FhirQuestion";
@@ -25,13 +25,11 @@ export class FhirQuestion extends Tool {
     super();
 
     const docsToolkit = new FhirDocsToolkit();
-    // const queryToolkit = new FhirQueryToolkit();
     const dateToolkit = new DateToolkit();
 
     this.tools = [
       ...docsToolkit.tools,
-      new FhirAPIServer2(),
-      //...queryToolkit.tools,
+      new FhirAPIServer(),
       ...dateToolkit.tools,
     ];
   }

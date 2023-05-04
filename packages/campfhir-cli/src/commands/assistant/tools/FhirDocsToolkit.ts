@@ -21,7 +21,7 @@ export class FhirDocsToolkit extends Toolkit {
       new KnownEndpoints(),
       new FhirAPIExamples(),
       new EndpointParams(),
-      new EndpointParameterDetails(),
+      // new EndpointParameterDetails(), // TODO: prove this is too much information
     ];
   }
 }
@@ -86,9 +86,8 @@ export class FhirAPIExamples extends Tool {
   description =
     "Useful for finding the usage examples for a given FHIR ENDPOINT.  The input to this tool should be a FHIR ENDPOINT name.  The output of this tool is a deterministic JSON list of usage examples for the given FHIR ENDPOINT.";
 
-  async _call(input: string): Promise<string> {
-    console.log("FhirAPIExamples input:", input);
-    return formatedExamples();
+  async _call(_input: string): Promise<string> {
+    return formatedExamples(); // TODO: implement, this is a cheat for now that only supports patients
   }
 }
 export class EndpointParams extends Tool {
