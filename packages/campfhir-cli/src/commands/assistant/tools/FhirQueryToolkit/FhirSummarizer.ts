@@ -5,6 +5,7 @@ import { BufferMemory } from "langchain/memory";
 import { Tool } from "langchain/tools";
 
 import { JSONResponseStore } from ".";
+import { createOpenAIInstance } from "../../models/openai";
 import { LoggingOutputParser } from "../../parsers/LoggingOutputParser";
 import {
   SUMMARIZE_JSON_PREFIX,
@@ -20,7 +21,7 @@ export class FhirSummarizer extends Tool {
   constructor(store: JSONResponseStore) {
     super();
 
-    const llm = new OpenAI({ temperature: 0 });
+    const llm = createOpenAIInstance({ temperature: 0 });
     this.jsonAgentExecutor = this.initializeAgent(llm, store.jsonToolkit);
   }
 

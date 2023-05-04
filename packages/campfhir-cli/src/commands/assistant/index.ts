@@ -5,11 +5,11 @@ import { CommandModule } from "yargs";
 
 import { AgentExecutor, ZeroShotAgent } from "langchain/agents";
 import { LLMChain } from "langchain/chains";
-import { OpenAI } from "langchain/llms/openai";
 import { BufferMemory } from "langchain/memory";
 
 import { type ChainValues } from "langchain/schema";
 
+import { createOpenAIInstance } from "./models/openai";
 import { LoggingOutputParser } from "./parsers/LoggingOutputParser";
 import { FhirQuestion } from "./tools/FhirQuestion";
 
@@ -49,7 +49,7 @@ This was your previous work (but I haven't seen any of it! I only see what you r
       inputVariables: ["input", "chat_history", "agent_scratchpad"],
     });
 
-    const llm = new OpenAI({ temperature: 0 });
+    const llm = createOpenAIInstance({ temperature: 0 });
     const memory = new BufferMemory({ memoryKey: "chat_history" });
     const llmChain = new LLMChain({
       llm,

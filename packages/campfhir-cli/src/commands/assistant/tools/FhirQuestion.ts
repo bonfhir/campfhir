@@ -1,7 +1,6 @@
 import { AgentExecutor, ZeroShotAgent } from "langchain/agents";
 import { LLMChain } from "langchain/chains";
 
-import { OpenAI } from "langchain/llms/openai";
 import { type ChainValues } from "langchain/schema";
 import { Tool } from "langchain/tools";
 
@@ -10,6 +9,7 @@ import { LoggingOutputParser } from "../parsers/LoggingOutputParser";
 import { fhirQuestionPrompt } from "../prompts/fhirQuestionPrompt";
 import { DateToolkit } from "./DateToolkit";
 
+import { createOpenAIInstance } from "../models/openai";
 import { FhirDocsToolkit } from "./FhirDocsToolkit";
 import { FhirQueryToolkit } from "./FhirQueryToolkit";
 
@@ -53,7 +53,7 @@ export class FhirQuestion extends Tool {
   }
 
   protected async initializeAgent() {
-    const llm = new OpenAI({ temperature: 0 });
+    const llm = createOpenAIInstance({ temperature: 0 });
     const prompt = await fhirQuestionPrompt(this.tools);
     const llmChain = new LLMChain({
       llm,
