@@ -9,6 +9,8 @@ import { Document } from "langchain/document";
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 import { Tool } from "langchain/tools";
 
+import { formatedExamples } from "../prompts/fhirQuestionPrompt";
+
 export class FhirDocsToolkit extends Toolkit {
   tools: Tool[];
 
@@ -17,6 +19,7 @@ export class FhirDocsToolkit extends Toolkit {
 
     this.tools = [
       new KnownEndpoints(),
+      new FhirAPIExamples(),
       new EndpointParams(),
       new EndpointParameterDetails(),
     ];
@@ -26,7 +29,7 @@ export class FhirDocsToolkit extends Toolkit {
 export class KnownEndpoints extends Tool {
   name = "KnownEndpoints";
   description =
-    "Useful for finding the known FHIR ENDPOINTS.  The input to this tool should be a natural language query about some FHIR resource.  The output of this tool is a deterministic JSON list of known FHIR ENDPOINTS.";
+    "Useful for finding the known FHIR ENDPOINTS.  The input to this tool should be a natural language query about some FHIR resource.  The output of this tool are ENDPOINT & PARAMETER usage examples.";
 
   supabase: SupabaseClient;
   retriever: SupabaseHybridSearch | undefined;
@@ -78,6 +81,16 @@ export class KnownEndpoints extends Tool {
   }
 }
 
+export class FhirAPIExamples extends Tool {
+  name = "FhirAPIExamples";
+  description =
+    "Useful for finding the usage examples for a given FHIR ENDPOINT.  The input to this tool should be a FHIR ENDPOINT name.  The output of this tool is a deterministic JSON list of usage examples for the given FHIR ENDPOINT.";
+
+  async _call(input: string): Promise<string> {
+    console.log("FhirAPIExamples input:", input);
+    return formatedExamples();
+  }
+}
 export class EndpointParams extends Tool {
   name = "EndpointParams";
   description =

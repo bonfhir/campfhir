@@ -11,7 +11,7 @@ import { DateToolkit } from "./DateToolkit";
 
 import { createOpenAIInstance } from "../models/openai";
 import { FhirDocsToolkit } from "./FhirDocsToolkit";
-import { FhirQueryToolkit } from "./FhirQueryToolkit";
+import { FhirAPIServer2 } from "./FhirQueryToolkit/FhirAPI";
 
 export class FhirQuestion extends Tool {
   name = "FhirQuestion";
@@ -25,12 +25,13 @@ export class FhirQuestion extends Tool {
     super();
 
     const docsToolkit = new FhirDocsToolkit();
-    const queryToolkit = new FhirQueryToolkit();
+    // const queryToolkit = new FhirQueryToolkit();
     const dateToolkit = new DateToolkit();
 
     this.tools = [
       ...docsToolkit.tools,
-      ...queryToolkit.tools,
+      new FhirAPIServer2(),
+      //...queryToolkit.tools,
       ...dateToolkit.tools,
     ];
   }

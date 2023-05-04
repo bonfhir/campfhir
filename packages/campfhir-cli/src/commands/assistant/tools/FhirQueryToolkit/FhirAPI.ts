@@ -69,12 +69,11 @@ export class FhirAPIServer extends Tool {
       const url = this.buildUrl(query.endpoint, query.params);
       console.log("FhirAPIServer url: ", url);
 
-      // that will :explode:
       const response = await getFHIR(url);
       //console.log("FhirAPI output resource type: ", response.resourceType);
       //console.log("FhirAPI output total: ", response.total || 0);
       //console.log("FhirAPI output entry: ", response.entry?.length || 0);
-      console.log(`getFHIR response: ${JSON.stringify(response, null, 2)}`);
+      // console.log(`getFHIR response: ${JSON.stringify(response, null, 2)}`);
 
       this.store.setResponse(response as JsonObject);
 
@@ -100,6 +99,56 @@ export class FhirAPIServer extends Tool {
       console.log(`getFHIR hints: ${JSON.stringify(hints, null, 2)}`);
 
       return JSON.stringify(hints);
+    } catch (error) {
+      console.error("getFhir error: ", error);
+
+      throw error;
+    }
+  }
+
+  buildUrl(endpoint: string, params: any[]) {
+    const paramQuery = querystring.stringify(params);
+    console.log("FhirAPIServer paramQuery: ", paramQuery);
+
+    return `/${endpoint}?${paramQuery}`;
+  }
+}
+
+export class FhirAPIServer2 extends Tool {
+  name = "FhirAPIServer";
+  description = `Useful for querying a FHIR RESTFul API server. The input to this tool should be a valid JSON string query.  The format of the JSON input query is {{"endpoint": <ENDPOINT>, "params": {{"<PARAMETER code>": "<PARAMETER value>"}}}}.  The output is the FHIR API server JSON response.`;
+
+  constructor() {
+    super();
+  }
+
+  async _call(input: string): Promise<string> {
+    try {
+      console.log("FhirAPIServer input: ", input);
+      const query = JSON.parse(input);
+      console.log("FhirAPIServer query: ", query);
+      const url = this.buildUrl(query.endpoint, query.params);
+      console.log("FhirAPIServer url: ", url);
+
+      const response = await getFHIR(url);
+      //console.log("FhirAPI output resource type: ", response.resourceType);
+      //console.log("FhirAPI output total: ", response.total || 0);
+      //console.log("FhirAPI output entry: ", response.entry?.length || 0);
+      // console.log(`getFHIR response: ${JSON.stringify(response, null, 2)}`);
+
+      let result: string;
+      if (response.entry?.length > 1) {
+        result = JSON.stringify({
+          error:
+            "The response is too large and has multiple pages.  The query should be refined to return a smaller result set.",
+        });
+      } else {
+        result = JSON.stringify(response);
+      }
+
+      console.log(`getFHIR result: ${JSON.stringify(result, null, 2)}`);
+
+      return JSON.stringify(result);
     } catch (error) {
       console.error("getFhir error: ", error);
 

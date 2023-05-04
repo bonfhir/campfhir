@@ -11,7 +11,6 @@ export function createOpenAIInstance(
   }
 
   if (process.env.PROMPTLAYER_API_KEY) {
-    console.log("📡 broadcasting session to PromptLayer");
     return new PromptLayerOpenAI(fields);
   } else {
     return new OpenAI(fields);
