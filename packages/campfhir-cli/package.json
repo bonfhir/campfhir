@@ -49,6 +49,7 @@
     "@medplum/core": "^2.0.5",
     "@supabase/supabase-js": "^2.21.0",
     "chalk": "^5.2.0",
+    "cohere-ai": "^6.2.0",
     "dayjs": "^1.11.7",
     "dotenv": "^16.0.3",
     "fast-glob": "^3.2.12",
@@ -58,6 +59,7 @@
     "lodash": "^4.17.21",
     "node-fetch": "^3.3.1",
     "prompts": "^2.4.2",
+    "replicate": "^0.12.0",
     "yaml": "^2.2.2",
     "yargs": "^17.6.2"
   },

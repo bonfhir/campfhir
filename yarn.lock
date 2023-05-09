@@ -444,6 +444,7 @@ __metadata:
     "@types/rimraf": ^3
     "@types/yargs": ^17
     chalk: ^5.2.0
+    cohere-ai: ^6.2.0
     dayjs: ^1.11.7
     dotenv: ^16.0.3
     eslint: ^8.30.0
@@ -456,6 +457,7 @@ __metadata:
     node-fetch: ^3.3.1
     prettier: ^2.8.1
     prompts: ^2.4.2
+    replicate: ^0.12.0
     rimraf: ^3.0.2
     ts-node: ^10.9.1
     tsup: ^6.6.2
@@ -2559,6 +2561,13 @@ __metadata:
   version: 1.1.0
   resolution: "code-point-at@npm:1.1.0"
   checksum: 17d5666611f9b16d64fdf48176d9b7fb1c7d1c1607a189f7e600040a11a6616982876af148230336adb7d8fe728a559f743a4e29db3747e3b1a32fa7f4529681
+  languageName: node
+  linkType: hard
+
+"cohere-ai@npm:^6.2.0":
+  version: 6.2.0
+  resolution: "cohere-ai@npm:6.2.0"
+  checksum: f4ec48a4983539d40c1a699c4dbcca4a31e9dc24d993db2dd30501d0a213cf71ddaff7437f9cff7d8e586054d90c37f663f6e36125e0771c974c2f9e13327436
   languageName: node
   linkType: hard
 
@@ -6049,6 +6058,13 @@ __metadata:
   version: 3.2.0
   resolution: "regexpp@npm:3.2.0"
   checksum: a78dc5c7158ad9ddcfe01aa9144f46e192ddbfa7b263895a70a5c6c73edd9ce85faf7c0430e59ac38839e1734e275b9c3de5c57ee3ab6edc0e0b1bdebefccef8
+  languageName: node
+  linkType: hard
+
+"replicate@npm:^0.12.0":
+  version: 0.12.0
+  resolution: "replicate@npm:0.12.0"
+  checksum: 81888070af5fbc50a5aa35896f4d10c79cc594b3803a73b8be8a21b20561fab0095641fe0578c4a13839cc3a7e0254e15cddb2ebe5b8d8260979401c5a94982b
   languageName: node
   linkType: hard
 
