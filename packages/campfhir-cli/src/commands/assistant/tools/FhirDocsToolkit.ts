@@ -9,6 +9,10 @@ import { Document } from "langchain/document";
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 import { Tool } from "langchain/tools";
 
+import {
+  readYamlExamples,
+  type FhirPromptExample,
+} from "../helpers/yamlExamples";
 import { formatedExamples } from "../prompts/fhirQuestionPrompt";
 
 export class FhirDocsToolkit extends Toolkit {
@@ -85,9 +89,36 @@ export class FhirAPIExamples extends Tool {
   name = "FhirAPIExamples";
   description =
     "Useful for finding the usage examples for a given FHIR ENDPOINT.  The input to this tool should be a FHIR ENDPOINT name.  The output of this tool is a deterministic JSON list of usage examples for the given FHIR ENDPOINT.";
+  examples: { [key: string]: string } = {};
 
+  constructor() {
+    super();
+    const unjoinedExamples: { [key: string]: string[] } = {};
+    readYamlExamples().forEach((example: FhirPromptExample) => {
+      console.log("example: ", example);
+      console.log("example.completion", example.completion);
+      const endpoint = example.completion.endpoint;
+      console.log("endpoint: ", endpoint);
+      if (!unjoinedExamples[endpoint]) {
+        unjoinedExamples[endpoint] = [];
+      }
+      unjoinedExamples[endpoint].push(this.formatExample(example));
+    });
+
+    this.examples = Object.fromEntries(
+      Object.entries(unjoinedExamples).map(([endpoint, examples]) => {
+        return [endpoint, examples.join("\n")];
+      })
+    );
+  }
   async _call(_input: string): Promise<string> {
     return formatedExamples(); // TODO: implement, this is a cheat for now that only supports patients
+  }
+
+  protected formatExample(example: FhirPromptExample): string {
+    return `Question: ${example.prompt} ||| FhirAPIServer: "${JSON.stringify(
+      example.completion
+    )}"`;
   }
 }
 export class EndpointParams extends Tool {

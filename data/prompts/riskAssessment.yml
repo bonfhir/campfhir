@@ -1,0 +1,12 @@
+- prompt: How many risk assessments do I have?
+  completion:
+    endpoint: RiskAssessment
+    params: { _summary: count }
+- prompt: How many risk assessments do I have with a high risk?
+  completion:
+    endpoint: RiskAssessment
+    params: { _summary: count, risk: high }
+- prompt: How many risk assessments do I have with a low risk?
+  completion:
+    endpoint: RiskAssessment
+    params: { _summary: count, risk: low }
