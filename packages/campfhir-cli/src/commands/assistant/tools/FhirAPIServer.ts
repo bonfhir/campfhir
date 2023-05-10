@@ -1,21 +1,9 @@
 import { JsonObject, Tool } from "langchain/tools";
 
 import querystring from "querystring";
-import { getFHIR } from "../helpers/fhir";
+import { getFHIR, minimizeFhirResponse } from "../helpers/fhirApi";
 
 import { SessionLogger } from "../helpers/sessionLogger";
-
-const RESOURCE_KEYS = [
-  "resourceType",
-  "id",
-  "name",
-  "telecom",
-  "gender",
-  "birthDate",
-  "deceasedDateTime",
-  "address",
-  "maritalStatus",
-];
 
 export class FhirAPIServer extends Tool {
   name = "FhirAPIServer";
@@ -48,7 +36,7 @@ export class FhirAPIServer extends Tool {
             "The response is too large and has multiple pages.  The query should be refined to return a smaller result set.",
         };
       } else {
-        result = this.minimizeResponse(response as JsonObject);
+        result = minimizeFhirResponse(query.endpoint, response as JsonObject);
       }
 
       console.log(`getFHIR result: ${JSON.stringify(result, null, 2)}`);
@@ -66,20 +54,6 @@ export class FhirAPIServer extends Tool {
     console.log("FhirAPIServer paramQuery: ", paramQuery);
 
     return `/${endpoint}?${paramQuery}`;
-  }
-
-  minimizeResponse(response: JsonObject) {
-    let result: any;
-    if (response.entry?.length === 1) {
-      result = Object.fromEntries(
-        Object.entries(response.entry[0].resource).filter(([key, _value]) =>
-          RESOURCE_KEYS.includes(key)
-        )
-      );
-    } else {
-      result = response;
-    }
-    return result;
   }
 
   logResponse(json: JsonObject) {

@@ -2,7 +2,17 @@ import { ZeroShotAgent } from "langchain/agents";
 import { PromptTemplate } from "langchain/prompts";
 import { Tool } from "langchain/tools";
 
-const instructions = `Your title is "FHIR Query Agent" and so is your name.  You are a data query agent.
+import { type CurrentUser } from "../helpers/currentUser";
+
+const INSTRUCTIONS = `Your title is "FHIR Query Agent" and so is your name.  You are a data query agent.
+
+
+The human asking the questions is:
+name: {name}
+gender: {gender}
+resourceType: {resourceType}
+id: {id}
+
 You must answer the questions step-by-step by using the provided tools.  Don't skip any step.
 
 To find the answer, you must follow the steps in the following resolution sequence:
@@ -10,7 +20,8 @@ To find the answer, you must follow the steps in the following resolution sequen
   1.1 - You must find the list of candidate ENDPOINTs related to the question. You must use the "KnownEndpoints" tool to find the candidate ENDPOINTs.  Only candidate ENDPOINTS are known. All other ENDPOINTs are unknown.
   1.2 - From the list of candidate endpoints, you must find the ENDPOINT that is most relevant to the question.  You must use the "EndpointParams" tool to find the most relevant ENDPOINT.
   1.3 - You must compare the "FhirAPIExamples" tool examples to find the input to the "FhirAPIServer" tool.
-  1.4 - For date PARAMETERs, you must format any date PARAMETER value using the "DateFormat" tool.
+  1.4 - You must use the "CurrentDateTime" tool to find the current date & time if needed.
+  1.5 - For date PARAMETERs, you must format any date PARAMETER value using the "DateFormat" tool.
 2. - You must explain, one-by-one, why each PARAMETERs are used in query.
 3. - You must analyse the PARAMETER explanations and keep PARAMETERS that answer the question.
 4. - You must query the "FhirAPIServer" tool with the ENDPOINT & PARAMETERS to get the API resources.  You must pass the exact ENDPOINT, PARAMETER & VALUE from the previous step to the FhirAPIServer tool.
@@ -32,8 +43,8 @@ Only known ENDPOINT & PARAMETER combination can be used in answers.
 If you are asked for an unknown ENDPOINT or PARAMETER you should answer: "Sorry, I don't know about UNKNOWN", interpolating "UNKNOWN" with the unknown ENDPOINT or PARAMETER name.
 
 When a question is repeated with the mention that the previous answer was wrong, you must find a different answer by thinking of a different strategy.
-
-** PARAMETER CHEATS **
+`;
+const EXTRA_INSTRUCTIONS = `** PARAMETER CHEATS **
 
 To find a resource by ID, use the _id parameter.
 The resource identifier is not the ID field, but the combination of the resource type and the ID field.  The identifier parameter must not be used in answers.
@@ -44,7 +55,7 @@ Question: "how many": {{"_summary": "count"}}
 Question: "what is the": NO _summary PARAMETER
 `;
 
-const suffix = `Think before answering.
+const FHIR_PROMPT_SUFFIX = `Think before answering.
 
 {chat_history}
 
@@ -54,11 +65,19 @@ This was your previous work (but I haven't seen any of it! I only see what you r
 {agent_scratchpad}`;
 
 export async function fhirQuestionPrompt(
+  currentUser: CurrentUser,
   tools: Tool[]
 ): Promise<PromptTemplate> {
+  const instructionPrompt = new PromptTemplate({
+    template: INSTRUCTIONS,
+    inputVariables: ["name", "gender", "resourceType", "id"],
+  });
+  const instructions = await instructionPrompt.format(currentUser);
+  const prefix = instructions + EXTRA_INSTRUCTIONS;
+
   return ZeroShotAgent.createPrompt(tools, {
-    prefix: instructions,
-    suffix,
+    prefix,
+    suffix: FHIR_PROMPT_SUFFIX,
     inputVariables: ["input", "chat_history", "agent_scratchpad"],
   });
 }
