@@ -15,6 +15,8 @@ services:
       - ${WORKSPACE_ROOT:-..}:/workspace:cached
       - devcontainer_node_modules:/workspace/node_modules
       - devcontainer_command_history:/command_history
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
   medplum:
     image: ghcr.io/bonfhir/medplum-devbox:v2.0.4
@@ -26,7 +28,7 @@ services:
       - "8103:8103"
     volumes:
       - ./medplum.config.json:/usr/src/medplum/packages/server/medplum.config.json
-  
+
   postgres:
     image: postgres:12-bullseye
     command: postgres -c config_file=/usr/local/etc/postgres/postgres.conf
@@ -35,7 +37,7 @@ services:
       - POSTGRES_PASSWORD=medplum
     ports:
       - '5432:5432'
-    volumes: 
+    volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./postgres.conf:/usr/local/etc/postgres/postgres.conf
       - ./load_extensions.sql:/docker-entrypoint-initdb.d/load_extensions.sql
