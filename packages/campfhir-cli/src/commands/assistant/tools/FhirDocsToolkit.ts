@@ -13,7 +13,6 @@ import {
   readYamlExamples,
   type FhirPromptExample,
 } from "../helpers/yamlExamples";
-import { formatedExamples } from "../prompts/fhirQuestionPrompt";
 
 export class FhirDocsToolkit extends Toolkit {
   tools: Tool[];
@@ -89,30 +88,36 @@ export class FhirAPIExamples extends Tool {
   name = "FhirAPIExamples";
   description =
     "Useful for finding the usage examples for a given FHIR ENDPOINT.  The input to this tool should be a FHIR ENDPOINT name.  The output of this tool is a deterministic JSON list of usage examples for the given FHIR ENDPOINT.";
-  examples: { [key: string]: string } = {};
+  formatedExamples: { [key: string]: string } = {};
 
   constructor() {
     super();
-    const unjoinedExamples: { [key: string]: string[] } = {};
+    const examples: { [key: string]: string[] } = {};
     readYamlExamples().forEach((example: FhirPromptExample) => {
       console.log("example: ", example);
       console.log("example.completion", example.completion);
-      const endpoint = example.completion.endpoint;
+      const endpoint = example.completion.endpoint.toLowerCase();
       console.log("endpoint: ", endpoint);
-      if (!unjoinedExamples[endpoint]) {
-        unjoinedExamples[endpoint] = [];
+      if (!examples[endpoint]) {
+        examples[endpoint] = [];
       }
-      unjoinedExamples[endpoint].push(this.formatExample(example));
+      examples[endpoint].push(this.formatExample(example));
     });
 
-    this.examples = Object.fromEntries(
-      Object.entries(unjoinedExamples).map(([endpoint, examples]) => {
+    this.formatedExamples = Object.fromEntries(
+      Object.entries(examples).map(([endpoint, examples]) => {
         return [endpoint, examples.join("\n")];
       })
     );
   }
-  async _call(_input: string): Promise<string> {
-    return formatedExamples(); // TODO: implement, this is a cheat for now that only supports patients
+  async _call(input: string): Promise<string> {
+    let examples: string | undefined;
+    try {
+      examples = this.formatedExamples[input.toLowerCase()];
+    } catch (error) {
+      console.log("FhirAPIExamples error: ", error);
+    }
+    return examples || "No examples found for this endpoint";
   }
 
   protected formatExample(example: FhirPromptExample): string {
