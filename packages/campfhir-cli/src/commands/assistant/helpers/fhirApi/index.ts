@@ -3,45 +3,7 @@ import { buildFhirRestfulClientAdapter } from "@bonfhir/medplum/r4b";
 import { MedplumClient } from "@medplum/core";
 
 import { JsonObject } from "langchain/tools";
-
-const RESOURCE_KEYS = {
-  patient: [
-    "resourceType",
-    "id",
-    "name",
-    "telecom",
-    "gender",
-    "birthDate",
-    "deceasedDateTime",
-    "address",
-    "maritalStatus",
-  ],
-  practitioner: [
-    "resourceType",
-    "id",
-    "active",
-    "name",
-    "telecom",
-    "gender",
-    "address",
-  ],
-  diagnosticreport: [
-    "resourceType",
-    "id",
-    "category",
-    "code",
-    "conclusion",
-    "date",
-    "encounter",
-    "issued",
-    "patient",
-    "performer",
-    "result",
-    "specimen",
-    "status",
-    "subject",
-  ],
-};
+import { RESOURCE_KEYS } from "./resourceKeys";
 
 let medplum: MedplumClient;
 async function medplumClient(): Promise<MedplumClient> {
