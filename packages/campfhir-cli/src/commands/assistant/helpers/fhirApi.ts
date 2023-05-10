@@ -25,6 +25,22 @@ const RESOURCE_KEYS = {
     "gender",
     "address",
   ],
+  diagnosticreport: [
+    "resourceType",
+    "id",
+    "category",
+    "code",
+    "conclusion",
+    "date",
+    "encounter",
+    "issued",
+    "patient",
+    "performer",
+    "result",
+    "specimen",
+    "status",
+    "subject",
+  ],
 };
 
 let medplum: MedplumClient;
