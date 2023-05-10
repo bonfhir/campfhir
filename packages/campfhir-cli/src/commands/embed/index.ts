@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import { Document } from "langchain/document";
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 import { SupabaseHybridSearch } from "langchain/retrievers/supabase";
+import { HNSWLib } from "langchain/vectorstores/hnswlib";
 import { SupabaseVectorStore } from "langchain/vectorstores/supabase";
 import prompts from "prompts";
 
@@ -183,12 +184,17 @@ async function createEmbeddings(
   });
 }
 
+async function createHNSWEmbeddings(docs: Document[]) {
+  return await HNSWLib.fromDocuments(docs, new OpenAIEmbeddings());
+}
+
 export default <CommandModule>{
   command: "embed",
   describe: "Creates ML embeddings for a FHIR API",
   handler: async (_options) => {
     dotenv.config(); // OpenAI + Medplum config from .env file
 
+    console.log("Loading FHIR search parameters spec...");
     const jsonText = fs.readFileSync(
       "/workspace/data/fhir-r4b-search-parameters.json",
       "utf8"
@@ -200,11 +206,28 @@ export default <CommandModule>{
       process.env.PUBLIC_SUPABASE_ANON_KEY || ""
     );
 
-    const byId = compileSearchParamsById(searchParamsSpec);
-    const byBase = compileSearchParamsByBase(searchParamsSpec);
+    // const byId = compileSearchParamsById(searchParamsSpec);
+    // const byBase = compileSearchParamsByBase(searchParamsSpec);
 
-    const docs = compileSearchParamsDocuments(searchParamsSpec);
+    // const docs = compileSearchParamsDocuments(searchParamsSpec);
+    console.log("Loaded ${docs.length} documents.");
     //console.log(docs);
+
+    // console.log("Creating embeddings...");
+    // const vectorStore = await createHNSWEmbeddings(docs);
+    // const hnswRetriever = vectorStore.asRetriever();
+
+    // Save the vector store to a directory
+    const directory = "/workspace/data/vector-store";
+    // await vectorStore.save(directory);
+
+    // Load the vector store from the same directory
+    const loadedVectorStore = await HNSWLib.load(
+      directory,
+      new OpenAIEmbeddings()
+    );
+    const hnswRetriever = loadedVectorStore.asRetriever();
+
     //await createEmbeddings(client, docs, "documents", "match_documents");
 
     // const chain = RetrievalQAChain.fromLLM(model, vectorStore.asRetriever());
@@ -219,7 +242,7 @@ export default <CommandModule>{
     //   message: "Enter a FHIR URL",
     // });
 
-    const retriever = await newRetriever(client);
+    const supaRetriever = await newRetriever(client);
     for (;;) {
       // loop until exit/quit
       const prompt = await prompts({
@@ -239,36 +262,28 @@ export default <CommandModule>{
         //   query: prompt.question,
         // });
 
-        console.log("retriever: ", retriever);
-        console.log("question: ", prompt.question);
-        const response = await retriever.getRelevantDocuments(prompt.question);
-
-        console.log({ response });
-
-        response.forEach((doc: Document) => {
-          console.log(doc.metadata.id);
-          console.log(doc.pageContent);
-          console.log(byId[doc.metadata.id]);
+        [hnswRetriever, supaRetriever].forEach(async (retriever) => {
+          await getRelevantDocuments(retriever, prompt.question);
         });
 
-        const classes = [
-          ...new Set(
-            response
-              .map((doc: Document) => {
-                const { base, target } = doc.metadata;
-                return [base, target];
-              })
-              .flat()
-              .filter((x: any) => x)
-          ),
-        ];
-        console.log("classes: ", classes);
+        // const classes = [
+        //   ...new Set(
+        //     response
+        //       .map((doc: Document) => {
+        //         const { base, target } = doc.metadata;
+        //         return [base, target];
+        //       })
+        //       .flat()
+        //       .filter((x: any) => x)
+        //   ),
+        // ];
+        // console.log("classes: ", classes);
 
-        classes.forEach((resourceType: string) => {
-          console.log(resourceType);
-          const searchParams = byBase[resourceType];
-          console.log(Object.keys(searchParams));
-        });
+        // classes.forEach((resourceType: string) => {
+        //   console.log(resourceType);
+        //   const searchParams = byBase[resourceType];
+        //   console.log(Object.keys(searchParams));
+        // });
       } catch (error) {
         console.log("error response: ", error);
         // return;
@@ -276,6 +291,18 @@ export default <CommandModule>{
     }
   },
 };
+
+async function getRelevantDocuments(retriever, question) {
+  const retrieverName = `${retriever.constructor.name}: `;
+  const response = await retriever.getRelevantDocuments(question);
+  console.log(retrieverName, { response });
+  response.forEach((doc: Document) => {
+    console.log(retrieverName, doc.metadata.id);
+    console.log(retrieverName, doc.pageContent);
+    console.log(retrieverName, JSON.stringify(doc.metadata, null, 2));
+  });
+  return response;
+}
 
 // TODO:
 // put the json store in a toolkit with store using tools

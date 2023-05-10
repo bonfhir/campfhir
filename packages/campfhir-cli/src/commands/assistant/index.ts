@@ -5,11 +5,11 @@ import { CommandModule } from "yargs";
 
 import { AgentExecutor, ZeroShotAgent } from "langchain/agents";
 import { LLMChain } from "langchain/chains";
-import { OpenAI } from "langchain/llms/openai";
 import { BufferMemory } from "langchain/memory";
 
 import { type ChainValues } from "langchain/schema";
 
+import { createOpenAIInstance } from "./models/openai";
 import { LoggingOutputParser } from "./parsers/LoggingOutputParser";
 import { FhirQuestion } from "./tools/FhirQuestion";
 
@@ -40,7 +40,7 @@ You have access to the following tools:`;
 
 Question: {input}
 
-Think before answering.
+Think before answering.  Only use the tools output as answers.  If the tools has no answer, then say "I don't know".
 This was your previous work (but I haven't seen any of it! I only see what you return as final answer):
 {agent_scratchpad}`;
     const agentPrompt = ZeroShotAgent.createPrompt(tools, {
@@ -49,7 +49,7 @@ This was your previous work (but I haven't seen any of it! I only see what you r
       inputVariables: ["input", "chat_history", "agent_scratchpad"],
     });
 
-    const llm = new OpenAI({ temperature: 0 });
+    const llm = createOpenAIInstance({ temperature: 0 });
     const memory = new BufferMemory({ memoryKey: "chat_history" });
     const llmChain = new LLMChain({
       llm,

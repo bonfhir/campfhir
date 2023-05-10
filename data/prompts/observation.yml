@@ -1,0 +1,12 @@
+- prompt: List observations for a patient born on 1975-12-21 having family name Enthoven
+  completion:
+    endpoint: Observation
+    params: { patient.birthdate: 1975-12-21, patient.family: Enthoven }
+- prompt: Find observations without any patient
+  completion:
+    endpoint: Observation
+    params: { "patient:missing": true }
+- prompt: Find observations with an integer value lower than 4
+  completion:
+    endpoint: Observation
+    params: { value-quantity: lt4 }

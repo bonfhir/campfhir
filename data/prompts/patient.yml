@@ -1,0 +1,36 @@
+- prompt: How many female patients
+  completion:
+    endpoint: Patient
+    params: { _summary: count, gender: female }
+- prompt: How many patients born before 2001?
+  completion:
+    endpoint: Patient
+    params: { _summary: count, birthdate: lt2001-01-01 }
+- prompt: Find patient named John
+  completion:
+    endpoint: Patient
+    params: { name: John }
+- prompt: Find patients born on 1975-12-21 having family name Enthoven
+  completion:
+    endpoint: Patient
+    params: { birthdate: 1975-12-21, family: Enthoven }
+- prompt: Find patients whose family name match exactly Enthoven
+  completion:
+    endpoint: Patient
+    params: { family-exact: Enthoven }
+- prompt: Find patients born after 1975-01-01
+  completion:
+    endpoint: Patient
+    params: { birthdate: gt1975-01-01 }
+- prompt: Find patient having ID 69f79094-577b-4825-8ba8-0e587b390269
+  completion:
+    endpoint: Patient
+    params: { _id: 69f79094-577b-4825-8ba8-0e587b390269 }
+- prompt: List the diagnostics for a patient with id 69f79094-577b-4825-8ba8-0e587b390269
+  completion:
+    endpoint: Patient
+    params:
+      {
+        _id: 69f79094-577b-4825-8ba8-0e587b390269,
+        _revinclude: DiagnosticReport.subject,
+      }

@@ -9,6 +9,11 @@ import { Document } from "langchain/document";
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 import { Tool } from "langchain/tools";
 
+import {
+  readYamlExamples,
+  type FhirPromptExample,
+} from "../helpers/yamlExamples";
+
 export class FhirDocsToolkit extends Toolkit {
   tools: Tool[];
 
@@ -17,8 +22,9 @@ export class FhirDocsToolkit extends Toolkit {
 
     this.tools = [
       new KnownEndpoints(),
+      new FhirAPIExamples(),
       new EndpointParams(),
-      new EndpointParameterDetails(),
+      // new EndpointParameterDetails(), // TODO: prove this is too much information
     ];
   }
 }
@@ -26,7 +32,7 @@ export class FhirDocsToolkit extends Toolkit {
 export class KnownEndpoints extends Tool {
   name = "KnownEndpoints";
   description =
-    "Useful for finding the known FHIR ENDPOINTS.  The input to this tool should be a natural language query about some FHIR resource.  The output of this tool is a deterministic JSON list of known FHIR ENDPOINTS.";
+    "Useful for finding the known FHIR ENDPOINTS.  The input to this tool should be a natural language query about some FHIR resource.  The output of this tool are ENDPOINT & PARAMETER usage examples.";
 
   supabase: SupabaseClient;
   retriever: SupabaseHybridSearch | undefined;
@@ -78,6 +84,48 @@ export class KnownEndpoints extends Tool {
   }
 }
 
+export class FhirAPIExamples extends Tool {
+  name = "FhirAPIExamples";
+  description =
+    "Useful for finding the usage examples for a given FHIR ENDPOINT.  The input to this tool should be a FHIR ENDPOINT name.  The output of this tool is a deterministic JSON list of usage examples for the given FHIR ENDPOINT.";
+  formatedExamples: { [key: string]: string } = {};
+
+  constructor() {
+    super();
+    const examples: { [key: string]: string[] } = {};
+    readYamlExamples().forEach((example: FhirPromptExample) => {
+      console.log("example: ", example);
+      console.log("example.completion", example.completion);
+      const endpoint = example.completion.endpoint.toLowerCase();
+      console.log("endpoint: ", endpoint);
+      if (!examples[endpoint]) {
+        examples[endpoint] = [];
+      }
+      examples[endpoint].push(this.formatExample(example));
+    });
+
+    this.formatedExamples = Object.fromEntries(
+      Object.entries(examples).map(([endpoint, examples]) => {
+        return [endpoint, examples.join("\n")];
+      })
+    );
+  }
+  async _call(input: string): Promise<string> {
+    let examples: string | undefined;
+    try {
+      examples = this.formatedExamples[input.toLowerCase()];
+    } catch (error) {
+      console.log("FhirAPIExamples error: ", error);
+    }
+    return examples || "No examples found for this endpoint";
+  }
+
+  protected formatExample(example: FhirPromptExample): string {
+    return `Question: ${example.prompt} ||| FhirAPIServer: "${JSON.stringify(
+      example.completion
+    )}"`;
+  }
+}
 export class EndpointParams extends Tool {
   name = "EndpointParams";
   description =
@@ -216,6 +264,7 @@ const searchParamsWhitelist = [
   "service-provider",
   "status",
   "subject",
+  "telecom",
   "title",
   "topic",
   "type",
