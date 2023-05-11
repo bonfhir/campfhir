@@ -20,6 +20,5 @@ export function readYamlExamples(
     const fileText = fs.readFileSync(filePath, "utf8");
     examples = [...examples, ...yaml.parse(fileText)];
   });
-  console.log("examples: ", JSON.stringify(examples, null, 2));
   return examples;
 }

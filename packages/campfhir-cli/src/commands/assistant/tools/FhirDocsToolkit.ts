@@ -94,10 +94,7 @@ export class FhirAPIExamples extends Tool {
     super();
     const examples: { [key: string]: string[] } = {};
     readYamlExamples().forEach((example: FhirPromptExample) => {
-      console.log("example: ", example);
-      console.log("example.completion", example.completion);
       const endpoint = example.completion.endpoint.toLowerCase();
-      console.log("endpoint: ", endpoint);
       if (!examples[endpoint]) {
         examples[endpoint] = [];
       }
@@ -236,6 +233,7 @@ const searchParamsWhitelist = [
   "active",
   "actor",
   "address",
+  "appointment-type",
   "appointment",
   "birthdate",
   "category",
@@ -261,7 +259,13 @@ const searchParamsWhitelist = [
   "phone",
   "practitioner",
   "reason-code",
+  "schedule",
+  "service-category",
   "service-provider",
+  "service-type",
+  "slot",
+  "specialty",
+  "start",
   "status",
   "subject",
   "telecom",

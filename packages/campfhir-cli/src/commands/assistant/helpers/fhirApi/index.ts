@@ -2,6 +2,9 @@ import { FhirRestfulClient } from "@bonfhir/core/r4b";
 import { buildFhirRestfulClientAdapter } from "@bonfhir/medplum/r4b";
 import { MedplumClient } from "@medplum/core";
 
+import { JsonObject } from "langchain/tools";
+import { RESOURCE_KEYS } from "./resourceKeys";
+
 let medplum: MedplumClient;
 async function medplumClient(): Promise<MedplumClient> {
   if (medplum === undefined) {
@@ -36,4 +39,32 @@ export async function getFHIR(urlPath: string) {
 
   const searchSet = await client.get(fhirURL);
   return searchSet;
+}
+
+export function minimizeFhirResponse(endpoint: string, response: JsonObject) {
+  let result: any;
+  if (response.resourceType == "Bundle" && response.entry?.length === 1) {
+    result = filterByResourceKeys(response.entry[0].resource, endpoint);
+  } else if (response.id) {
+    result = filterByResourceKeys(response, endpoint);
+  } else {
+    result = response;
+  }
+  return result;
+}
+
+function filterByResourceKeys(
+  resource: JsonObject,
+  endpoint: string
+): JsonObject {
+  const resourceKeys = RESOURCE_KEYS[endpoint.toLowerCase()];
+  if (!resourceKeys) {
+    throw new Error(`No resource keys for endpoint: ${endpoint}`);
+  }
+
+  return Object.fromEntries(
+    Object.entries(resource).filter(([key, _value]) =>
+      resourceKeys.includes(key)
+    )
+  );
 }

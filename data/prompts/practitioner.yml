@@ -1,0 +1,4 @@
+- prompt: What is the name of the practitioner having id 69f79094-577b-4825-8ba8-0e587b390269
+  completion:
+    endpoint: Practitioner
+    params: { _id: 69f79094-577b-4825-8ba8-0e587b390269 }
