@@ -538,9 +538,9 @@ __metadata:
   linkType: hard
 
 "@dqbd/tiktoken@npm:^1.0.4":
-  version: 1.0.6
-  resolution: "@dqbd/tiktoken@npm:1.0.6"
-  checksum: da37eeaba12f3e34a1c9bd5a368e3802a862022e13cd2c94aff73429318fd8363335fd656500a480211cfc3f897bb31b624a5aaee3b992674def61be5a103272
+  version: 1.0.7
+  resolution: "@dqbd/tiktoken@npm:1.0.7"
+  checksum: 81049797dcffa101c57b68a78be19b11958edf6e6cfffab7ccd3ec2e5290e3b27bc25f1060a1c34e1cb94f22e0f46d9aafa925d383fb4559738b644aa01c0fb1
   languageName: node
   linkType: hard
 
