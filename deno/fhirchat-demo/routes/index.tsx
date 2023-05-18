@@ -1,5 +1,6 @@
+// deno-lint-ignore-file
 import { Head } from "$fresh/runtime.ts";
-import Chat from "../islands/Chat.tsx";
+import AIQnA from "../islands/AIQnA.tsx";
 
 export default function Home() {
   return (
@@ -18,7 +19,7 @@ export default function Home() {
           Welcome to `fresh`. Try updating this message in the
           ./routes/index.tsx file, and refresh.
         </p>
-        <Chat />
+        <AIQnA />
       </div>
     </>
   );
