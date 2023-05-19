@@ -6,6 +6,7 @@ import { initWebSocket } from "../helpers/websocket.ts";
 export type AppendToConversationFunction = (message: string) => void;
 export type SetQuestionFunction = (message: string) => void;
 export type SubmitQuestionFunction = (message: string) => void;
+export type closeConversationFunction = () => void;
 
 export type AIConversationContext = {
   question: Signal<string>;
@@ -14,10 +15,11 @@ export type AIConversationContext = {
   setQuestion: SetQuestionFunction;
   submitQuestion: SubmitQuestionFunction;
   websocket: WebSocket;
+  closeConversation: closeConversationFunction;
 };
 
 function createAIConversationContext(): AIConversationContext {
-  const websocket = initWebSocket("ws://localhost:8000/api/aiConversation", {
+  const websocket = initWebSocket("ws://localhost:8889/api/aiConversation", {
     open: () => console.log("WS OPENED"),
     close: () => console.log("WS CLOSE"),
     error: (event) => console.log("WS ERROR: ", event),
@@ -50,6 +52,13 @@ function createAIConversationContext(): AIConversationContext {
     }
   };
 
+  const closeConversation: closeConversationFunction = () => {
+    question.value = "";
+    conversation.value = [];
+
+    websocket.close();
+  };
+
   return {
     websocket,
     question,
@@ -57,6 +66,7 @@ function createAIConversationContext(): AIConversationContext {
     appendToConversation,
     setQuestion,
     submitQuestion,
+    closeConversation,
   };
 }
 

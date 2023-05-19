@@ -6,12 +6,12 @@ import {
 
 export default function AIQnA() {
   const {
-    websocket,
     question,
     conversation,
     setQuestion,
     appendToConversation,
     submitQuestion,
+    closeConversation,
   } = useContext(AIConversationState);
 
   function handleMessageChange(event: Event) {
@@ -29,7 +29,7 @@ export default function AIQnA() {
   useEffect(() => {
     console.log("use effect!");
     return () => {
-      websocket.close();
+      closeConversation();
     };
   }, []);
 

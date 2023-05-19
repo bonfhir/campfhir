@@ -1,5 +1,9 @@
 import { serve } from "https://deno.land/std@0.184.0/http/server.ts";
-import { OpenAI } from "https://esm.sh/langchain/llms/openai";
+import { AgentExecutor } from "https://esm.sh/langchain/agents";
+import { type ChainValues } from "https://esm.sh/langchain/schema";
+
+import { createAssistantAgent } from "/workspace/packages/fhirman/agents/assistant.ts";
+import { SessionLogger } from "/workspace/packages/fhirman/helpers/sessionLogger.ts";
 
 function handler(req: Request): Response {
   if (req.headers.get("upgrade") != "websocket") {
@@ -10,27 +14,26 @@ function handler(req: Request): Response {
     console.log("a client connected!");
   });
 
-  let model: OpenAI;
+  let agent: AgentExecutor;
 
-  async function messageHandler(event) {
-    if (!model) {
-      model = new OpenAI({
-        temperature: 0,
-      });
+  async function questionHandler(event: MessageEvent) {
+    if (!agent) {
+      agent = await createAssistantAgent();
     }
     if (event.data === "ping") {
       socket.send("pong");
-    } else if (event.data === "pout") {
-      socket.send("pout pout");
     } else {
-      const res = await model.call(event.data);
-      console.log("AI:", res);
-      socket.send(res);
+      const response: ChainValues = await agent.call({
+        input: event.data,
+      });
+      console.log("Agent response:", response);
+      socket.send(response.output);
     }
   }
 
-  socket.addEventListener("message", messageHandler);
+  socket.addEventListener("message", questionHandler);
   return response;
 }
 
-serve(handler);
+SessionLogger.init({});
+serve(handler, { port: 8889 });

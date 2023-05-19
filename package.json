@@ -11,6 +11,6 @@
     "seed": "yarn workspace @bonfhir/campfhir-cli dev import -f '/workspace/data/synthea_sample_data_fhir_r4_sep2019/*.json'",
     "assistant": "yarn workspace @bonfhir/campfhir-cli dev assistant",
     "embed": "yarn workspace @bonfhir/campfhir-cli dev embed",
-    "fhirchat": "cd /workspace/packages/fhirchat-demo/ && deno task start"
+    "chat": "cd /workspace/deno/fhirchat-demo/ && deno task start"
   }
 }
