@@ -13,3 +13,4 @@
 packages/campfhir-cli/.env
 .vscode/settings.json
 sessions/*
+.env
