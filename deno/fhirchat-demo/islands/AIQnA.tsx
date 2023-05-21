@@ -1,8 +1,5 @@
-import { useEffect, useState, useContext } from "preact/hooks";
-import {
-  AIConversationState,
-  type AIConversationContext,
-} from "../hooks/aiConversationContext.ts";
+import { useContext, useEffect } from "preact/hooks";
+import { AIConversationState } from "../hooks/aiConversationContext.ts";
 
 export default function AIQnA() {
   const {
@@ -42,7 +39,9 @@ export default function AIQnA() {
           placeholder="Type something..."
           onChange={handleMessageChange}
         />
-        <button onClick={handleSubmit}>send</button>
+        <button class="button is-dark" type="button" onClick={handleSubmit}>
+          send
+        </button>
       </form>
 
       <div class="flex-grow-1">

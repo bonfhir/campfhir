@@ -1,0 +1,111 @@
+@charset "UTF-8";
+body {
+	display: grid;
+	align-content: space-between;
+  grid-template: "a a " 1fr "c d" 1fr "e e " 70px / 1fr 40%;
+}
+body > header{
+	grid-area: a;
+	justify-self: center;
+	align-self: start;
+}
+body > main{
+	grid-area: c;
+	justify-self: center;
+}
+body > .sidebar{
+	grid-area: d;
+}
+body > footer{
+	grid-area: e;
+	justify-self: center;
+	align-self: end;
+}
+@supports not (grid-template-areas:"test"){
+	body{
+		position: relative;
+		display: block;
+		width: 100%;
+		height: 100%;
+	}
+
+	body > *{
+		position: absolute;
+		box-sizing: border-box;
+	}
+
+	body > header{
+		transform: translateX(-50%);
+		max-height: calc(50% - 35px);
+		max-width: 100%;
+		top: 0;
+		left: 50%;
+	}
+
+	body > main{
+		transform: translateX(-50%);
+		height: calc(50% - 35px);
+		max-width: 60%;
+		top: calc(50% - 35px);
+		left: 30%;
+	}
+
+	body > .sidebar{
+		height: calc(50% - 35px);
+		width: 40%;
+		top: calc(50% - 35px);
+		left: 60%;
+	}
+
+	body > footer{
+		transform: translateX(-50%);
+		max-height: 70px;
+		max-width: 100%;
+		bottom: 0;
+		left: 50%;
+	}
+}
+@media screen and (min-width:0\0){
+	body{
+		position: relative;
+		display: block;
+		width: 100%;
+		height: 100%;
+	}
+
+	body > *{
+		position: absolute;
+		box-sizing: border-box;
+	}
+
+	body > header{
+		transform: translateX(-50%);
+		max-height: calc(50% - 35px);
+		max-width: 100%;
+		top: 0;
+		left: 50%;
+	}
+
+	body > main{
+		transform: translateX(-50%);
+		height: calc(50% - 35px);
+		max-width: 60%;
+		top: calc(50% - 35px);
+		left: 30%;
+	}
+
+	body > .sidebar{
+		height: calc(50% - 35px);
+		width: 40%;
+		top: calc(50% - 35px);
+		left: 60%;
+	}
+
+	body > footer{
+		transform: translateX(-50%);
+		max-height: 70px;
+		max-width: 100%;
+		bottom: 0;
+		left: 50%;
+	}
+}
