@@ -1,111 +1,352 @@
 @charset "UTF-8";
-body {
+div.container {
 	display: grid;
-	align-content: space-between;
-  grid-template: "a a " 1fr "c d" 1fr "e e " 70px / 1fr 40%;
+	align-content: stretch;
+	justify-content: stretch;
+  grid-template: "a b c" 1fr / 250px 1fr 300px;
 }
-body > header{
+div.container > .lside{
+	grid-area: a;
+	align-self: stretch;
+}
+div.container > .midsection{
+	grid-area: b;
+}
+div.container > .rside{
+	grid-area: c;
+	align-self: stretch;
+}
+@supports not (grid-template-areas:"test"){
+	div.container{
+		position: relative;
+		display: block;
+		width: 100%;
+		height: 100%;
+	}
+
+	div.container > *{
+		position: absolute;
+		box-sizing: border-box;
+	}
+
+	div.container > .lside{
+		height: 100%;
+		width: 250px;
+		top: 0;
+		left: 0;
+	}
+
+	div.container > .midsection{
+		height: 100%;
+		width: calc(100% - 550px);
+		top: 0;
+		left: 250px;
+	}
+
+	div.container > .rside{
+		height: 100%;
+		width: 300px;
+		top: 0;
+		left: calc(-300px + 100%);
+	}
+}
+@media screen and (min-width:0\0){
+	div.container{
+		position: relative;
+		display: block;
+		width: 100%;
+		height: 100%;
+	}
+
+	div.container > *{
+		position: absolute;
+		box-sizing: border-box;
+	}
+
+	div.container > .lside{
+		height: 100%;
+		width: 250px;
+		top: 0;
+		left: 0;
+	}
+
+	div.container > .midsection{
+		height: 100%;
+		width: calc(100% - 550px);
+		top: 0;
+		left: 250px;
+	}
+
+	div.container > .rside{
+		height: 100%;
+		width: 300px;
+		top: 0;
+		left: calc(-300px + 100%);
+	}
+}
+
+div.midsection {
+	display: grid;
+	align-content: stretch;
+	justify-content: space-between;
+  grid-template: "a" 50px "b " 1fr "d" 40px / 1fr;
+}
+
+div.midsection > header{
 	grid-area: a;
 	justify-self: center;
 	align-self: start;
 }
-body > main{
-	grid-area: c;
+
+div.midsection > main{
+	grid-area: b;
 	justify-self: center;
+	align-self: stretch;
 }
-body > .sidebar{
+
+div.midsection > footer{
 	grid-area: d;
-}
-body > footer{
-	grid-area: e;
 	justify-self: center;
 	align-self: end;
 }
+
 @supports not (grid-template-areas:"test"){
-	body{
+	div.midsection{
 		position: relative;
 		display: block;
 		width: 100%;
 		height: 100%;
 	}
 
-	body > *{
+	div.midsection > *{
 		position: absolute;
 		box-sizing: border-box;
 	}
 
-	body > header{
+	div.midsection > header{
 		transform: translateX(-50%);
-		max-height: calc(50% - 35px);
+		max-height: 50px;
 		max-width: 100%;
 		top: 0;
 		left: 50%;
 	}
 
-	body > main{
+	div.midsection > main{
 		transform: translateX(-50%);
-		height: calc(50% - 35px);
-		max-width: 60%;
-		top: calc(50% - 35px);
-		left: 30%;
+		height: calc(100% - 90px);
+		max-width: 100%;
+		top: 50px;
+		left: 50%;
 	}
 
-	body > .sidebar{
-		height: calc(50% - 35px);
-		width: 40%;
-		top: calc(50% - 35px);
-		left: 60%;
-	}
-
-	body > footer{
+	div.midsection > footer{
 		transform: translateX(-50%);
-		max-height: 70px;
+		max-height: 40px;
 		max-width: 100%;
 		bottom: 0;
 		left: 50%;
 	}
 }
+
 @media screen and (min-width:0\0){
-	body{
+	div.midsection{
 		position: relative;
 		display: block;
 		width: 100%;
 		height: 100%;
 	}
 
-	body > *{
+	div.midsection > *{
 		position: absolute;
 		box-sizing: border-box;
 	}
 
-	body > header{
+	div.midsection > header{
 		transform: translateX(-50%);
-		max-height: calc(50% - 35px);
+		max-height: 50px;
 		max-width: 100%;
 		top: 0;
 		left: 50%;
 	}
 
-	body > main{
+	div.midsection > main{
 		transform: translateX(-50%);
-		height: calc(50% - 35px);
-		max-width: 60%;
-		top: calc(50% - 35px);
-		left: 30%;
+		height: calc(100% - 90px);
+		max-width: 100%;
+		top: 50px;
+		left: 50%;
 	}
 
-	body > .sidebar{
-		height: calc(50% - 35px);
-		width: 40%;
-		top: calc(50% - 35px);
-		left: 60%;
-	}
-
-	body > footer{
+	div.midsection > footer{
 		transform: translateX(-50%);
-		max-height: 70px;
+		max-height: 40px;
 		max-width: 100%;
 		bottom: 0;
 		left: 50%;
+	}
+}
+
+main {
+	display: grid;
+	align-content: stretch;
+	justify-content: stretch;
+  grid-template: "a" 1fr / 1fr;
+}
+
+main > .conversation{
+	grid-area: a;
+	justify-self: stretch;
+	align-self: stretch;
+}
+
+@supports not (grid-template-areas:"test"){
+	main{
+		position: relative;
+		display: block;
+		width: 100%;
+		height: 100%;
+	}
+
+	main > *{
+		position: absolute;
+		box-sizing: border-box;
+	}
+
+	main > .conversation{
+		height: 100%;
+		width: 100%;
+		top: 0;
+		left: 0;
+	}
+}
+
+@media screen and (min-width:0\0){
+	main{
+		position: relative;
+		display: block;
+		width: 100%;
+		height: 100%;
+	}
+
+	main > *{
+		position: absolute;
+		box-sizing: border-box;
+	}
+
+	main > .conversation{
+		height: 100%;
+		width: 100%;
+		top: 0;
+		left: 0;
+	}
+}
+
+.rside {
+	display: grid;
+	align-content: stretch;
+	justify-content: stretch;
+  grid-template: "a" 1fr / 100%;
+}
+
+.rside > .rside-inner{
+	grid-area: a;
+	justify-self: stretch;
+	align-self: stretch;
+}
+
+@supports not (grid-template-areas:"test"){
+	.rside{
+		position: relative;
+		display: block;
+		width: 100%;
+		height: 100%;
+	}
+
+	.rside > *{
+		position: absolute;
+		box-sizing: border-box;
+	}
+
+	.rside > .rside-inner{
+		height: 100%;
+		width: 100%;
+		top: 0;
+		left: 0;
+	}
+}
+
+@media screen and (min-width:0\0){
+	.rside{
+		position: relative;
+		display: block;
+		width: 100%;
+		height: 100%;
+	}
+
+	.rside > *{
+		position: absolute;
+		box-sizing: border-box;
+	}
+
+	.rside > .rside-inner{
+		height: 100%;
+		width: 100%;
+		top: 0;
+		left: 0;
+	}
+}
+
+.lside {
+	display: grid;
+	align-content: stretch;
+	justify-content: stretch;
+  grid-template: "a" 1fr / 100%;
+}
+
+.lside > .lside-inner{
+	grid-area: a;
+	justify-self: stretch;
+	align-self: stretch;
+}
+
+@supports not (grid-template-areas:"test"){
+	.lside{
+		position: relative;
+		display: block;
+		width: 100%;
+		height: 100%;
+	}
+
+	.lside > *{
+		position: absolute;
+		box-sizing: border-box;
+	}
+
+	.lside > .lside-inner{
+		height: 100%;
+		width: 100%;
+		top: 0;
+		left: 0;
+	}
+}
+
+@media screen and (min-width:0\0){
+	.lside{
+		position: relative;
+		display: block;
+		width: 100%;
+		height: 100%;
+	}
+
+	.lside > *{
+		position: absolute;
+		box-sizing: border-box;
+	}
+
+	.lside > .lside-inner{
+		height: 100%;
+		width: 100%;
+		top: 0;
+		left: 0;
 	}
 }

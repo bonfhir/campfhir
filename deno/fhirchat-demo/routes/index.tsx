@@ -11,12 +11,29 @@ export default function Home() {
           <link rel="stylesheet" href="/styles/bulma.css" />
           <title>CampFHIR</title>
         </Head>
-        <header>
-          <p>Uncover insights from you EHR</p>
-        </header>
-        <main>
-          <AIQnA />
-        </main>
+        <div class="container hero is-fullheight is-fullhd">
+          <div class="lside">
+            <div class="lside-inner has-background-grey"></div>
+          </div>
+          <div class="midsection has-background-white-bis">
+            <header>
+              <div class="box">
+                <p>Uncover insights from you EHR</p>
+              </div>
+            </header>
+            <main>
+              <AIQnA />
+            </main>
+            <footer>
+              <div class="box">
+                <h3>©2023 ACN</h3>
+              </div>
+            </footer>
+          </div>
+          <div class="rside">
+            <div class="rside-inner has-background-white-ter"></div>
+          </div>
+        </div>
       </body>
     </>
   );

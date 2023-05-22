@@ -31,7 +31,7 @@ export default function AIQnA() {
   }, []);
 
   return (
-    <div class="flex gap-2 w-full">
+    <div class="section conversation">
       <form class="flex-grow-1">
         <input
           type="text"
@@ -44,7 +44,7 @@ export default function AIQnA() {
         </button>
       </form>
 
-      <div class="flex-grow-1">
+      <div class="box">
         <ul>
           {conversation.value.map((message) => (
             <li>{message}</li>
