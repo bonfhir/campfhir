@@ -5,8 +5,6 @@ import postcssPresetEnv from "npm:postcss-preset-env";
 // import csso from "npm:postcss-csso";
 import customMediaPlugin from "npm:postcss-custom-media";
 
-console.log("SASS: ", postcssSass);
-
 export const config = {
   plugins: [
     postcssSass(),

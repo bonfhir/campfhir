@@ -39,9 +39,13 @@ try {
     Deno.mkdir(stylesOutputDirectory);
   }
 }
-const watcher = Deno.watchFs([`./${STYLES_INPUT_DIRECTORY}`]);
+
+const inputDirectory = `./${STYLES_INPUT_DIRECTORY}`;
+console.log("Started watching directory: ", inputDirectory);
+const watcher = Deno.watchFs([inputDirectory]);
 for await (const event of watcher) {
   const { paths } = event;
+  console.log("PostCSS processing: ", paths);
   paths.forEach((path) => {
     debouncedBuildStyles(path);
   });
