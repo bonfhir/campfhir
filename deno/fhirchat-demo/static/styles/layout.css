@@ -1,9 +1,9 @@
 @charset "UTF-8";
 div.container {
 	display: grid;
-	align-content: stretch;
+	align-content: end;
 	justify-content: stretch;
-  grid-template: "a b c" 1fr / 250px 1fr 300px;
+  grid-template: "a b c" 1fr / 150px 1fr 150px;
 }
 div.container > .lside{
 	grid-area: a;
@@ -11,6 +11,7 @@ div.container > .lside{
 }
 div.container > .midsection{
 	grid-area: b;
+	align-self: end;
 }
 div.container > .rside{
 	grid-area: c;
@@ -31,23 +32,23 @@ div.container > .rside{
 
 	div.container > .lside{
 		height: 100%;
-		width: 250px;
+		width: 150px;
 		top: 0;
 		left: 0;
 	}
 
 	div.container > .midsection{
-		height: 100%;
-		width: calc(100% - 550px);
-		top: 0;
-		left: 250px;
+		max-height: 100%;
+		width: calc(100% - 300px);
+		bottom: 0;
+		left: 150px;
 	}
 
 	div.container > .rside{
 		height: 100%;
-		width: 300px;
+		width: 150px;
 		top: 0;
-		left: calc(-300px + 100%);
+		left: calc(-150px + 100%);
 	}
 }
 @media screen and (min-width:0\0){
@@ -65,23 +66,23 @@ div.container > .rside{
 
 	div.container > .lside{
 		height: 100%;
-		width: 250px;
+		width: 150px;
 		top: 0;
 		left: 0;
 	}
 
 	div.container > .midsection{
-		height: 100%;
-		width: calc(100% - 550px);
-		top: 0;
-		left: 250px;
+		max-height: 100%;
+		width: calc(100% - 300px);
+		bottom: 0;
+		left: 150px;
 	}
 
 	div.container > .rside{
 		height: 100%;
-		width: 300px;
+		width: 150px;
 		top: 0;
-		left: calc(-300px + 100%);
+		left: calc(-150px + 100%);
 	}
 }
 
@@ -89,18 +90,17 @@ div.midsection {
 	display: grid;
 	align-content: stretch;
 	justify-content: space-between;
-  grid-template: "a" 50px "b " 1fr "d" 40px / 1fr;
+  grid-template: "a " 50px "c" 1fr "d " 40px / 1fr;
 }
 
 div.midsection > header{
 	grid-area: a;
 	justify-self: center;
-	align-self: start;
 }
 
-div.midsection > main{
-	grid-area: b;
-	justify-self: center;
+div.midsection > .conversation{
+	grid-area: c;
+	justify-self: stretch;
 	align-self: stretch;
 }
 
@@ -125,18 +125,17 @@ div.midsection > footer{
 
 	div.midsection > header{
 		transform: translateX(-50%);
-		max-height: 50px;
+		height: 50px;
 		max-width: 100%;
 		top: 0;
 		left: 50%;
 	}
 
-	div.midsection > main{
-		transform: translateX(-50%);
+	div.midsection > .conversation{
 		height: calc(100% - 90px);
-		max-width: 100%;
+		width: 100%;
 		top: 50px;
-		left: 50%;
+		left: 0;
 	}
 
 	div.midsection > footer{
@@ -163,18 +162,17 @@ div.midsection > footer{
 
 	div.midsection > header{
 		transform: translateX(-50%);
-		max-height: 50px;
+		height: 50px;
 		max-width: 100%;
 		top: 0;
 		left: 50%;
 	}
 
-	div.midsection > main{
-		transform: translateX(-50%);
+	div.midsection > .conversation{
 		height: calc(100% - 90px);
-		max-width: 100%;
+		width: 100%;
 		top: 50px;
-		left: 50%;
+		left: 0;
 	}
 
 	div.midsection > footer{
@@ -183,170 +181,5 @@ div.midsection > footer{
 		max-width: 100%;
 		bottom: 0;
 		left: 50%;
-	}
-}
-
-main {
-	display: grid;
-	align-content: stretch;
-	justify-content: stretch;
-  grid-template: "a" 1fr / 1fr;
-}
-
-main > .conversation{
-	grid-area: a;
-	justify-self: stretch;
-	align-self: stretch;
-}
-
-@supports not (grid-template-areas:"test"){
-	main{
-		position: relative;
-		display: block;
-		width: 100%;
-		height: 100%;
-	}
-
-	main > *{
-		position: absolute;
-		box-sizing: border-box;
-	}
-
-	main > .conversation{
-		height: 100%;
-		width: 100%;
-		top: 0;
-		left: 0;
-	}
-}
-
-@media screen and (min-width:0\0){
-	main{
-		position: relative;
-		display: block;
-		width: 100%;
-		height: 100%;
-	}
-
-	main > *{
-		position: absolute;
-		box-sizing: border-box;
-	}
-
-	main > .conversation{
-		height: 100%;
-		width: 100%;
-		top: 0;
-		left: 0;
-	}
-}
-
-.rside {
-	display: grid;
-	align-content: stretch;
-	justify-content: stretch;
-  grid-template: "a" 1fr / 100%;
-}
-
-.rside > .rside-inner{
-	grid-area: a;
-	justify-self: stretch;
-	align-self: stretch;
-}
-
-@supports not (grid-template-areas:"test"){
-	.rside{
-		position: relative;
-		display: block;
-		width: 100%;
-		height: 100%;
-	}
-
-	.rside > *{
-		position: absolute;
-		box-sizing: border-box;
-	}
-
-	.rside > .rside-inner{
-		height: 100%;
-		width: 100%;
-		top: 0;
-		left: 0;
-	}
-}
-
-@media screen and (min-width:0\0){
-	.rside{
-		position: relative;
-		display: block;
-		width: 100%;
-		height: 100%;
-	}
-
-	.rside > *{
-		position: absolute;
-		box-sizing: border-box;
-	}
-
-	.rside > .rside-inner{
-		height: 100%;
-		width: 100%;
-		top: 0;
-		left: 0;
-	}
-}
-
-.lside {
-	display: grid;
-	align-content: stretch;
-	justify-content: stretch;
-  grid-template: "a" 1fr / 100%;
-}
-
-.lside > .lside-inner{
-	grid-area: a;
-	justify-self: stretch;
-	align-self: stretch;
-}
-
-@supports not (grid-template-areas:"test"){
-	.lside{
-		position: relative;
-		display: block;
-		width: 100%;
-		height: 100%;
-	}
-
-	.lside > *{
-		position: absolute;
-		box-sizing: border-box;
-	}
-
-	.lside > .lside-inner{
-		height: 100%;
-		width: 100%;
-		top: 0;
-		left: 0;
-	}
-}
-
-@media screen and (min-width:0\0){
-	.lside{
-		position: relative;
-		display: block;
-		width: 100%;
-		height: 100%;
-	}
-
-	.lside > *{
-		position: absolute;
-		box-sizing: border-box;
-	}
-
-	.lside > .lside-inner{
-		height: 100%;
-		width: 100%;
-		top: 0;
-		left: 0;
 	}
 }

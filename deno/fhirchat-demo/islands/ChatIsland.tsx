@@ -1,7 +1,7 @@
 import { useContext, useEffect } from "preact/hooks";
 import { AIConversationState } from "../hooks/aiConversationContext.ts";
 
-export default function AIQnA() {
+export default function ChatIsland() {
   const {
     question,
     conversation,
@@ -18,7 +18,7 @@ export default function AIQnA() {
   function handleSubmit(event: Event) {
     event.preventDefault();
 
-    appendToConversation(question.value);
+    appendToConversation(`Question: ${question.value}`);
     submitQuestion(question.value);
     setQuestion("");
   }
@@ -31,26 +31,38 @@ export default function AIQnA() {
   }, []);
 
   return (
-    <div class="section conversation">
-      <form class="flex-grow-1">
-        <input
-          type="text"
-          class="w-full"
-          placeholder="Type something..."
-          onChange={handleMessageChange}
-        />
-        <button class="button is-dark" type="button" onClick={handleSubmit}>
-          send
-        </button>
-      </form>
-
+    <section class="section conversation">
       <div class="box">
+        <h6 class="title is-6 has-text-centered">
+          Uncover insights from your EHR
+        </h6>
+      </div>
+      <div class="box is-large">
         <ul>
           {conversation.value.map((message) => (
             <li>{message}</li>
           ))}
         </ul>
       </div>
-    </div>
+
+      <form>
+        <h4 class="title is-4">Ask me a question</h4>
+        <div class="field is-grouped">
+          <p class="control is-expanded">
+            <input
+              class="input"
+              type="text"
+              placeholder="Enter your question here"
+              onChange={handleMessageChange}
+            />
+          </p>
+          <p class="control">
+            <a class="button is-info" onClick={handleSubmit}>
+              send
+            </a>
+          </p>
+        </div>
+      </form>
+    </section>
   );
 }
