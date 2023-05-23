@@ -6,6 +6,8 @@
     "preact-render-to-string": "https://esm.sh/*preact-render-to-string@5.2.6",
     "@preact/signals": "https://esm.sh/*@preact/signals@1.1.3",
     "@preact/signals-core": "https://esm.sh/*@preact/signals-core@1.2.3",
+    "$std/": "https://deno.land/std@0.188.0/",
+    "postcss/": "https://deno.land/x/postcss@8.4.16/",
     "dayjs": "npm:dayjs",
     "langchain": "https://esm.sh/langchain",
     "langchain/": "https://esm.sh/langchain/",

@@ -3,7 +3,7 @@ FROM mcr.microsoft.com/devcontainers/typescript-node:0-18-bullseye
 # Default ZSH configuration only load the git plugin. This adds yarn as well.
 RUN su node -c "sed -i 's/plugins=(git)/plugins=(git yarn)/' ~/.zshrc"
 
-ENV DENO_VERSION=v1.33.3
+ENV DENO_VERSION=v1.33.4
 ENV DENO_INSTALL=/deno
 
 RUN mkdir -p /deno \

@@ -27,7 +27,7 @@ function createAIConversationContext(): AIConversationContext {
       const message = event as MessageEvent;
       const data = message.data as string; // TODO unsafe
       console.log("WS MESSAGE: ", event);
-      appendToConversation(data);
+      appendToConversation(`Answer: ${data}`);
     },
   });
   const question = signal<string>("");
