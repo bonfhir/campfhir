@@ -10297,16 +10297,3 @@ a.has-text-danger-dark:hover, a.has-text-danger-dark:focus {
   color: #008B95;
   font: 100% Helvetica, sans-serif;
 }
-
-#modal.modal {
-  align-items: end;
-  flex-direction: row;
-  justify-content: end;
-}
-
-#modal .modal-card {
-  max-height: 100%;
-  min-height: 100%;
-  width: 300px;
-  margin-left: 0;
-}

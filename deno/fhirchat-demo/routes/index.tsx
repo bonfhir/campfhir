@@ -8,8 +8,8 @@ export default function Home() {
       <body class="has-background-white-ter">
         <Head>
           <link rel="stylesheet" href="/styles/layout.css" />
-          <link rel="stylesheet" href="/styles/bulma.css" />
-          <title>CampFHIR</title>
+          <link rel="stylesheet" href="/styles/chat.css" />
+          <title>FHIR Chat</title>
         </Head>
         <div class="container hero is-fullheight is-fullhd">
           <div class="navbar is-fixed-top has-background-primary"></div>

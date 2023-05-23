@@ -1,0 +1,10 @@
+@charset "utf-8";
+@import "./sources/0.9.4/bulma/bulma.sass";
+
+$font-stack: Helvetica, sans-serif;
+$primary-color: #008B95;
+
+:root {
+  color: $primary-color;
+  font: 100% $font-stack;
+}
