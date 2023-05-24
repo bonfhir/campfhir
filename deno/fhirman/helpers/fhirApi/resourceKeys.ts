@@ -1,4 +1,8 @@
-export const RESOURCE_KEYS = {
+export type ResourceKey = {
+  [key: string]: readonly string[];
+};
+
+export const RESOURCE_KEYS: ResourceKey = {
   appointment: [
     "status",
     "cancelationReason",
@@ -119,4 +123,6 @@ export const RESOURCE_KEYS = {
     "status",
     "subject",
   ],
-};
+} as const;
+
+export type ResourceName = keyof typeof RESOURCE_KEYS;

@@ -1,6 +1,3 @@
-import * as fs from "fs";
-import process from "process";
-
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
 
 import { SupabaseHybridSearch } from "langchain/retrievers/supabase";
@@ -15,6 +12,30 @@ import {
   type FhirPromptExample,
 } from "../helpers/yamlExamples.ts";
 
+type ResourceDetail = {
+  id: string;
+  code: string;
+  type: string;
+  expression: string;
+  description: string;
+  xpath: string;
+  xpathUsage: string;
+  base: string[];
+  comparator: string[];
+  target: string[];
+};
+type KeyedSearchParams = {
+  [key: string]: {
+    [key: string]: ResourceDetail;
+  };
+};
+type ResourceSpecEntry = {
+  resource: ResourceDetail;
+};
+type ResourceSpec = {
+  entry: ResourceSpecEntry[];
+};
+
 export class FhirDocsToolkit extends Toolkit {
   tools: Tool[];
 
@@ -25,7 +46,7 @@ export class FhirDocsToolkit extends Toolkit {
       new KnownEndpoints(),
       new FhirAPIExamples(),
       new EndpointParams(),
-      // new EndpointParameterDetails(), // TODO: prove this is too much information
+      // new EndpointResourceDetails(), // TODO: prove this is too much information
     ];
   }
 }
@@ -42,8 +63,8 @@ export class KnownEndpoints extends Tool {
     super();
 
     this.supabase = createClient(
-      process.env.PUBLIC_SUPABASE_URL || "",
-      process.env.PUBLIC_SUPABASE_ANON_KEY || ""
+      Deno.env.get("PUBLIC_SUPABASE_URL") || "",
+      Deno.env.get("PUBLIC_SUPABASE_ANON_KEY") || ""
     );
   }
 
@@ -54,7 +75,7 @@ export class KnownEndpoints extends Tool {
 
   protected async retrieveKnowEndpointsFor(input: string): Promise<string[]> {
     if (!this.retriever) {
-      this.retriever = await this.newRetriever(this.supabase);
+      this.retriever = this.newRetriever(this.supabase);
     }
 
     const response = await this.retriever.getRelevantDocuments(input);
@@ -67,13 +88,13 @@ export class KnownEndpoints extends Tool {
             return [base as string, target as string];
           })
           .flat()
-          .filter((x: any) => x)
+          .filter((x: string) => x)
       ),
-    ];
+    ] as string[];
     return endpoints;
   }
 
-  protected async newRetriever(client: SupabaseClient) {
+  protected newRetriever(client: SupabaseClient) {
     return new SupabaseHybridSearch(new OpenAIEmbeddings(), {
       client,
       tableName: "documents",
@@ -108,6 +129,8 @@ export class FhirAPIExamples extends Tool {
       })
     );
   }
+
+  // deno-lint-ignore require-await
   async _call(input: string): Promise<string> {
     let examples: string | undefined;
     try {
@@ -129,26 +152,28 @@ export class EndpointParams extends Tool {
   description =
     "Useful for finding the valid parameters for a given FHIR ENDPOINT.  The input to this tool should be a FHIR ENDPOINT name.  The output of this tool is a deterministic JSON list of valid parameters for the given FHIR ENDPOINT.";
 
-  searchParamsByBase: any;
+  searchParamsByBase: KeyedSearchParams;
 
   constructor() {
     super();
-    const jsonText = fs.readFileSync(
-      "/workspace/data/fhir-r4b-search-parameters.json",
-      "utf8"
+    const decoder = new TextDecoder("utf-8");
+    const byteArray = Deno.readFileSync(
+      "/workspace/data/fhir-r4b-search-parameters.json"
     );
+    const jsonText = decoder.decode(byteArray);
     const searchParamsSpec = JSON.parse(jsonText);
 
     this.searchParamsByBase = compileSearchParamsByBase(searchParamsSpec);
   }
 
+  // deno-lint-ignore require-await
   async _call(input: string): Promise<string> {
     return JSON.stringify(this.paramsForBase(input));
   }
 
-  protected paramsForBase(base: string): string[][] {
+  protected paramsForBase(base: string): string[] {
     const baseParams = Object.values(this.searchParamsByBase[base] || {});
-    return baseParams.map((param: any) => {
+    return baseParams.map((param: ResourceDetail) => {
       return param.code;
       // const { code, description } = param;
       // return [base, code, description];
@@ -161,19 +186,21 @@ export class EndpointParameterDetails extends Tool {
   description =
     "Useful for finding the details of a given FHIR PARAMETER.  The input to this tool should be a FHIR ENDPOINT & PARAMETER name pair, joined by a column (:).  The input format is ENDPOINT:PARAMETER.  The output of this tool is the deterministic usage properties of the given FHIR PARAMETER, as JSON.";
 
-  searchParamsByBase: any;
+  searchParamsByBase: KeyedSearchParams;
 
   constructor() {
     super();
-    const jsonText = fs.readFileSync(
-      "/workspace/data/fhir-r4b-search-parameters.json",
-      "utf8"
+    const decoder = new TextDecoder("utf-8");
+    const byteArray = Deno.readFileSync(
+      "/workspace/data/fhir-r4b-search-parameters.json"
     );
+    const jsonText = decoder.decode(byteArray);
     const searchParamsSpec = JSON.parse(jsonText);
 
     this.searchParamsByBase = compileSearchParamsByBase(searchParamsSpec);
   }
 
+  // deno-lint-ignore require-await
   async _call(input: string): Promise<string> {
     if (!input.includes(":")) {
       return "Error: input must be of the form <base>:<param>";
@@ -185,18 +212,7 @@ export class EndpointParameterDetails extends Tool {
   }
 }
 
-function searchParamsFromResource(resource: {
-  id: string;
-  code: string;
-  type: string;
-  expression: string;
-  description: string;
-  xpath: string;
-  xpathUsage: string;
-  base: string[];
-  comparator: string[];
-  target: string[];
-}) {
+function searchParamsFromResource(resource: ResourceDetail): ResourceDetail {
   const {
     id,
     code,
@@ -277,28 +293,32 @@ const searchParamsWhitelist = [
   "value",
 ]; // TODO: add more
 // filtered to reduce the size of the tools responses
-function filterParamByWhitelist(entries: any[]) {
-  return entries.filter((entry: any) =>
+function filterParamByWhitelist(
+  entries: ResourceSpecEntry[]
+): ResourceSpecEntry[] {
+  return entries.filter((entry) =>
     searchParamsWhitelist.includes(entry.resource.code)
   );
 }
 
-let paramsByBase: any;
-function compileSearchParamsByBase(searchParamsSpec: any) {
+let paramsByBase: KeyedSearchParams;
+function compileSearchParamsByBase(
+  searchParamsSpec: ResourceSpec
+): KeyedSearchParams {
   if (!paramsByBase) {
     paramsByBase = {};
     const resourceParams = filterParamByWhitelist(searchParamsSpec.entry)
-      .filter((entry: any) => entry.resource.base.includes("Resource"))
-      .reduce((acc: any, entry: any) => {
+      .filter((entry) => entry.resource.base.includes("Resource"))
+      .reduce((acc, entry) => {
         const resource = entry.resource;
         const searchParams = searchParamsFromResource(resource);
         acc[searchParams.code] = searchParams;
         return acc;
-      }, {});
+      }, {} as { [key: string]: ResourceDetail });
 
-    filterParamByWhitelist(searchParamsSpec.entry).forEach((entry: any) => {
+    filterParamByWhitelist(searchParamsSpec.entry).forEach((entry) => {
       const resource = entry.resource;
-      resource.base.forEach((resourceType: string) => {
+      resource.base.forEach((resourceType) => {
         if (!paramsByBase[resourceType]) {
           paramsByBase[resourceType] = resourceParams;
         }

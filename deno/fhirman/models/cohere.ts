@@ -1,7 +1,7 @@
 import { Cohere } from "langchain/llms/cohere";
 
 export function createCohereInstance() {
-  if (!process.env.COHERE_API_KEY) {
+  if (!Deno.env.get("COHERE_API_KEY")) {
     throw new Error("COHERE_API_KEY not set");
   }
 

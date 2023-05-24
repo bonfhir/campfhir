@@ -1,7 +1,8 @@
-import { readFile } from "fs/promises";
-
 export async function loadJSONL(jsonlFilePath: string) {
-  return (await readFile(jsonlFilePath, { encoding: "utf8", flag: "r" }))
+  const byteArray = await Deno.readFile(jsonlFilePath);
+  const decoder = new TextDecoder("utf-8");
+  decoder
+    .decode(byteArray)
     .split("\n")
     .filter(Boolean)
     .filter((line) => !line.startsWith("//"))

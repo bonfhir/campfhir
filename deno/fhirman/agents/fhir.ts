@@ -24,7 +24,7 @@ export async function createFhirAgent(currentUser: CurrentUser) {
     ...dateToolkit.tools,
   ];
 
-  const llm = createOpenAIInstance({ temperature: 0 });
+  const llm = createOpenAIInstance();
   const prompt = await fhirQuestionPrompt(currentUser, tools);
   const llmChain = new LLMChain({
     llm,

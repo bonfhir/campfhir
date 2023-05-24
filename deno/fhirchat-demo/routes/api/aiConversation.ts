@@ -2,8 +2,8 @@ import { serve } from "https://deno.land/std@0.184.0/http/server.ts";
 import { AgentExecutor } from "https://esm.sh/langchain/agents";
 import { type ChainValues } from "https://esm.sh/langchain/schema";
 
-import { createAssistantAgent } from "/workspace/packages/fhirman/agents/assistant.ts";
-import { SessionLogger } from "/workspace/packages/fhirman/helpers/sessionLogger.ts";
+import { createAssistantAgent } from "/workspace/deno/fhirman/mod.ts";
+import { SessionLogger } from "/workspace/deno/fhirman/helpers/sessionLogger.ts";
 
 function handler(req: Request): Response {
   if (req.headers.get("upgrade") != "websocket") {

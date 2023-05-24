@@ -1,11 +1,23 @@
-import process from "process";
-
 import { FhirRestfulClient } from "@bonfhir/core/r4b";
 import { buildFhirRestfulClientAdapter } from "@bonfhir/medplum/r4b";
 import { MedplumClient } from "@medplum/core";
+import fetch from "npm:node-fetch";
 
-import { JsonObject } from "langchain/tools";
-import { RESOURCE_KEYS } from "./resourceKeys.ts";
+import { type ResourceName, RESOURCE_KEYS } from "./resourceKeys.ts";
+
+type FHIRResource = {
+  resourceType: string;
+  id: string;
+};
+type ResponseEntry = {
+  resource: FHIRResource;
+};
+type ResponseBundle = {
+  resourceType: string;
+  id?: string;
+  resource?: FHIRResource;
+  entry: ResponseEntry[];
+};
 
 let medplum: MedplumClient;
 async function medplumClient(): Promise<MedplumClient> {
@@ -16,8 +28,8 @@ async function medplumClient(): Promise<MedplumClient> {
     });
 
     await medplum.startClientLogin(
-      process.env.MEDPLUM_CLIENT_ID!,
-      process.env.MEDPLUM_CLIENT_SECRET!
+      Deno.env.get("MEDPLUM_CLIENT_ID") || "",
+      Deno.env.get("MEDPLUM_CLIENT_SECRET") || ""
     );
   }
 
@@ -33,33 +45,42 @@ function fhirClient(medplum: MedplumClient): FhirRestfulClient {
   return client;
 }
 
-export async function getFHIR(urlPath: string) {
+export async function getFHIR(urlPath: string): Promise<ResponseBundle> {
   const medplum = await medplumClient();
   const client = fhirClient(medplum);
 
   const fhirURL = medplum.fhirUrl(urlPath.replace(/^\/+/, ""));
 
   const searchSet = await client.get(fhirURL);
-  return searchSet;
+  return searchSet as ResponseBundle;
 }
 
-export function minimizeFhirResponse(endpoint: string, response: JsonObject) {
-  let result: any;
+export function minimizeFhirResponse(
+  endpoint: string,
+  response: ResponseBundle
+): FHIRResource {
+  let result: FHIRResource;
   if (response.resourceType == "Bundle" && response.entry?.length === 1) {
-    result = filterByResourceKeys(response.entry[0].resource, endpoint);
+    result = filterByResourceKeys(
+      response.entry[0].resource,
+      endpoint.toLowerCase() as ResourceName
+    );
   } else if (response.id) {
-    result = filterByResourceKeys(response, endpoint);
+    result = filterByResourceKeys(
+      response as FHIRResource,
+      endpoint.toLowerCase() as ResourceName
+    );
   } else {
-    result = response;
+    result = response as FHIRResource;
   }
   return result;
 }
 
 function filterByResourceKeys(
-  resource: JsonObject,
-  endpoint: string
-): JsonObject {
-  const resourceKeys = RESOURCE_KEYS[endpoint.toLowerCase()];
+  resource: FHIRResource,
+  endpoint: ResourceName
+): FHIRResource {
+  const resourceKeys = RESOURCE_KEYS[endpoint];
   if (!resourceKeys) {
     throw new Error(`No resource keys for endpoint: ${endpoint}`);
   }
@@ -68,5 +89,5 @@ function filterByResourceKeys(
     Object.entries(resource).filter(([key, _value]) =>
       resourceKeys.includes(key)
     )
-  );
+  ) as FHIRResource;
 }

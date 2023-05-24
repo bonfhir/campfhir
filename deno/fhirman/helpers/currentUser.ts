@@ -1,4 +1,3 @@
-import { JsonObject } from "langchain/tools";
 import { getFHIR, minimizeFhirResponse } from "./fhirApi/index.ts";
 
 const practitionerId = "36d4fe4e-6f94-4222-95be-ad3420e3e6ee";
@@ -8,6 +7,19 @@ export type CurrentUser = {
   id: string;
   name: string;
   gender: string;
+};
+
+type UserResponseBundle = {
+  resourceType: "Practitioner";
+  id: string;
+  gender: string;
+  name: UserName[];
+};
+
+type UserName = {
+  title: string;
+  family: string;
+  given: string[];
 };
 
 let currentUser: CurrentUser | undefined; // singleton for now
@@ -21,15 +33,19 @@ export async function getCurrentUser(): Promise<CurrentUser> {
   );
   const minimizedCurrentUser = minimizeFhirResponse(
     "Practitioner",
-    currentUserResponse as JsonObject
-  );
+    currentUserResponse
+  ) as UserResponseBundle;
 
   let name = "";
-  if (minimizedCurrentUser.name[0].title) {
-    name += `${minimizedCurrentUser.name[0].title} `;
-  }
+  const currentUserName = minimizedCurrentUser.name;
 
-  name += `${minimizedCurrentUser.name[0].given[0]} ${minimizedCurrentUser.name[0].family}`;
+  if (currentUserName) {
+    if (currentUserName[0].title) {
+      name += `${currentUserName[0].title} `;
+    }
+
+    name += `${currentUserName[0].given[0]} ${currentUserName[0].family}`;
+  }
 
   currentUser = {
     resourceType: "Practitioner",

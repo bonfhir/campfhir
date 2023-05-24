@@ -1,7 +1,7 @@
 import { Replicate } from "langchain/llms/replicate";
 
 export function createReplicateInstance() {
-  if (!process.env.REPLICATE_API_KEY) {
+  if (!Deno.env.get("REPLICATE_API_KEY")) {
     throw new Error("REPLICATE_API_KEY not set");
   }
 

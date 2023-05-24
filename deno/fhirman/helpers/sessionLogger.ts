@@ -2,7 +2,10 @@
 // when initialized. the logger opens a file, named to the current timestamp and write to it
 // it is implemented using the singleton pattern
 
-import { createWriteStream, WriteStream } from "fs";
+import {
+  createWriteStream,
+  type WriteStream,
+} from "https://deno.land/std@0.162.0/node/fs.ts";
 
 const basePath = "/workspace/sessions/";
 
@@ -10,7 +13,7 @@ export class SessionLogger {
   private static instance: SessionLogger;
   private stream: WriteStream;
 
-  private constructor(sessionParams: object) {
+  private constructor(sessionParams: unknown) {
     const fileName = `${basePath}FhirAssistant_${new Date().getTime()}.log`;
     this.stream = createWriteStream(fileName);
 
@@ -20,7 +23,7 @@ export class SessionLogger {
     this.separator();
   }
 
-  public log(message: string, ...extra: any[]) {
+  public log(message: string, ...extra: unknown[]) {
     let text = message;
     if (extra.length > 0) {
       text += " " + JSON.stringify(extra, null, 2);
@@ -32,11 +35,11 @@ export class SessionLogger {
     this.log("----------------------------------------------------");
   }
 
-  public static init(sessionParams: object) {
+  public static init(sessionParams: unknown) {
     SessionLogger.instance = new SessionLogger(sessionParams);
   }
 
-  public static log(message: string, ...extra: any[]) {
+  public static log(message: string, ...extra: unknown[]) {
     SessionLogger.instance.log(message, ...extra);
   }
 

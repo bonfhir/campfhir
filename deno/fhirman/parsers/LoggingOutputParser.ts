@@ -18,8 +18,8 @@ export class LoggingOutputParser extends ZeroShotAgentOutputParser {
 
       output.log
         .split("\n")
-        .filter((line) => line)
-        .forEach((line) => {
+        .filter((line: string) => line)
+        .forEach((line: string) => {
           this.log(this.agentStepLine(line));
         });
       this.log("\n");
@@ -33,12 +33,12 @@ export class LoggingOutputParser extends ZeroShotAgentOutputParser {
     }
   }
 
-  log(message: string, ...extra: any[]) {
+  log(message: string, ...extra: unknown[]) {
     SessionLogger.log(message, ...extra);
     console.log(message, ...extra);
   }
 
-  protected agentToolTitle(output: any) {
+  protected agentToolTitle(output: { tool?: string }) {
     let title = `💠 ${this.agentName} agent`;
     if (output?.tool) {
       title += ` ⚒️ ${output.tool} tool`;

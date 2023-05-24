@@ -16,7 +16,7 @@ export async function createAssistantAgent() {
 
   const agentPrompt = await assistantPrompt(currentUser, tools);
 
-  const llm = createOpenAIInstance({ temperature: 0 });
+  const llm = createOpenAIInstance();
   const memory = new BufferMemory({ memoryKey: "chat_history" });
   const llmChain = new LLMChain({
     llm,
