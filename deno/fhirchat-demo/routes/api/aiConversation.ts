@@ -26,7 +26,9 @@ function handler(req: Request): Response {
       assistant.events.on(
         MODEL_OUTPUT_EVENT,
         (message, agentName, toolName) => {
-          console.log("EMITTER: ", message, agentName, toolName);
+          socket.send(
+            JSON.stringify({ log: { message, agentName, toolName } })
+          );
         }
       );
     }
@@ -37,7 +39,7 @@ function handler(req: Request): Response {
         input: event.data,
       });
       console.log("Agent response:", response);
-      socket.send(response.output);
+      socket.send(JSON.stringify({ response: response.output }));
     }
   }
 
