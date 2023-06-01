@@ -6,6 +6,8 @@ import { Tool } from "langchain/tools";
 import { CurrentUser } from "../helpers/currentUser.ts";
 
 import { createFhirAgent } from "../agents/fhir.ts";
+//@ts-ignore
+import { ModelOutputEmitter } from "../events/ModelOutputEmitter.ts"
 
 export class FhirQuestion extends Tool {
   name = "FhirQuestion";
@@ -14,16 +16,18 @@ export class FhirQuestion extends Tool {
 
   executor: AgentExecutor | undefined;
   currentUser: CurrentUser;
+  emitter: ModelOutputEmitter;
 
-  constructor(currentUser: CurrentUser) {
+  constructor(currentUser: CurrentUser, emitter: ModelOutputEmitter) {
     super();
 
     this.currentUser = currentUser;
+    this.emitter = emitter;
   }
 
   async _call(input: string): Promise<string> {
     if (!this.executor) {
-      this.executor = await createFhirAgent(this.currentUser);
+      this.executor = await createFhirAgent(this.currentUser, this.emitter);
     }
 
     try {

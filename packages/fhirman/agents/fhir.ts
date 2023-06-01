@@ -5,16 +5,17 @@ import { BufferWindowMemory } from "langchain/memory";
 
 import { createOpenAIInstance } from "../models/openai.ts";
 
-import { LoggingOutputParser } from "../parsers/LoggingOutputParser.ts";
+import { EmitterOutputParser } from "../parsers/EmitterOutputParser.ts";
 import { fhirQuestionPrompt } from "../prompts/fhirQuestionPrompt.ts";
 
 import { DateToolkit } from "../tools/DateToolkit.ts";
 import { FhirAPIServer } from "../tools/FhirAPIServer.ts";
 import { FhirDocsToolkit } from "../tools/FhirDocsToolkit.ts";
+import { ModelOutputEmitter } from "../events/ModelOutputEmitter.ts"
 
 import { type CurrentUser } from "../helpers/currentUser.ts";
 
-export async function createFhirAgent(currentUser: CurrentUser) {
+export async function createFhirAgent(currentUser: CurrentUser, emitter: ModelOutputEmitter) {
   const docsToolkit = new FhirDocsToolkit();
   const dateToolkit = new DateToolkit();
 
@@ -34,7 +35,7 @@ export async function createFhirAgent(currentUser: CurrentUser) {
   const agent = new ZeroShotAgent({
     llmChain,
     allowedTools: tools.map((tool) => tool.name),
-    outputParser: new LoggingOutputParser("FhirQuestion"),
+    outputParser: new EmitterOutputParser("FhirQuestion", emitter),
   });
   const memory = new BufferWindowMemory({ memoryKey: "chat_history" });
   return AgentExecutor.fromAgentAndTools({

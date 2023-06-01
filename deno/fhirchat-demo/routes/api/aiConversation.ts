@@ -1,9 +1,13 @@
 import { serve } from "https://deno.land/std@0.184.0/http/server.ts";
-import { AgentExecutor } from "https://esm.sh/langchain/agents";
 import { type ChainValues } from "https://esm.sh/langchain/schema";
 
-import { createAssistantAgent } from "/workspace/packages/fhirman/agents/assistant.ts";
+import {
+  createAssistantAgent,
+  type AssistantAgent,
+} from "/workspace/packages/fhirman/agents/assistant.ts";
 import { SessionLogger } from "/workspace/packages/fhirman/helpers/sessionLogger.ts";
+
+import { MODEL_OUTPUT_EVENT } from "/workspace/packages/fhirman/events/ModelOutputEmitter.ts";
 
 function handler(req: Request): Response {
   if (req.headers.get("upgrade") != "websocket") {
@@ -14,16 +18,22 @@ function handler(req: Request): Response {
     console.log("a client connected!");
   });
 
-  let agent: AgentExecutor;
+  let assistant: AssistantAgent;
 
   async function questionHandler(event: MessageEvent) {
-    if (!agent) {
-      agent = await createAssistantAgent();
+    if (!assistant) {
+      assistant = await createAssistantAgent();
+      assistant.events.on(
+        MODEL_OUTPUT_EVENT,
+        (message, agentName, toolName) => {
+          console.log("EMITTER: ", message, agentName, toolName);
+        }
+      );
     }
     if (event.data === "ping") {
       socket.send("pong");
-    } else {
-      const response: ChainValues = await agent.call({
+    } else if (event.data) {
+      const response: ChainValues = await assistant.agent.call({
         input: event.data,
       });
       console.log("Agent response:", response);
