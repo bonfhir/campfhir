@@ -18,7 +18,7 @@ export default function ChatIsland() {
   function handleSubmit(event: Event) {
     event.preventDefault();
 
-    appendToConversation(`Question: ${question.value}`);
+    appendToConversation(`👤 ${question.value}`);
     submitQuestion(question.value);
     setQuestion("");
   }
