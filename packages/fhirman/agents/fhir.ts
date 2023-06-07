@@ -13,9 +13,7 @@ import { FhirAPIServer } from "../tools/FhirAPIServer.ts";
 import { FhirDocsToolkit } from "../tools/FhirDocsToolkit.ts";
 import { ModelOutputEmitter } from "../events/ModelOutputEmitter.ts"
 
-import { type CurrentUser } from "../helpers/currentUser.ts";
-
-export async function createFhirAgent(currentUser: CurrentUser, emitter: ModelOutputEmitter) {
+export async function createFhirAgent(emitter: ModelOutputEmitter) {
   const docsToolkit = new FhirDocsToolkit();
   const dateToolkit = new DateToolkit();
 
@@ -26,7 +24,7 @@ export async function createFhirAgent(currentUser: CurrentUser, emitter: ModelOu
   ];
 
   const llm = createOpenAIInstance({ temperature: 0 });
-  const prompt = await fhirQuestionPrompt(currentUser, tools);
+  const prompt = await fhirQuestionPrompt(tools);
   const llmChain = new LLMChain({
     llm,
     prompt,
