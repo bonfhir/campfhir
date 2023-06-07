@@ -21,7 +21,7 @@ export async function createAssistantAgent(): Promise<AssistantAgent> {
   const outputEmitter = new ModelOutputEmitter();
   const currentUser = await getCurrentUser();
 
-  const tools = [new FhirQuestion(currentUser, outputEmitter)];
+  const tools = [new FhirQuestion(outputEmitter)];
 
   const agentPrompt = await assistantPrompt(currentUser, tools);
 
