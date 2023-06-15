@@ -16,13 +16,16 @@ export default function Home() {
           <title>FHIR Chat</title>
         </Head>
         
+        <div class="flex-wrapper">
           <NavIsland/>
          
+         <section class="midsection_container">
           <SuggestionsIsland/>
-          
           <ChatIsland />
+        </section>
 
         <FooterIsland/>
+        </div>
         
         <div class="modal">
           <div class="modal-background"></div>
