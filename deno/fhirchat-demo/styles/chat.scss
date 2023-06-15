@@ -9,17 +9,13 @@ $primary-color: #008B95;
   font: 100% $font-stack;
 }
 
-.flex-wrapper {
-  display: flex;
+.flex_wrapper {
   min-height: 100vh;
-  flex-direction: column;
   justify-content: space-between;
 }
 
 .navbar_container {
-  display: flex;
   flex-direction: row;
-  justify-content: center;
   align-items: center;
   border-top: 16px solid #008B95;
   height: 80px;
@@ -27,12 +23,19 @@ $primary-color: #008B95;
   border-bottom: 1px solid #FCEBCC;
 }
 
+.section_wrapper {
+  justify-content: space-between;
+  flex: 1;
+}
 
 .footer_container {
-  display: flex;
   flex-direction: row;
-  justify-content: center;
   align-items: center;
   height: 86px;
   background: #FFFFFF;
+}
+
+.styled_card{
+  max-width: 384px;
+  background: #EBF5EE;
 }

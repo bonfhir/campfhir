@@ -39,7 +39,7 @@ export default function ChatIsland() {
 // }, []);
 
   return (
-    <section class="section section-padding-large">
+    <section class="section section-padding-large is-flex is-flex-direction-column is-justify-content-center">
  
         <ul>
           {conversation.value.map((message) => (
