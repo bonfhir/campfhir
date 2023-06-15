@@ -1,12 +1,10 @@
-import { useContext, useEffect } from "preact/hooks";
-import { AIConversationState } from "../hooks/aiConversationContext.ts";
 
 export default function SuggestionsIsland() {
  
   
 
   return (
-    <section class="section">
+    <section class="section section-padding-large">
  
    
  <p class="is-size-2 title has-text-centered">
