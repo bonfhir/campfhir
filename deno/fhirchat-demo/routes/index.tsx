@@ -1,6 +1,8 @@
 // deno-lint-ignore-file
 import { Head } from "$fresh/runtime.ts";
 import ChatIsland from "../islands/ChatIsland.tsx";
+import SuggestionsIsland from "../islands/SuggestionsIsland.tsx";
+
 
 export default function Home() {
   return (
@@ -11,23 +13,23 @@ export default function Home() {
           <link rel="stylesheet" href="/styles/chat.css" />
           <title>FHIR Chat</title>
         </Head>
+        
         <div class="container hero is-fullheight is-fullhd">
           <div class="navbar is-fixed-top has-background-primary"></div>
-          <div class="lside">
-            <div class="lside-inner has-background-white-ter"></div>
-          </div>
-          <div class="midsection has-background-white-ter">
-            <header></header>
+         
+     <SuggestionsIsland/>
+          
+          <div class="has-background-white-ter">
             <ChatIsland />
-            <footer>
+   </div>
+
+          <footer>
               <div class="box">
-                <h3>©2023 ACN</h3>
+              <figure class="image">
+                <img src={"../images/acn-logo.svg"} alt="acn logo"/>
+              </figure>
               </div>
             </footer>
-          </div>
-          <div class="rside">
-            <div class="rside-inner has-background-white-ter"></div>
-          </div>
         </div>
         <div class="modal">
           <div class="modal-background"></div>

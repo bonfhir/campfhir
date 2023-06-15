@@ -30,29 +30,30 @@ export default function ChatIsland() {
     };
   }, []);
 
+//   useEffect(() => {
+// console.log("reload");
+
+//   setInterval(function() {
+//     location.reload();
+//   }, 3000);
+// }, []);
+
   return (
-    <section class="section conversation">
-      <div class="box">
-        <h6 class="title is-6 has-text-centered">
-          Uncover insights from your EHR
-        </h6>
-      </div>
-      <div class="box is-large">
+    <section class="section">
+ 
         <ul>
           {conversation.value.map((message) => (
             <li>{message}</li>
           ))}
         </ul>
-      </div>
-
+      
       <form>
-        <h4 class="title is-4">Ask me a question</h4>
         <div class="field is-grouped">
           <p class="control is-expanded">
             <input
               class="input"
               type="text"
-              placeholder="Enter your question here"
+              placeholder="Enter a message"
               onChange={handleMessageChange}
             />
           </p>

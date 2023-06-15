@@ -12,6 +12,5 @@
 !.yarn/sdks
 !.yarn/versions
 packages/campfhir-cli/.env
-.vscode/settings.json
-sessions/*
 .env
+sessions/FhirAssistant*

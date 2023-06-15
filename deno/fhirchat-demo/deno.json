@@ -1,7 +1,7 @@
 {
   "tasks": {
     "build:css": "deno run --allow-env=DENO_ENV --allow-run --allow-net --allow-read --allow-write build-css.ts",
-    "start": "deno run --lock=deno.lock --lock-write -A --watch=static/,routes/,hooks/,helpers/ dev.ts"
+    "start": "deno run -A --watch=static/,routes/,hooks/,helpers/,islands dev.ts"
   },
   "importMap": "../import_map.json",
   "compilerOptions": {
