@@ -8,3 +8,14 @@ $primary-color: #008B95;
   color: $primary-color;
   font: 100% $font-stack;
 }
+
+.navbar_container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  border-top: 16px solid #008B95;
+  height: 80px;
+  background: #FFFFFF;
+  border-bottom: 1px solid #FCEBCC;
+}
