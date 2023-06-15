@@ -19,10 +19,8 @@ export default function Home() {
         <div class="flex-wrapper">
           <NavIsland/>
          
-         <section class="midsection_container">
           <SuggestionsIsland/>
           <ChatIsland />
-        </section>
 
         <FooterIsland/>
         </div>
