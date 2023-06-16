@@ -10346,9 +10346,11 @@ body {
 }
 
 .styled_text_input {
-  width: 768px;
+  max-width: 768px;
+  min-width: 560px;
 }
 
 .control .icon {
   pointer-events: initial !important;
+  cursor: pointer;
 }

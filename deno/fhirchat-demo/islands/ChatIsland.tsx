@@ -18,9 +18,11 @@ export default function ChatIsland() {
   function handleSubmit(event: Event) {
     event.preventDefault();
     if(question.value === "") return;
-    appendToConversation(question.value);
-    submitQuestion(question.value);
-    setQuestion("");
+    else {
+      appendToConversation(question.value);
+      submitQuestion(question.value);
+      setQuestion("");
+    }
   }
 
   useEffect(() => {
@@ -31,8 +33,13 @@ export default function ChatIsland() {
   }, []);
 
   return (
-    <section class="section section-padding-large is-flex is-flex-direction-column is-justify-content-center is-align-self-center">
- 
+    <section class="section 
+    section-padding-large 
+    is-flex 
+    is-flex-direction-column 
+    is-justify-content-center 
+    is-align-self-center">
+
         <ul>
           {conversation.value.map((message) => (
             <li>{message}</li>
@@ -41,11 +48,12 @@ export default function ChatIsland() {
       
 
         <div class="field styled_text_input">
-  <p class="control has-icons-right">
-  <input
+          <p class="control has-icons-right">
+        <input
               class="input "
               type="text"
               placeholder="Enter a message"
+              value={question.value}
               onChange={handleMessageChange}
             />
 
