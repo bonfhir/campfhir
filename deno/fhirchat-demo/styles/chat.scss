@@ -1,12 +1,20 @@
 @charset "utf-8";
 @import "./sources/0.9.4/bulma/bulma.sass";
 
-$font-stack: Helvetica, sans-serif;
+$font-stack: 'Raleway';
 $primary-color: #008B95;
+$secondary-color: #EBF5EE;
+$white: #FFFFFF;
+
+
 
 :root {
   color: $primary-color;
   font: 100% $font-stack;
+}
+
+body {
+  font-family: $font-stack;
 }
 
 .flex_wrapper {
@@ -17,25 +25,49 @@ $primary-color: #008B95;
 .navbar_container {
   flex-direction: row;
   align-items: center;
-  border-top: 16px solid #008B95;
+  border-top: 16px solid $primary-color;
   height: 80px;
-  background: #FFFFFF;
-  border-bottom: 1px solid #FCEBCC;
+  background: $white;
+  border-bottom: 1px solid $secondary-color;
 }
 
 .section_wrapper {
   justify-content: space-between;
   flex: 1;
+  background: $white;
 }
 
 .footer_container {
   flex-direction: row;
   align-items: center;
   height: 86px;
-  background: #FFFFFF;
+  background: $white;
 }
 
 .styled_card{
   max-width: 384px;
   background: #EBF5EE;
+}
+
+
+.text_main {
+  font-weight: 400;
+  line-height: 19px;
+  letter-spacing: 0.005em;
+  color: #2D2D2D;
+}
+
+.styled_icon {
+  color: #6A6A6A;
+
+}
+
+.styled_text_input {
+  max-width: 768px;
+  min-width: 560px;
+
+}
+
+.control .icon {
+  pointer-events: initial !important;
 }

@@ -17,8 +17,8 @@ export default function ChatIsland() {
 
   function handleSubmit(event: Event) {
     event.preventDefault();
-
-    appendToConversation(`👤 ${question.value}`);
+    if(question.value === "") return;
+    appendToConversation(question.value);
     submitQuestion(question.value);
     setQuestion("");
   }
@@ -30,16 +30,8 @@ export default function ChatIsland() {
     };
   }, []);
 
-//   useEffect(() => {
-// console.log("reload");
-
-//   setInterval(function() {
-//     location.reload();
-//   }, 3000);
-// }, []);
-
   return (
-    <section class="section section-padding-large is-flex is-flex-direction-column is-justify-content-center">
+    <section class="section section-padding-large is-flex is-flex-direction-column is-justify-content-center is-align-self-center">
  
         <ul>
           {conversation.value.map((message) => (
@@ -47,23 +39,21 @@ export default function ChatIsland() {
           ))}
         </ul>
       
-      <form>
-        <div class="field is-grouped">
-          <p class="control is-expanded">
-            <input
-              class="input"
+
+        <div class="field styled_text_input">
+  <p class="control has-icons-right">
+  <input
+              class="input "
               type="text"
               placeholder="Enter a message"
               onChange={handleMessageChange}
             />
-          </p>
-          <p class="control">
-            <a class="button is-info" onClick={handleSubmit}>
-              send
-            </a>
-          </p>
-        </div>
-      </form>
+
+<span class="icon is-small is-right"  onClick={handleSubmit} >
+    <i class="fas fa-arrow-right styled_icon"/>
+  </span>
+  </p>
+</div>
     </section>
   );
 }

@@ -1,7 +1,5 @@
 # Campfhir
 
-# Project Setup
-
 ## Development Pre-requisites
 
 - [Visual Studio Code](https://code.visualstudio.com/Download)

@@ -25,11 +25,14 @@ export async function getCurrentUser(): Promise<CurrentUser> {
   );
 
   let name = "";
-  if (minimizedCurrentUser.name[0].title) {
-    name += `${minimizedCurrentUser.name[0].title} `;
+  
+  if (minimizedCurrentUser.name){
+    if (minimizedCurrentUser.name[0].title) {
+      name += `${minimizedCurrentUser.name[0].title} `;
+    }
+  
+    name += `${minimizedCurrentUser.name[0].given[0]} ${minimizedCurrentUser.name[0].family}`;
   }
-
-  name += `${minimizedCurrentUser.name[0].given[0]} ${minimizedCurrentUser.name[0].family}`;
 
   currentUser = {
     resourceType: "Practitioner",
