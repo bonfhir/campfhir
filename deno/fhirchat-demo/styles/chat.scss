@@ -4,8 +4,11 @@
 $font-stack: 'Raleway';
 $primary-color: #008B95;
 $secondary-color: #EBF5EE;
-$white: #FFFFFF;
+$primary-text-color: #2D2D2D;
+$icon-color: #6A6A6A;
 
+$white: #FFFFFF;
+$black: #000000;
 
 
 :root {
@@ -23,8 +26,6 @@ body {
 }
 
 .navbar_container {
-  flex-direction: row;
-  align-items: center;
   border-top: 16px solid $primary-color;
   height: 80px;
   background: $white;
@@ -38,34 +39,28 @@ body {
 }
 
 .footer_container {
-  flex-direction: row;
-  align-items: center;
   height: 86px;
   background: $white;
 }
 
 .styled_card{
   max-width: 384px;
-  background: #EBF5EE;
+  background: $secondary-color;
 }
 
-
 .text_main {
-  font-weight: 400;
   line-height: 19px;
   letter-spacing: 0.005em;
-  color: #2D2D2D;
+  color: $primary-text-color;
 }
 
 .styled_icon {
-  color: #6A6A6A;
-
+  color: $icon-color;
 }
 
 .styled_text_input {
   max-width: 768px;
   min-width: 560px;
-
 }
 
 .control .icon {

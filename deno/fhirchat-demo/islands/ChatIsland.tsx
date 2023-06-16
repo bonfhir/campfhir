@@ -34,34 +34,36 @@ export default function ChatIsland() {
 
   return (
     <section class="section 
-    section-padding-large 
-    is-flex 
-    is-flex-direction-column 
-    is-justify-content-center 
-    is-align-self-center">
-
+      section-padding-large 
+      is-flex 
+      is-flex-direction-column 
+      is-justify-content-center 
+      is-align-self-center">
         <ul>
           {conversation.value.map((message) => (
             <li>{message}</li>
           ))}
         </ul>
-      
 
         <div class="field styled_text_input">
-          <p class="control has-icons-right">
+        <p class="control has-icons-right">
         <input
-              class="input "
-              type="text"
-              placeholder="Enter a message"
-              value={question.value}
-              onChange={handleMessageChange}
-            />
+            class="input is-italic"
+            type="text"
+            placeholder="Enter a message"
+            value={question.value}
+            onChange={handleMessageChange}
+        />
 
-<span class="icon is-small is-right"  onClick={handleSubmit} >
-    <i class="fas fa-arrow-right styled_icon"/>
-  </span>
-  </p>
-</div>
+        <span class="icon is-small is-right">
+          <img 
+          src={"../images/submit-icon.svg"} 
+          alt="acn logo" 
+          onClick={handleSubmit}/>
+        </span>
+
+        </p>
+      </div>
     </section>
   );
 }

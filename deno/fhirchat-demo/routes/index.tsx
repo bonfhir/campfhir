@@ -20,12 +20,12 @@ export default function Home() {
         <div class="flex_wrapper is-flex is-flex-direction-column">
           <NavIsland/>
          
-        <div class="section_wrapper is-flex  is-flex-direction-column">
-          <SuggestionsIsland/>
-          <ChatIsland />
+          <div class="section_wrapper is-flex  is-flex-direction-column">
+            <SuggestionsIsland/>
+            <ChatIsland />
           </div>
 
-        <FooterIsland/>
+          <FooterIsland/> 
         </div>
         
         <div class="modal">

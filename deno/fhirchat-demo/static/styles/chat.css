@@ -10308,8 +10308,6 @@ body {
 }
 
 .navbar_container {
-  flex-direction: row;
-  align-items: center;
   border-top: 16px solid #008B95;
   height: 80px;
   background: #FFFFFF;
@@ -10323,8 +10321,6 @@ body {
 }
 
 .footer_container {
-  flex-direction: row;
-  align-items: center;
   height: 86px;
   background: #FFFFFF;
 }
@@ -10335,7 +10331,6 @@ body {
 }
 
 .text_main {
-  font-weight: 400;
   line-height: 19px;
   letter-spacing: 0.005em;
   color: #2D2D2D;
