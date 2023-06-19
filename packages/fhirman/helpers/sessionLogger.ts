@@ -3,6 +3,7 @@
 // it is implemented using the singleton pattern
 
 import { createWriteStream, WriteStream } from "fs";
+import { mkdir } from 'node:fs/promises';
 
 const basePath = "/workspace/sessions/";
 
@@ -11,6 +12,8 @@ export class SessionLogger {
   private stream: WriteStream;
 
   private constructor(sessionParams: object) {
+    this.ensureSessionDirectory();
+
     const fileName = `${basePath}FhirAssistant_${new Date().getTime()}.log`;
     this.stream = createWriteStream(fileName);
 
@@ -18,6 +21,15 @@ export class SessionLogger {
     this.log("Session params:");
     this.log(JSON.stringify(sessionParams, null, 2));
     this.separator();
+  }
+
+  async ensureSessionDirectory() {
+    try {
+      return await mkdir(basePath);
+    } catch (error) {
+      if (error.code == "EEXIST") return true;
+      else throw(error);
+    }
   }
 
   public log(message: string, ...extra: any[]) {
