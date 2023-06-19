@@ -18,24 +18,27 @@
    Cmd + P and select 'Dev containers: rebuild containers without cache`.
 2. Then you can start querying the API at `http://localhost:8889`
 
-### Usage
+---
 
-Start the webserver project:
+## Usage
 
+### Start the webserver project:
+This will watch the project directory and restart as necessary.
 ```
 yarn chat
 ```
 
-Make sure that `sessions` directory exists under `workspace`, otherwise do
-
-```
-mkdir sessions
-```
-
-This will watch the project directory and restart as necessary.
-
-Start the UI component:
-
+### Start the UI component:
 ```
 yarn chat-styles
+```
+
+### Format the deno TS sourcecode:
+```
+yarn lint
+```
+
+### Clear the deno package cache:
+```
+yarn clear-cache
 ```
