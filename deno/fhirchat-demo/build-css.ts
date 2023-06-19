@@ -70,7 +70,7 @@ async function buildStyles(path: string) {
     const outputPath = `./static/${
       relative(
         __dirname,
-        path.replace(".scss", ".css").replace(".kiss", ".css"),
+        path.replace(".scss", ".css"),
       )
     }`;
     console.log(`Updating styles for ${outputPath}`);
