@@ -49,7 +49,7 @@ export default function ChatIsland() {
             class="input is-italic styled_input"
             type="text"
             placeholder="Enter a message"
-            value={question.value}
+            value={question}
             onChange={handleMessageChange}
           />
 
