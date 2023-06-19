@@ -1,6 +1,8 @@
 # Description
 
-Please include a summary of the change and which issue is fixed. Please also include relevant motivation and context. List any dependencies that are required for this change.
+Please include a summary of the change and which issue is fixed. Please also
+include relevant motivation and context. List any dependencies that are required
+for this change.
 
 Fixes # (issue)
 
@@ -8,8 +10,8 @@ Fixes # (issue)
 
 ## Type of change
 
-Make sure your PR name (and squashed commit name) respects [Conventional Commits] (https://www.conventionalcommits.org/en/v1.0.0/)
-Ex:
+Make sure your PR name (and squashed commit name) respects [Conventional
+Commits] (https://www.conventionalcommits.org/en/v1.0.0/) Ex:
 
 - `feat(NLI): Added new visualizations to NLI`
   - This causes a `MINOR` version bump
@@ -18,14 +20,18 @@ Ex:
 - `perf(API): switched data structure for API`
   - This causes a `MAJOR` version bump
 
+Adding a ! triggers a `MAJOR` version bump, meaning breaking change ex:
+`feat(API)!: switched data structure for API` -- see above, not currently due to
+github action (.github/workflows/bump_prod_deploy.yml) using angular style
 
-Adding a ! triggers a `MAJOR` version bump, meaning breaking change ex: `feat(API)!: switched data structure for API` -- see above, not currently due to github action (.github/workflows/bump_prod_deploy.yml) using angular style
-
-Other recommended tags can be: `build:`, `chore:`, `ci:`, `docs:`, `style:`, `refactor:`, `perf:`, `test:`
+Other recommended tags can be: `build:`, `chore:`, `ci:`, `docs:`, `style:`,
+`refactor:`, `perf:`, `test:`
 
 # How Has This Been Tested?
 
-Please describe the tests that you ran to verify your changes. Provide instructions so we can reproduce. Please also list any relevant details for your test configuration
+Please describe the tests that you ran to verify your changes. Provide
+instructions so we can reproduce. Please also list any relevant details for your
+test configuration
 
 # Checklist:
 

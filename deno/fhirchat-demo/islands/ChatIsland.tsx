@@ -17,7 +17,7 @@ export default function ChatIsland() {
 
   function handleSubmit(event: Event) {
     event.preventDefault();
-    if(question.value === "") return;
+    if (question.value === "") return;
     else {
       appendToConversation(question.value);
       submitQuestion(question.value);
@@ -39,29 +39,27 @@ export default function ChatIsland() {
       is-flex-direction-column 
       is-justify-content-center 
       is-align-self-center">
-        <ul>
-          {conversation.value.map((message) => (
-            <li>{message}</li>
-          ))}
-        </ul>
+      <ul>
+        {conversation.value.map((message) => <li>{message}</li>)}
+      </ul>
 
-        <div class="field styled_text_input">
+      <div class="field styled_text_input">
         <p class="control has-icons-right">
-        <input
-            class="input is-italic"
+          <input
+            class="input is-italic styled_input"
             type="text"
             placeholder="Enter a message"
             value={question.value}
             onChange={handleMessageChange}
-        />
+          />
 
-        <span class="icon is-small is-right">
-          <img 
-          src={"../images/submit-icon.svg"} 
-          alt="acn logo" 
-          onClick={handleSubmit}/>
-        </span>
-
+          <span class="icon is-small is-right">
+            <img
+              src={"../images/submit-icon.svg"}
+              alt="acn logo"
+              onClick={handleSubmit}
+            />
+          </span>
         </p>
       </div>
     </section>

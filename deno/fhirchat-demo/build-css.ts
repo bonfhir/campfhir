@@ -67,10 +67,12 @@ async function buildStyles(path: string) {
     });
 
     const __dirname = resolve();
-    const outputPath = `./static/${relative(
-      __dirname,
-      path.replace(".scss", ".css").replace(".kiss", ".css")
-    )}`;
+    const outputPath = `./static/${
+      relative(
+        __dirname,
+        path.replace(".scss", ".css").replace(".kiss", ".css"),
+      )
+    }`;
     console.log(`Updating styles for ${outputPath}`);
     await Deno.writeTextFile(outputPath, outputCss);
   } catch (error: unknown) {
@@ -106,7 +108,7 @@ const exists = async (pathname: string): Promise<boolean> => {
 
 async function downloadSource(
   source: string,
-  destination: string
+  destination: string,
 ): Promise<void> {
   console.log("Downloading source from: ", source);
   const response = await fetch(source);

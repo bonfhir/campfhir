@@ -7,9 +7,7 @@ module.exports = {
     {
       files: ["**/{.*,*.config}.{cjs,js,mjs,ts}"],
       env: {
-        browser: true,
         node: true,
-        es2020: true,
       },
     },
   ],

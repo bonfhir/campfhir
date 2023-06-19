@@ -9,7 +9,7 @@ import { SessionLogger } from "./helpers/sessionLogger";
 
 import { createAssistantAgent } from "./agents/assistant";
 
-export default <CommandModule>{
+export default <CommandModule> {
   command: "assistant",
   describe: "FHIR AI assistant",
   handler: async (_options) => {

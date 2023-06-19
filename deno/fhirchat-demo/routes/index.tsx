@@ -12,22 +12,30 @@ export default function Home() {
         <Head>
           <link rel="stylesheet" href="/styles/layout.css" />
           <link rel="stylesheet" href="/styles/chat.css" />
-          <link href='https://fonts.googleapis.com/css?family=Raleway' rel='stylesheet'></link>
-          <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+          <link
+            href="https://fonts.googleapis.com/css?family=Raleway"
+            rel="stylesheet"
+          >
+          </link>
+          <script
+            defer
+            src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"
+          >
+          </script>
           <title>FHIR Chat</title>
         </Head>
-        
+
         <div class="flex_wrapper is-flex is-flex-direction-column">
-          <NavIsland/>
-         
+          <NavIsland />
+
           <div class="section_wrapper is-flex  is-flex-direction-column">
-            <SuggestionsIsland/>
+            <SuggestionsIsland />
             <ChatIsland />
           </div>
 
-          <FooterIsland/> 
+          <FooterIsland />
         </div>
-        
+
         <div class="modal">
           <div class="modal-background"></div>
           <div class="modal-card">

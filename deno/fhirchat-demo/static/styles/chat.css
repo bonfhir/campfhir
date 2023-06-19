@@ -10341,11 +10341,15 @@ body {
 }
 
 .styled_text_input {
-  max-width: 768px;
+  width: 100%;
   min-width: 560px;
 }
 
 .control .icon {
   pointer-events: initial !important;
   cursor: pointer;
+}
+
+.styled_input {
+  color: #6A6A6A;
 }

@@ -4,7 +4,8 @@ import { Tool } from "langchain/tools";
 
 import { type CurrentUser } from "../helpers/currentUser";
 
-const INSTRUCTIONS = `Your title is "FHIR Query Agent" and so is your name.  You are a data query agent.
+const INSTRUCTIONS =
+  `Your title is "FHIR Query Agent" and so is your name.  You are a data query agent.
 
 
 The human asking the questions is:
@@ -66,7 +67,7 @@ This was your previous work (but I haven't seen any of it! I only see what you r
 
 export async function fhirQuestionPrompt(
   currentUser: CurrentUser,
-  tools: Tool[]
+  tools: Tool[],
 ): Promise<PromptTemplate> {
   const instructionPrompt = new PromptTemplate({
     template: INSTRUCTIONS,

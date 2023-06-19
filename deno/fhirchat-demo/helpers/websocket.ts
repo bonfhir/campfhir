@@ -1,6 +1,6 @@
 type WebSocketEventCallback = (
   this: WebSocket,
-  event: Event | MessageEvent | CloseEvent
+  event: Event | MessageEvent | CloseEvent,
 ) => void;
 type WebSocketEventName = keyof WebSocketEventMap;
 type WebSocketCallbacks = {
@@ -12,7 +12,7 @@ type WebSocketCallbacks = {
 
 export function initWebSocket(
   address: string,
-  callbacks?: WebSocketCallbacks
+  callbacks?: WebSocketCallbacks,
 ): WebSocket {
   const ws = new WebSocket(address);
 

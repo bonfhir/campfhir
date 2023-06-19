@@ -1,4 +1,3 @@
-import postcss from "npm:postcss";
 import postcssSass from "npm:@csstools/postcss-sass";
 import autoprefixer from "npm:autoprefixer";
 import gridKiss from "npm:postcss-grid-kiss";
@@ -8,7 +7,6 @@ import customMediaPlugin from "npm:postcss-custom-media";
 
 export const config = {
   plugins: [
-    postcss(),
     postcssSass(),
     gridKiss({ fallback: true }),
     customMediaPlugin(),

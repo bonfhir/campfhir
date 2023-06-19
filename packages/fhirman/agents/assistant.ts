@@ -10,12 +10,12 @@ import { assistantPrompt } from "../prompts/assistantPrompt.ts";
 import { FhirQuestion } from "../tools/FhirQuestion.ts";
 
 // @ts-ignore
-import { ModelOutputEmitter } from "../events/ModelOutputEmitter.ts"
+import { ModelOutputEmitter } from "../events/ModelOutputEmitter.ts";
 
 export type AssistantAgent = {
   events: ModelOutputEmitter;
   agent: AgentExecutor;
-}
+};
 
 export async function createAssistantAgent(): Promise<AssistantAgent> {
   const outputEmitter = new ModelOutputEmitter();
@@ -46,6 +46,6 @@ export async function createAssistantAgent(): Promise<AssistantAgent> {
 
   return {
     agent: executor,
-    events: outputEmitter
-  }
+    events: outputEmitter,
+  };
 }

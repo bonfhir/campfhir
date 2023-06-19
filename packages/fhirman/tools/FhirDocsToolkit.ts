@@ -11,8 +11,8 @@ import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 import { Tool } from "langchain/tools";
 
 import {
-  readYamlExamples,
   type FhirPromptExample,
+  readYamlExamples,
 } from "../helpers/yamlExamples.ts";
 
 export class FhirDocsToolkit extends Toolkit {
@@ -43,7 +43,7 @@ export class KnownEndpoints extends Tool {
 
     this.supabase = createClient(
       process.env.PUBLIC_SUPABASE_URL || "",
-      process.env.PUBLIC_SUPABASE_ANON_KEY || ""
+      process.env.PUBLIC_SUPABASE_ANON_KEY || "",
     );
   }
 
@@ -67,7 +67,7 @@ export class KnownEndpoints extends Tool {
             return [base as string, target as string];
           })
           .flat()
-          .filter((x: any) => x)
+          .filter((x: any) => x),
       ),
     ];
     return endpoints;
@@ -105,7 +105,7 @@ export class FhirAPIExamples extends Tool {
     this.formatedExamples = Object.fromEntries(
       Object.entries(examples).map(([endpoint, examples]) => {
         return [endpoint, examples.join("\n")];
-      })
+      }),
     );
   }
   async _call(input: string): Promise<string> {
@@ -119,9 +119,11 @@ export class FhirAPIExamples extends Tool {
   }
 
   protected formatExample(example: FhirPromptExample): string {
-    return `Question: ${example.prompt} ||| FhirAPIServer: "${JSON.stringify(
-      example.completion
-    )}"`;
+    return `Question: ${example.prompt} ||| FhirAPIServer: "${
+      JSON.stringify(
+        example.completion,
+      )
+    }"`;
   }
 }
 export class EndpointParams extends Tool {
@@ -135,7 +137,7 @@ export class EndpointParams extends Tool {
     super();
     const jsonText = fs.readFileSync(
       "/workspace/data/fhir-r4b-search-parameters.json",
-      "utf8"
+      "utf8",
     );
     const searchParamsSpec = JSON.parse(jsonText);
 
@@ -167,7 +169,7 @@ export class EndpointParameterDetails extends Tool {
     super();
     const jsonText = fs.readFileSync(
       "/workspace/data/fhir-r4b-search-parameters.json",
-      "utf8"
+      "utf8",
     );
     const searchParamsSpec = JSON.parse(jsonText);
 

@@ -26,7 +26,7 @@ interface ImportContext {
   client: FhirRestfulClient;
 }
 
-export default <CommandModule<unknown, ImportOptions>>{
+export default <CommandModule<unknown, ImportOptions>> {
   command: "import",
   describe: "Import FHIR bundles withe deduplication",
   builder: {
@@ -61,9 +61,9 @@ export default <CommandModule<unknown, ImportOptions>>{
           task: async (ctx, task) => {
             const importFiles = await fg(options.files);
             for (const [index, file] of importFiles.entries()) {
-              task.title = `Import ${parse(file).base} (${index + 1}/${
-                importFiles.length
-              })`;
+              task.title = `Import ${parse(file).base} (${
+                index + 1
+              }/${importFiles.length})`;
               try {
                 const originalBundleContent = await readFile(file, {
                   encoding: "utf8",
@@ -72,16 +72,16 @@ export default <CommandModule<unknown, ImportOptions>>{
                 const bundle = JSON.parse(originalBundleContent) as Bundle;
                 const searchBatch = buildSearchBatchByIdentifier(bundle);
                 const existingResourcesResponse = (await ctx.client.batch(
-                  buildSearchBatchByIdentifier(bundle)
+                  buildSearchBatchByIdentifier(bundle),
                 )) as Bundle<Bundle>;
 
                 const substitutionMapping = buildSubstitutionMapping(
                   searchBatch,
-                  existingResourcesResponse
+                  existingResourcesResponse,
                 );
 
                 bundle.entry = (bundle.entry || []).filter(
-                  (entry) => !substitutionMapping[entry.fullUrl!]
+                  (entry) => !substitutionMapping[entry.fullUrl!],
                 );
                 updateBundleReferences(bundle, substitutionMapping);
 
@@ -124,7 +124,7 @@ function buildSearchBatchByIdentifier(bundle: Bundle): Bundle {
 
 function buildSubstitutionMapping(
   search: Bundle,
-  response: Bundle<Bundle>
+  response: Bundle<Bundle>,
 ): Record<string, string> {
   const result: Record<string, string> = {};
 
@@ -140,7 +140,7 @@ function buildSubstitutionMapping(
 
 function updateBundleReferences(
   value: any,
-  substitutionMapping: Record<string, string>
+  substitutionMapping: Record<string, string>,
 ) {
   if (isObject(value) || isArray(value)) {
     for (const entry of Object.entries(value)) {

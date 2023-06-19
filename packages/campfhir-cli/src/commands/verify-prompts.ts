@@ -18,7 +18,7 @@ interface VerifyPromptsContext {
   client: FhirRestfulClient;
 }
 
-export default <CommandModule<unknown, VerifyPromptsOptions>>{
+export default <CommandModule<unknown, VerifyPromptsOptions>> {
   command: "verify",
   describe: "Verify a prompts JSONL file.",
   builder: {

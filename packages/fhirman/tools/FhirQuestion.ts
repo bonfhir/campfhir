@@ -5,7 +5,7 @@ import { Tool } from "langchain/tools";
 
 import { createFhirAgent } from "../agents/fhir.ts";
 //@ts-ignore
-import { ModelOutputEmitter } from "../events/ModelOutputEmitter.ts"
+import { ModelOutputEmitter } from "../events/ModelOutputEmitter.ts";
 
 export class FhirQuestion extends Tool {
   name = "FhirQuestion";

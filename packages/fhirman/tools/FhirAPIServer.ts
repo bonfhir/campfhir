@@ -7,7 +7,8 @@ import { SessionLogger } from "../helpers/sessionLogger.ts";
 
 export class FhirAPIServer extends Tool {
   name = "FhirAPIServer";
-  description = `Useful for querying a FHIR RESTFul API server. The input to this tool should be a valid JSON string query.  The format of the JSON input query is {{"endpoint": <ENDPOINT>, "params": {{"<PARAMETER code>": "<PARAMETER value>"}}}}.  The output is the FHIR API server JSON response.`;
+  description =
+    `Useful for querying a FHIR RESTFul API server. The input to this tool should be a valid JSON string query.  The format of the JSON input query is {{"endpoint": <ENDPOINT>, "params": {{"<PARAMETER code>": "<PARAMETER value>"}}}}.  The output is the FHIR API server JSON response.`;
 
   constructor() {
     super();

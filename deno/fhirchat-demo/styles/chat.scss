@@ -5,7 +5,7 @@ $font-stack: 'Raleway';
 $primary-color: #008B95;
 $secondary-color: #EBF5EE;
 $primary-text-color: #2D2D2D;
-$icon-color: #6A6A6A;
+$secondary-text-color: #6A6A6A;
 
 $white: #FFFFFF;
 $black: #000000;
@@ -55,15 +55,19 @@ body {
 }
 
 .styled_icon {
-  color: $icon-color;
+  color: $secondary-text-color;
 }
 
 .styled_text_input {
-  max-width: 768px;
+  width: 100%;
   min-width: 560px;
 }
 
 .control .icon {
   pointer-events: initial !important;
   cursor: pointer;
+}
+
+.styled_input{
+  color: $secondary-text-color;
 }

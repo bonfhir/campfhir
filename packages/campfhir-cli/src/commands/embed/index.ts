@@ -42,11 +42,12 @@ function compileSearchParamsByResources(searchParamsSpec: any) {
           base,
         };
         if (comparator) searchParams["comparator"] = comparator;
-        if (target && target.includes(resourceType))
+        if (target && target.includes(resourceType)) {
           searchParams["target"] = [resourceType];
+        }
 
         searchParamsByResources[resourceType].push(searchParams);
-      }
+      },
     );
   });
 
@@ -146,14 +147,15 @@ function compileSearchParamsDocuments(searchParamsSpec: any): Document[] {
       const param: string = resource.code;
       docs.push(
         new Document({
-          pageContent: `[${base}:${param}${targetString}]: ${resource.description}`,
+          pageContent:
+            `[${base}:${param}${targetString}]: ${resource.description}`,
           metadata: {
             id: resource.id,
             target,
             base,
             param,
           },
-        })
+        }),
       );
     });
   });
@@ -175,7 +177,7 @@ async function createEmbeddings(
   client: SupabaseClient,
   docs: Document[],
   tableName: string,
-  queryName: string
+  queryName: string,
 ) {
   await SupabaseVectorStore.fromDocuments(docs, new OpenAIEmbeddings(), {
     client,
@@ -188,7 +190,7 @@ async function createHNSWEmbeddings(docs: Document[]) {
   return await HNSWLib.fromDocuments(docs, new OpenAIEmbeddings());
 }
 
-export default <CommandModule>{
+export default <CommandModule> {
   command: "embed",
   describe: "Creates ML embeddings for a FHIR API",
   handler: async (_options) => {
@@ -197,13 +199,13 @@ export default <CommandModule>{
     console.log("Loading FHIR search parameters spec...");
     const jsonText = fs.readFileSync(
       "/workspace/data/fhir-r4b-search-parameters.json",
-      "utf8"
+      "utf8",
     );
     const searchParamsSpec = JSON.parse(jsonText);
 
     const client = createClient(
       process.env.PUBLIC_SUPABASE_URL || "",
-      process.env.PUBLIC_SUPABASE_ANON_KEY || ""
+      process.env.PUBLIC_SUPABASE_ANON_KEY || "",
     );
 
     // const byId = compileSearchParamsById(searchParamsSpec);
@@ -224,7 +226,7 @@ export default <CommandModule>{
     // Load the vector store from the same directory
     const loadedVectorStore = await HNSWLib.load(
       directory,
-      new OpenAIEmbeddings()
+      new OpenAIEmbeddings(),
     );
     const hnswRetriever = loadedVectorStore.asRetriever();
 
