@@ -1,9 +1,9 @@
 // deno-lint-ignore-file
 import { Head } from "$fresh/runtime.ts";
-import NavIsland from "../islands/NavIsland.tsx";
+import NavBar from "../components/NavBar.tsx";
 import ChatIsland from "../islands/ChatIsland.tsx";
-import SuggestionsIsland from "../islands/SuggestionsIsland.tsx";
-import FooterIsland from "../islands/FooterIsland.tsx";
+import Suggestions from "../components/Suggestions.tsx";
+import Footer from "../components/Footer.tsx";
 
 export default function Home() {
   return (
@@ -26,14 +26,14 @@ export default function Home() {
         </Head>
 
         <div class="flex_wrapper is-flex is-flex-direction-column">
-          <NavIsland />
+          <NavBar />
 
           <div class="section_wrapper is-flex  is-flex-direction-column">
-            <SuggestionsIsland />
+            <Suggestions />
             <ChatIsland />
           </div>
 
-          <FooterIsland />
+          <Footer />
         </div>
 
         <div class="modal">

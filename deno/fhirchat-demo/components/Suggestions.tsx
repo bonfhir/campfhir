@@ -1,4 +1,4 @@
-export default function SuggestionsIsland() {
+export default function Suggestions() {
   return (
     <section class="section section-padding-large is-flex is-flex-direction-column is-justify-content-center is-align-items-center">
       <p class="is-size-5 title has-text-centered">

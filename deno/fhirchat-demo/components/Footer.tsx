@@ -1,4 +1,4 @@
-export default function FooterIsland() {
+export default function Footer() {
   return (
     <footer class="footer_container is-flex is-flex-direction-column is-justify-content-center is-align-items-center">
       <figure class="image">

@@ -1,4 +1,4 @@
-export default function NavIsland() {
+export default function NavBar() {
   return (
     <nav
       class="navbar navbar_container is-flex-direction-row is-justify-content-center is-align-items-center"
