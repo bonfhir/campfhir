@@ -1,6 +1,9 @@
 // deno-lint-ignore-file
 import { Head } from "$fresh/runtime.ts";
+import NavBar from "../components/NavBar.tsx";
 import ChatIsland from "../islands/ChatIsland.tsx";
+import Suggestions from "../components/Suggestions.tsx";
+import Footer from "../components/Footer.tsx";
 
 export default function Home() {
   return (
@@ -9,26 +12,30 @@ export default function Home() {
         <Head>
           <link rel="stylesheet" href="/styles/layout.css" />
           <link rel="stylesheet" href="/styles/chat.css" />
+          <link
+            href="https://fonts.googleapis.com/css?family=Raleway"
+            rel="stylesheet"
+          >
+          </link>
+          <script
+            defer
+            src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"
+          >
+          </script>
           <title>FHIR Chat</title>
         </Head>
-        <div class="container hero is-fullheight is-fullhd">
-          <div class="navbar is-fixed-top has-background-primary"></div>
-          <div class="lside">
-            <div class="lside-inner has-background-white-ter"></div>
-          </div>
-          <div class="midsection has-background-white-ter">
-            <header></header>
+
+        <div class="flex_wrapper is-flex is-flex-direction-column">
+          <NavBar />
+
+          <div class="section_wrapper is-flex  is-flex-direction-column">
+            <Suggestions />
             <ChatIsland />
-            <footer>
-              <div class="box">
-                <h3>©2023 ACN</h3>
-              </div>
-            </footer>
           </div>
-          <div class="rside">
-            <div class="rside-inner has-background-white-ter"></div>
-          </div>
+
+          <Footer />
         </div>
+
         <div class="modal">
           <div class="modal-background"></div>
           <div class="modal-card">

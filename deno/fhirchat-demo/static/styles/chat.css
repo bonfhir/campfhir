@@ -10295,5 +10295,61 @@ a.has-text-danger-dark:hover, a.has-text-danger-dark:focus {
 
 :root {
   color: #008B95;
-  font: 100% Helvetica, sans-serif;
+  font: 100% "Raleway";
+}
+
+body {
+  font-family: "Raleway";
+}
+
+.flex_wrapper {
+  min-height: 100vh;
+  justify-content: space-between;
+}
+
+.navbar_container {
+  border-top: 16px solid #008B95;
+  height: 80px;
+  background: #FFFFFF;
+  border-bottom: 1px solid #EBF5EE;
+}
+
+.section_wrapper {
+  justify-content: space-between;
+  flex: 1;
+  background: #FFFFFF;
+}
+
+.footer_container {
+  height: 86px;
+  background: #FFFFFF;
+}
+
+.styled_card {
+  max-width: 384px;
+  background: #EBF5EE;
+}
+
+.text_main {
+  line-height: 19px;
+  letter-spacing: 0.005em;
+  color: #2D2D2D;
+}
+
+.styled_icon {
+  color: #6A6A6A;
+}
+
+.styled_text_input {
+  width: 100%;
+  min-width: 560px;
+}
+
+.control .icon {
+  pointer-events: initial !important;
+  cursor: pointer;
+}
+
+.styled_input {
+  color: #6A6A6A;
 }

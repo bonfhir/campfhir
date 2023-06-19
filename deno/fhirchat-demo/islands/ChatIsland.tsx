@@ -17,10 +17,12 @@ export default function ChatIsland() {
 
   function handleSubmit(event: Event) {
     event.preventDefault();
-
-    appendToConversation(`👤 ${question.value}`);
-    submitQuestion(question.value);
-    setQuestion("");
+    if (question.value === "") return;
+    else {
+      appendToConversation(question.value);
+      submitQuestion(question.value);
+      setQuestion("");
+    }
   }
 
   useEffect(() => {
@@ -31,38 +33,35 @@ export default function ChatIsland() {
   }, []);
 
   return (
-    <section class="section conversation">
-      <div class="box">
-        <h6 class="title is-6 has-text-centered">
-          Uncover insights from your EHR
-        </h6>
-      </div>
-      <div class="box is-large">
-        <ul>
-          {conversation.value.map((message) => (
-            <li>{message}</li>
-          ))}
-        </ul>
-      </div>
+    <section class="section 
+      section-padding-large 
+      is-flex 
+      is-flex-direction-column 
+      is-justify-content-center 
+      is-align-self-center">
+      <ul>
+        {conversation.value.map((message) => <li>{message}</li>)}
+      </ul>
 
-      <form>
-        <h4 class="title is-4">Ask me a question</h4>
-        <div class="field is-grouped">
-          <p class="control is-expanded">
-            <input
-              class="input"
-              type="text"
-              placeholder="Enter your question here"
-              onChange={handleMessageChange}
+      <div class="field styled_text_input">
+        <p class="control has-icons-right">
+          <input
+            class="input is-italic styled_input"
+            type="text"
+            placeholder="Enter a message"
+            value={question}
+            onChange={handleMessageChange}
+          />
+
+          <span class="icon is-small is-right">
+            <img
+              src={"../images/submit-icon.svg"}
+              alt="acn logo"
+              onClick={handleSubmit}
             />
-          </p>
-          <p class="control">
-            <a class="button is-info" onClick={handleSubmit}>
-              send
-            </a>
-          </p>
-        </div>
-      </form>
+          </span>
+        </p>
+      </div>
     </section>
   );
 }

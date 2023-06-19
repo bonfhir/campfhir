@@ -1,10 +1,73 @@
 @charset "utf-8";
 @import "./sources/0.9.4/bulma/bulma.sass";
 
-$font-stack: Helvetica, sans-serif;
+$font-stack: 'Raleway';
 $primary-color: #008B95;
+$secondary-color: #EBF5EE;
+$primary-text-color: #2D2D2D;
+$secondary-text-color: #6A6A6A;
+
+$white: #FFFFFF;
+$black: #000000;
+
 
 :root {
   color: $primary-color;
   font: 100% $font-stack;
+}
+
+body {
+  font-family: $font-stack;
+}
+
+.flex_wrapper {
+  min-height: 100vh;
+  justify-content: space-between;
+}
+
+.navbar_container {
+  border-top: 16px solid $primary-color;
+  height: 80px;
+  background: $white;
+  border-bottom: 1px solid $secondary-color;
+}
+
+.section_wrapper {
+  justify-content: space-between;
+  flex: 1;
+  background: $white;
+}
+
+.footer_container {
+  height: 86px;
+  background: $white;
+}
+
+.styled_card{
+  max-width: 384px;
+  background: $secondary-color;
+}
+
+.text_main {
+  line-height: 19px;
+  letter-spacing: 0.005em;
+  color: $primary-text-color;
+}
+
+.styled_icon {
+  color: $secondary-text-color;
+}
+
+.styled_text_input {
+  width: 100%;
+  min-width: 560px;
+}
+
+.control .icon {
+  pointer-events: initial !important;
+  cursor: pointer;
+}
+
+.styled_input{
+  color: $secondary-text-color;
 }

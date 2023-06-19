@@ -17,11 +17,11 @@ export async function getCurrentUser(): Promise<CurrentUser> {
   if (currentUser) return currentUser;
 
   const currentUserResponse = await getFHIR(
-    `/Practitioner?_id=${practitionerId}`
+    `/Practitioner?_id=${practitionerId}`,
   );
   const minimizedCurrentUser = minimizeFhirResponse(
     "Practitioner",
-    currentUserResponse as JsonObject
+    currentUserResponse as JsonObject,
   );
 
   let name = "";
@@ -29,7 +29,9 @@ export async function getCurrentUser(): Promise<CurrentUser> {
     name += `${minimizedCurrentUser.name[0].title} `;
   }
 
-  name += `${minimizedCurrentUser.name[0].given[0]} ${minimizedCurrentUser.name[0].family}`;
+  name += `${minimizedCurrentUser.name[0].given[0]} ${
+    minimizedCurrentUser.name[0].family
+  }`;
 
   currentUser = {
     resourceType: "Practitioner",

@@ -11,7 +11,7 @@ import { fhirQuestionPrompt } from "../prompts/fhirQuestionPrompt.ts";
 import { DateToolkit } from "../tools/DateToolkit.ts";
 import { FhirAPIServer } from "../tools/FhirAPIServer.ts";
 import { FhirDocsToolkit } from "../tools/FhirDocsToolkit.ts";
-import { ModelOutputEmitter } from "../events/ModelOutputEmitter.ts"
+import { ModelOutputEmitter } from "../events/ModelOutputEmitter.ts";
 
 export async function createFhirAgent(emitter: ModelOutputEmitter) {
   const docsToolkit = new FhirDocsToolkit();

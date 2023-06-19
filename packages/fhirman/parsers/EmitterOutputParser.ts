@@ -1,8 +1,10 @@
 import { ZeroShotAgentOutputParser } from "langchain/agents";
 // @ts-ignore
 import { SessionLogger } from "../helpers/sessionLogger.ts";
-import { MODEL_OUTPUT_EVENT, ModelOutputEmitter } from "../events/ModelOutputEmitter.ts";
-
+import {
+  MODEL_OUTPUT_EVENT,
+  ModelOutputEmitter,
+} from "../events/ModelOutputEmitter.ts";
 
 export class EmitterOutputParser extends ZeroShotAgentOutputParser {
   agentName: string;

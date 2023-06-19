@@ -15,7 +15,7 @@ async function medplumClient(): Promise<MedplumClient> {
 
     await medplum.startClientLogin(
       process.env.MEDPLUM_CLIENT_ID!,
-      process.env.MEDPLUM_CLIENT_SECRET!
+      process.env.MEDPLUM_CLIENT_SECRET!,
     );
   }
 
@@ -55,7 +55,7 @@ export function minimizeFhirResponse(endpoint: string, response: JsonObject) {
 
 function filterByResourceKeys(
   resource: JsonObject,
-  endpoint: string
+  endpoint: string,
 ): JsonObject {
   const resourceKeys = RESOURCE_KEYS[endpoint.toLowerCase()];
   if (!resourceKeys) {
@@ -65,6 +65,6 @@ function filterByResourceKeys(
   return Object.fromEntries(
     Object.entries(resource).filter(([key, _value]) =>
       resourceKeys.includes(key)
-    )
+    ),
   );
 }

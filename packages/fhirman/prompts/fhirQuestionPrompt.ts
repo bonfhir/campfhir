@@ -2,7 +2,8 @@ import { ZeroShotAgent } from "langchain/agents";
 import { PromptTemplate } from "langchain/prompts";
 import { Tool } from "langchain/tools";
 
-const INSTRUCTIONS = `Your title is "FHIR Query Agent" and so is your name.  You are a data query agent.
+const INSTRUCTIONS =
+  `Your title is "FHIR Query Agent" and so is your name.  You are a data query agent.
 
 You must answer the questions step-by-step by using the provided tools.  Don't skip any step.
 
@@ -56,7 +57,7 @@ This was your previous work (but I haven't seen any of it! I only see what you r
 {agent_scratchpad}`;
 
 export async function fhirQuestionPrompt(
-  tools: Tool[]
+  tools: Tool[],
 ): Promise<PromptTemplate> {
   const instructionPrompt = new PromptTemplate({
     template: INSTRUCTIONS,

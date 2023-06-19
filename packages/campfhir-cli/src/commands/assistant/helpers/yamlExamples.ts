@@ -11,7 +11,7 @@ export type FhirPromptExample = {
 };
 
 export function readYamlExamples(
-  dirPath = "/workspace/data/prompts"
+  dirPath = "/workspace/data/prompts",
 ): FhirPromptExample[] {
   const files = fs.readdirSync(dirPath);
   let examples = [] as FhirPromptExample[];

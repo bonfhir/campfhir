@@ -22,7 +22,7 @@ export const InitializeClient: ListrTask<{
     });
     await medplum.startClientLogin(
       ctx.options.medplumClientId,
-      ctx.options.medplumClientSecret
+      ctx.options.medplumClientSecret,
     );
 
     ctx.client = buildFhirRestfulClientAdapter(medplum);
