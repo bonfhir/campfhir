@@ -5,11 +5,14 @@ export default function ChatIsland() {
   const {
     question,
     conversation,
+    agentMockResponse,
     setQuestion,
     appendToConversation,
     submitQuestion,
     closeConversation,
   } = useContext(AIConversationState);
+
+  console.log("agentMockResponse", agentMockResponse);
 
   const handleMessageChange = (event: Event) => {
     event.preventDefault();
@@ -67,8 +70,8 @@ export default function ChatIsland() {
         ))}
       </ul>
 
-      <ul>
-        {conversation.value.map((message) => (
+      {agentMockResponse.value && (
+        <ul>
           <li class="fhir_agent_container">
             <div class="is-flex is-flex-direction-row">
               <span class="icon is-medium">
@@ -78,12 +81,12 @@ export default function ChatIsland() {
                 />
               </span>
               <p class="is-size-6 has-text-left has-text-weight-normal pl-5 is-align-self-center fhir_agent_prompt">
-                {message}
+                {agentMockResponse.value}
               </p>
             </div>
           </li>
-        ))}
-      </ul>
+        </ul>
+      )}
 
       <div class="field styled_text_input">
         <div class="control has-icons-right">

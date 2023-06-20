@@ -6,16 +6,19 @@ import { initWebSocket } from "../helpers/websocket.ts";
 export type AppendToConversationFunction = (message: string) => void;
 export type SetQuestionFunction = (message: string) => void;
 export type SubmitQuestionFunction = (message: string) => void;
-export type closeConversationFunction = () => void;
+export type CloseConversationFunction = () => void;
+export type SetAgentMockResponseFunction = () => void;
 
 export type AIConversationContext = {
   question: Signal<string>;
   conversation: Signal<string[]>;
+  agentMockResponse: Signal<string>;
+  websocket: WebSocket;
   appendToConversation: AppendToConversationFunction;
   setQuestion: SetQuestionFunction;
   submitQuestion: SubmitQuestionFunction;
-  websocket: WebSocket;
-  closeConversation: closeConversationFunction;
+  closeConversation: CloseConversationFunction;
+  setAgentMockResponse: SetAgentMockResponseFunction;
 };
 
 export type WSData = {
@@ -53,6 +56,7 @@ function createAIConversationContext(): AIConversationContext {
   });
   const question = signal<string>("");
   const conversation = signal<string[]>([]);
+  const agentMockResponse = signal<string>("");
 
   const smartAppendToConversation = (message: string) => {
     const lastIsLog = conversation.value[conversation.value.length - 1]
@@ -85,12 +89,17 @@ function createAIConversationContext(): AIConversationContext {
     } else {
       console.log("Websocket not connected.");
     }
+    setAgentMockResponse();
   };
 
-  const closeConversation: closeConversationFunction = () => {
+  const setAgentMockResponse: SetAgentMockResponseFunction = () => {
+    agentMockResponse.value =
+      "I need to use the FhirQuestion tool to answer this question";
+  };
+
+  const closeConversation: CloseConversationFunction = () => {
     question.value = "";
     conversation.value = [];
-
     websocket.close();
   };
 
@@ -102,6 +111,8 @@ function createAIConversationContext(): AIConversationContext {
     setQuestion,
     submitQuestion,
     closeConversation,
+    agentMockResponse,
+    setAgentMockResponse,
   };
 }
 
