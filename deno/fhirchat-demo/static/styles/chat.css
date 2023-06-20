@@ -10296,6 +10296,8 @@ a.has-text-danger-dark:hover, a.has-text-danger-dark:focus {
 :root {
   color: #008B95;
   font: 100% "Raleway";
+  width: 100%;
+  box-sizing: border-box;
 }
 
 body {
@@ -10352,4 +10354,21 @@ body {
 
 .styled_input {
   color: #6A6A6A;
+}
+
+.user_prompt {
+  line-height: 19px;
+  letter-spacing: 0.005em;
+  color: #2D2D2D;
+}
+
+.fhir_agent_container {
+  background: #F5F5F5;
+  margin-bottom: 24px;
+}
+
+.fhir_agent_prompt {
+  line-height: 19px;
+  letter-spacing: 0.005em;
+  color: #008B95;
 }

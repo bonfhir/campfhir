@@ -8,7 +8,7 @@ import Footer from "../components/Footer.tsx";
 export default function Home() {
   return (
     <>
-      <body class="has-background-white-ter">
+      <body>
         <Head>
           <link rel="stylesheet" href="/styles/layout.css" />
           <link rel="stylesheet" href="/styles/chat.css" />

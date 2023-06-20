@@ -6,6 +6,7 @@ $primary-color: #008B95;
 $secondary-color: #EBF5EE;
 $primary-text-color: #2D2D2D;
 $secondary-text-color: #6A6A6A;
+$primary-background-color: #F5F5F5;
 
 $white: #FFFFFF;
 $black: #000000;
@@ -14,6 +15,8 @@ $black: #000000;
 :root {
   color: $primary-color;
   font: 100% $font-stack;
+  width:100%;
+  box-sizing: border-box;
 }
 
 body {
@@ -70,4 +73,21 @@ body {
 
 .styled_input{
   color: $secondary-text-color;
+}
+
+.user_prompt{
+  line-height: 19px;
+  letter-spacing: 0.005em;
+  color: $primary-text-color;
+}
+
+.fhir_agent_container{
+  background: $primary-background-color;
+  margin-bottom: 24px;
+}
+
+.fhir_agent_prompt{
+  line-height: 19px;
+  letter-spacing: 0.005em;
+  color: $primary-color;
 }
