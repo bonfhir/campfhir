@@ -1,7 +1,0 @@
-{
-  "agentSampleResponse": {
-    "Thought": "I need to use the FhirQuestion tool to answer this question",
-    "Action": "FhirQuestion",
-    "Action Input": "How many female patients were born before 1977"
-  }
-}

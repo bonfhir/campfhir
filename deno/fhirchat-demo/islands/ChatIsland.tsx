@@ -1,5 +1,6 @@
-import { useContext, useEffect } from "preact/hooks";
+import { useContext, useEffect, useState } from "preact/hooks";
 import { AIConversationState } from "../hooks/aiConversationContext.ts";
+import { useTextWithTypeAnimation } from "../hooks/typingAnimation.ts";
 
 export default function ChatIsland() {
   const {
@@ -12,7 +13,10 @@ export default function ChatIsland() {
     closeConversation,
   } = useContext(AIConversationState);
 
-  console.log("agentMockResponse", agentMockResponse);
+  const { displayText } = useTextWithTypeAnimation({
+    text: agentMockResponse.value,
+    enabled: agentMockResponse.value !== "",
+  });
 
   const handleMessageChange = (event: Event) => {
     event.preventDefault();
@@ -49,12 +53,7 @@ export default function ChatIsland() {
   }, []);
 
   return (
-    <section class="section 
-      section-padding-large 
-      is-flex 
-      is-flex-direction-column 
-      is-justify-content-center 
-      is-align-self-center">
+    <section class="is-flex is-flex-direction-column is-justify-content-center  is-align-self-center">
       <ul>
         {conversation.value.map((message) => (
           <li>
@@ -70,7 +69,7 @@ export default function ChatIsland() {
         ))}
       </ul>
 
-      {agentMockResponse.value && (
+      {agentMockResponse.value !== "" && (
         <ul>
           <li class="fhir_agent_container">
             <div class="is-flex is-flex-direction-row">
@@ -81,7 +80,7 @@ export default function ChatIsland() {
                 />
               </span>
               <p class="is-size-6 has-text-left has-text-weight-normal pl-5 is-align-self-center fhir_agent_prompt">
-                {agentMockResponse.value}
+                {displayText}
               </p>
             </div>
           </li>

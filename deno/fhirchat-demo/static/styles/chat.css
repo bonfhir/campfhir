@@ -10343,8 +10343,7 @@ body {
 }
 
 .styled_text_input {
-  width: 100%;
-  min-width: 560px;
+  width: 800px;
 }
 
 .control .icon {
@@ -10365,6 +10364,7 @@ body {
 .fhir_agent_container {
   background: #F5F5F5;
   margin-bottom: 24px;
+  width: 100%;
 }
 
 .fhir_agent_prompt {
