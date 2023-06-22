@@ -35,8 +35,6 @@ export function useTextWithTypeAnimation({
 
   // Controls the typer animation
   useEffect(() => {
-    console.log("typing animation text: ", text);
-
     let intervalId: number;
     if (
       (enabled || typingProgress > 0) &&

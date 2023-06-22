@@ -2007,16 +2007,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ajax-request@npm:^1.2.0":
-  version: 1.2.3
-  resolution: "ajax-request@npm:1.2.3"
-  dependencies:
-    file-system: ^2.1.1
-    utils-extend: ^1.0.7
-  checksum: 9814e81bbf41d803e662cdd41aa1cf6ba1fd2162e4e054ba6f97c43b685af67bdcddfd45aa213a1cf347c5a91f6198947f2c8c8678337b7ec6c3f8af42612a95
-  languageName: node
-  linkType: hard
-
 "ajv@npm:^6.10.0, ajv@npm:^6.12.4":
   version: 6.12.6
   resolution: "ajv@npm:6.12.6"
@@ -2275,16 +2265,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"base64-img@npm:^1.0.4":
-  version: 1.0.4
-  resolution: "base64-img@npm:1.0.4"
-  dependencies:
-    ajax-request: ^1.2.0
-    file-system: ^2.1.0
-  checksum: a5e8b5ed97493ae89f553fb0c964cb2e6cd6f70d2fd4087b53e7e4ac88ffdaae8d6525f1599fb21b941f923194911c53ccd1e70bcd7078748f363784c64dae2b
-  languageName: node
-  linkType: hard
-
 "bin-check@npm:^4.1.0":
   version: 4.1.0
   resolution: "bin-check@npm:4.1.0"
@@ -2504,8 +2484,6 @@ __metadata:
 "campfhir@workspace:.":
   version: 0.0.0-use.local
   resolution: "campfhir@workspace:."
-  dependencies:
-    base64-img: ^1.0.4
   languageName: unknown
   linkType: soft
 
@@ -3546,25 +3524,6 @@ __metadata:
   dependencies:
     flat-cache: ^3.0.4
   checksum: f49701feaa6314c8127c3c2f6173cfefff17612f5ed2daaafc6da13b5c91fd43e3b2a58fd0d63f9f94478a501b167615931e7200e31485e320f74a33885a9c74
-  languageName: node
-  linkType: hard
-
-"file-match@npm:^1.0.1":
-  version: 1.0.2
-  resolution: "file-match@npm:1.0.2"
-  dependencies:
-    utils-extend: ^1.0.6
-  checksum: 7d36c26118054d64798d8660a65453ad1e2b1348861f4e0eb1ebc237b1cd43bc2394787b431b8515db7b21057cb171f543c44dcc82bb5efd27c346e77a6ea2c9
-  languageName: node
-  linkType: hard
-
-"file-system@npm:^2.1.0, file-system@npm:^2.1.1":
-  version: 2.2.2
-  resolution: "file-system@npm:2.2.2"
-  dependencies:
-    file-match: ^1.0.1
-    utils-extend: ^1.0.4
-  checksum: 70d44061e29f3a2679663c7c3d09395c877a5b5152b17427281fe1006763e0e6956fd0810a2da4a11a9804799544121979366f7cc21caf3f1521f76e8d15679b
   languageName: node
   linkType: hard
 
@@ -7089,13 +7048,6 @@ __metadata:
   version: 1.0.2
   resolution: "util-deprecate@npm:1.0.2"
   checksum: 474acf1146cb2701fe3b074892217553dfcf9a031280919ba1b8d651a068c9b15d863b7303cb15bd00a862b498e6cf4ad7b4a08fb134edd5a6f7641681cb54a2
-  languageName: node
-  linkType: hard
-
-"utils-extend@npm:^1.0.4, utils-extend@npm:^1.0.6, utils-extend@npm:^1.0.7":
-  version: 1.0.8
-  resolution: "utils-extend@npm:1.0.8"
-  checksum: 91722b70ad480926856828a6c970e85a5a69856ddaafa3fcca8c7003ed0feb8a63c3e6574d174f11848f03a1b149419498e5cff2153f324f0b451f3d92316f16
   languageName: node
   linkType: hard
 

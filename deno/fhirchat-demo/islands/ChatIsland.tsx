@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "preact/hooks";
+import { useContext, useEffect } from "preact/hooks";
 import { AIConversationState } from "../hooks/aiConversationContext.ts";
 import { useTextWithTypeAnimation } from "../hooks/typingAnimation.ts";
 
