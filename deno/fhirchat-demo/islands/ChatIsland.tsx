@@ -13,10 +13,11 @@ export default function ChatIsland() {
     closeConversation,
   } = useContext(AIConversationState);
 
-  const { displayText } = useTextWithTypeAnimation({
-    text: agentMockResponse.value,
-    enabled: agentMockResponse.value !== "",
-  });
+  const { displayText, isTyping, resetTextAnimation } =
+    useTextWithTypeAnimation({
+      text: agentMockResponse.value,
+      enabled: agentMockResponse.value !== "",
+    });
 
   const handleMessageChange = (event: Event) => {
     event.preventDefault();
@@ -52,6 +53,10 @@ export default function ChatIsland() {
     };
   }, []);
 
+  useEffect(() => {
+    if (agentMockResponse.value) resetTextAnimation();
+  }, [agentMockResponse.value]);
+
   return (
     <section class="is-flex is-flex-direction-column is-justify-content-center  is-align-self-center">
       <ul>
@@ -69,23 +74,20 @@ export default function ChatIsland() {
         ))}
       </ul>
 
-      {agentMockResponse.value !== "" && (
-        <ul>
-          <li class="fhir_agent_container">
-            <div class="is-flex is-flex-direction-row">
-              <span class="icon is-medium">
-                <img
-                  src={"../images/fhir-agent-avatar.svg"}
-                  alt="fhir agent avatar"
-                />
-              </span>
-              <p class="is-size-6 has-text-left has-text-weight-normal pl-5 is-align-self-center fhir_agent_prompt">
-                {displayText}
-              </p>
-            </div>
-          </li>
-        </ul>
-      )}
+      <ul
+        class={`${agentMockResponse.value === "" ? "is-hidden" : "is-visible"}`}
+      >
+        <li class="fhir_agent_container">
+          <div class="is-flex is-align-items-center is-flex-direction-row">
+            <span class="icon is-medium">
+              <img src={"../images/agent-avatar.svg"} alt="user avatar" />
+            </span>
+            <p class="is-size-6 has-text-left has-text-weight-normal pl-5 is-align-self-center fhir_agent_prompt">
+              {displayText}
+            </p>
+          </div>
+        </li>
+      </ul>
 
       <div class="field styled_text_input">
         <div class="control has-icons-right">

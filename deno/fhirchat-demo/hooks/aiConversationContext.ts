@@ -1,7 +1,7 @@
 import { type Signal, signal } from "@preact/signals";
 import { createContext } from "preact";
-
 import { initWebSocket } from "../helpers/websocket.ts";
+import { AGENT_MOCK_RESPONSES } from "../constants/mock_responses.ts";
 
 export type AppendToConversationFunction = (message: string) => void;
 export type SetQuestionFunction = (message: string) => void;
@@ -93,19 +93,11 @@ function createAIConversationContext(): AIConversationContext {
   };
 
   const setAgentMockResponse: SetAgentMockResponseFunction = () => {
-    const strings = [
-      "I need to use the FhirQuestion tool to answer this question.",
-      "I need to find the ENDPOINT that is most relevant to the question.",
-      "I need to compare the FhirAPIExamples tool examples to find the input to the FhirAPIServer tool.",
-      "I need to use the CurrentDateTime tool to find the current date & time if needed.",
-      "I now know the final answer.",
-      "Final Answer: There are 287 female patients born before 1977.",
-    ];
     let currentIndex = 0;
 
     function assignString() {
-      if (currentIndex < strings.length) {
-        agentMockResponse.value = strings[currentIndex];
+      if (currentIndex < AGENT_MOCK_RESPONSES.length) {
+        agentMockResponse.value = AGENT_MOCK_RESPONSES[currentIndex];
         currentIndex++;
       } else {
         clearInterval(interval);

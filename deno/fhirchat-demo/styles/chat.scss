@@ -86,9 +86,10 @@ body {
 }
 
 .fhir_agent_container{
+  display: flex;
   background: $primary-background-color;
   margin-bottom: 24px;
-  width: 100%;
+  height: 60px;
 }
 
 .fhir_agent_prompt{
