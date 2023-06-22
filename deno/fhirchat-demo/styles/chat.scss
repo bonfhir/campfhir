@@ -39,6 +39,11 @@ body {
   justify-content: space-between;
   flex: 1;
   background: $white;
+  place-content: end;
+}
+
+.suggestions_section{
+  margin-bottom: 10rem;;
 }
 
 .footer_container {
