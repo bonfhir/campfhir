@@ -12,11 +12,14 @@ export default function ChatIsland() {
     closeConversation,
   } = useContext(AIConversationState);
 
-  const { displayText, isTyping, resetTextAnimation } =
-    useTextWithTypeAnimation({
-      text: conversation.value[1],
-      enabled: conversation.value[1] !== "",
-    });
+  const userQuestion = conversation.value[0];
+  const agentResponse = conversation.value[1];
+
+  const { displayText, resetTextAnimation } = useTextWithTypeAnimation({
+    text: agentResponse,
+    enabled: agentResponse !== "",
+  });
+
   const handleMessageChange = (event: Event) => {
     event.preventDefault();
     setQuestion((event.target as HTMLInputElement).value);
@@ -34,8 +37,8 @@ export default function ChatIsland() {
 
   const handleUserKeyPress = (event: KeyboardEvent) => {
     const { key } = event;
-    if (key === "Enter" && question.value !== "") handleSubmit(event);
-    else return;
+    const allowSubmission = key === "Enter" && question.value !== "";
+    if (allowSubmission) handleSubmit(event);
   };
 
   useEffect(() => {
@@ -52,12 +55,12 @@ export default function ChatIsland() {
   }, []);
 
   useEffect(() => {
-    if (conversation.value[1]) resetTextAnimation();
+    if (agentResponse) resetTextAnimation();
   }, [conversation.value]);
 
   return (
     <section class="is-flex is-flex-direction-column is-justify-content-center  is-align-self-center">
-      {conversation.value[0] && (
+      {userQuestion && (
         <ul>
           <li>
             <div class="is-flex is-flex-direction-row pb-5">
@@ -65,14 +68,14 @@ export default function ChatIsland() {
                 <img src={"../images/user-avatar.svg"} alt="user avatar" />
               </span>
               <p class="is-size-6 has-text-left has-text-weight-normal pl-5 is-align-self-center user_prompt">
-                {conversation.value[0]}
+                {userQuestion}
               </p>
             </div>
           </li>
         </ul>
       )}
 
-      {conversation.value[1] && (
+      {agentResponse && (
         <ul>
           <li class="fhir_agent_container">
             <div class="is-flex is-align-items-center is-flex-direction-row">

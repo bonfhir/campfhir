@@ -3,8 +3,8 @@ import { type ChainValues } from "https://esm.sh/langchain/schema";
 import process from "process";
 
 import {
-  createAssistantAgent,
   type AssistantAgent,
+  createAssistantAgent,
 } from "/workspace/packages/fhirman/agents/assistant.ts";
 import { SessionLogger } from "/workspace/packages/fhirman/helpers/sessionLogger.ts";
 
@@ -29,9 +29,9 @@ function handler(req: Request): Response {
         MODEL_OUTPUT_EVENT,
         (message, agentName, toolName) => {
           socket.send(
-            JSON.stringify({ log: { message, agentName, toolName } })
+            JSON.stringify({ log: { message, agentName, toolName } }),
           );
-        }
+        },
       );
     }
     if (event.data === "ping") {
@@ -73,7 +73,7 @@ function handler(req: Request): Response {
       socket.send(
         JSON.stringify({
           response: AGENT_MOCK_RESPONSES[AGENT_MOCK_RESPONSES.length],
-        })
+        }),
       );
     }
   }
