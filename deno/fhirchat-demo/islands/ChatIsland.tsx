@@ -6,7 +6,6 @@ export default function ChatIsland() {
   const {
     question,
     conversation,
-    agentMockResponse,
     setQuestion,
     appendToConversation,
     submitQuestion,
@@ -15,10 +14,9 @@ export default function ChatIsland() {
 
   const { displayText, isTyping, resetTextAnimation } =
     useTextWithTypeAnimation({
-      text: agentMockResponse.value,
-      enabled: agentMockResponse.value !== "",
+      text: conversation.value[1],
+      enabled: conversation.value[1] !== "",
     });
-
   const handleMessageChange = (event: Event) => {
     event.preventDefault();
     setQuestion((event.target as HTMLInputElement).value);
@@ -54,40 +52,40 @@ export default function ChatIsland() {
   }, []);
 
   useEffect(() => {
-    if (agentMockResponse.value) resetTextAnimation();
-  }, [agentMockResponse.value]);
+    if (conversation.value[1]) resetTextAnimation();
+  }, [conversation.value]);
 
   return (
     <section class="is-flex is-flex-direction-column is-justify-content-center  is-align-self-center">
-      <ul>
-        {conversation.value.map((message) => (
+      {conversation.value[0] && (
+        <ul>
           <li>
             <div class="is-flex is-flex-direction-row pb-5">
               <span class="icon is-medium">
                 <img src={"../images/user-avatar.svg"} alt="user avatar" />
               </span>
               <p class="is-size-6 has-text-left has-text-weight-normal pl-5 is-align-self-center user_prompt">
-                {message}
+                {conversation.value[0]}
               </p>
             </div>
           </li>
-        ))}
-      </ul>
+        </ul>
+      )}
 
-      <ul
-        class={`${agentMockResponse.value === "" ? "is-hidden" : "is-visible"}`}
-      >
-        <li class="fhir_agent_container">
-          <div class="is-flex is-align-items-center is-flex-direction-row">
-            <span class="icon is-medium">
-              <img src={"../images/agent-avatar.svg"} alt="user avatar" />
-            </span>
-            <p class="is-size-6 has-text-left has-text-weight-normal pl-5 is-align-self-center fhir_agent_prompt">
-              {displayText}
-            </p>
-          </div>
-        </li>
-      </ul>
+      {conversation.value[1] && (
+        <ul>
+          <li class="fhir_agent_container">
+            <div class="is-flex is-align-items-center is-flex-direction-row">
+              <span class="icon is-medium">
+                <img src={"../images/agent-avatar.svg"} alt="user avatar" />
+              </span>
+              <p class="is-size-6 has-text-left has-text-weight-normal pl-5 is-align-self-center fhir_agent_prompt">
+                {displayText}
+              </p>
+            </div>
+          </li>
+        </ul>
+      )}
 
       <div class="field styled_text_input">
         <div class="control has-icons-right">

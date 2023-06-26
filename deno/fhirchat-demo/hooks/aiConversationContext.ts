@@ -1,24 +1,20 @@
 import { type Signal, signal } from "@preact/signals";
 import { createContext } from "preact";
 import { initWebSocket } from "../helpers/websocket.ts";
-import { AGENT_MOCK_RESPONSES } from "../constants/mock_responses.ts";
 
 export type AppendToConversationFunction = (message: string) => void;
 export type SetQuestionFunction = (message: string) => void;
 export type SubmitQuestionFunction = (message: string) => void;
 export type CloseConversationFunction = () => void;
-export type SetAgentMockResponseFunction = () => void;
 
 export type AIConversationContext = {
   question: Signal<string>;
   conversation: Signal<string[]>;
-  agentMockResponse: Signal<string>;
   websocket: WebSocket;
   appendToConversation: AppendToConversationFunction;
   setQuestion: SetQuestionFunction;
   submitQuestion: SubmitQuestionFunction;
   closeConversation: CloseConversationFunction;
-  setAgentMockResponse: SetAgentMockResponseFunction;
 };
 
 export type WSData = {
@@ -56,7 +52,6 @@ function createAIConversationContext(): AIConversationContext {
   });
   const question = signal<string>("");
   const conversation = signal<string[]>([]);
-  const agentMockResponse = signal<string>("");
 
   const smartAppendToConversation = (message: string) => {
     const lastIsLog = conversation.value[conversation.value.length - 1]
@@ -89,22 +84,6 @@ function createAIConversationContext(): AIConversationContext {
     } else {
       console.log("Websocket not connected.");
     }
-    setAgentMockResponse();
-  };
-
-  const setAgentMockResponse: SetAgentMockResponseFunction = () => {
-    let currentIndex = 0;
-
-    function assignString() {
-      if (currentIndex < AGENT_MOCK_RESPONSES.length) {
-        agentMockResponse.value = AGENT_MOCK_RESPONSES[currentIndex];
-        currentIndex++;
-      } else {
-        clearInterval(interval);
-      }
-    }
-
-    const interval = setInterval(assignString, 5000);
   };
 
   const closeConversation: CloseConversationFunction = () => {
@@ -121,8 +100,6 @@ function createAIConversationContext(): AIConversationContext {
     setQuestion,
     submitQuestion,
     closeConversation,
-    agentMockResponse,
-    setAgentMockResponse,
   };
 }
 
