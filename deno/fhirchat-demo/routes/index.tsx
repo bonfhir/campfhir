@@ -2,13 +2,13 @@
 import { Head } from "$fresh/runtime.ts";
 import NavBar from "../components/NavBar.tsx";
 import ChatIsland from "../islands/ChatIsland.tsx";
-import Suggestions from "../components/Suggestions.tsx";
+import SuggestionsIsland from "../islands/SuggestionsIsland.tsx";
 import Footer from "../components/Footer.tsx";
 
 export default function Home() {
   return (
     <>
-      <body class="has-background-white-ter">
+      <body>
         <Head>
           <link rel="stylesheet" href="/styles/layout.css" />
           <link rel="stylesheet" href="/styles/chat.css" />
@@ -29,7 +29,7 @@ export default function Home() {
           <NavBar />
 
           <div class="section_wrapper is-flex  is-flex-direction-column">
-            <Suggestions />
+            <SuggestionsIsland />
             <ChatIsland />
           </div>
 

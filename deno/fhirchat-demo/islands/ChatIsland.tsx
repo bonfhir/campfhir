@@ -1,5 +1,6 @@
 import { useContext, useEffect } from "preact/hooks";
 import { AIConversationState } from "../hooks/aiConversationContext.ts";
+import { useTextWithTypeAnimation } from "../hooks/typingAnimation.ts";
 
 export default function ChatIsland() {
   const {
@@ -11,9 +12,18 @@ export default function ChatIsland() {
     closeConversation,
   } = useContext(AIConversationState);
 
-  function handleMessageChange(event: Event) {
+  const userQuestion = conversation.value[0];
+  const agentResponse = conversation.value[1];
+
+  const { displayText, resetTextAnimation } = useTextWithTypeAnimation({
+    text: agentResponse,
+    enabled: agentResponse !== "",
+  });
+
+  const handleMessageChange = (event: Event) => {
+    event.preventDefault();
     setQuestion((event.target as HTMLInputElement).value);
-  }
+  };
 
   function handleSubmit(event: Event) {
     event.preventDefault();
@@ -25,32 +35,69 @@ export default function ChatIsland() {
     }
   }
 
+  const handleUserKeyPress = (event: KeyboardEvent) => {
+    const { key } = event;
+    const allowSubmission = key === "Enter" && question.value !== "";
+    if (allowSubmission) handleSubmit(event);
+  };
+
   useEffect(() => {
-    console.log("use effect!");
+    globalThis.addEventListener("keydown", handleUserKeyPress);
+    return () => {
+      globalThis.removeEventListener("keydown", handleUserKeyPress);
+    };
+  });
+
+  useEffect(() => {
     return () => {
       closeConversation();
     };
   }, []);
 
+  useEffect(() => {
+    if (agentResponse) resetTextAnimation();
+  }, [conversation.value]);
+
   return (
-    <section class="section 
-      section-padding-large 
-      is-flex 
-      is-flex-direction-column 
-      is-justify-content-center 
-      is-align-self-center">
-      <ul>
-        {conversation.value.map((message) => <li>{message}</li>)}
-      </ul>
+    <section class="is-flex is-flex-direction-column is-justify-content-center  is-align-self-center">
+      {userQuestion && (
+        <ul>
+          <li>
+            <div class="is-flex is-flex-direction-row pb-5">
+              <span class="icon is-medium">
+                <img src={"../images/user-avatar.svg"} alt="user avatar" />
+              </span>
+              <p class="is-size-6 has-text-left has-text-weight-normal pl-5 is-align-self-center user_prompt">
+                {userQuestion}
+              </p>
+            </div>
+          </li>
+        </ul>
+      )}
+
+      {agentResponse && (
+        <ul>
+          <li class="fhir_agent_container">
+            <div class="is-flex is-align-items-center is-flex-direction-row">
+              <span class="icon is-medium">
+                <img src={"../images/agent-avatar.svg"} alt="user avatar" />
+              </span>
+              <p class="is-size-6 has-text-left has-text-weight-normal pl-5 is-align-self-center fhir_agent_prompt">
+                {displayText}
+              </p>
+            </div>
+          </li>
+        </ul>
+      )}
 
       <div class="field styled_text_input">
-        <p class="control has-icons-right">
+        <div class="control has-icons-right">
           <input
             class="input is-italic styled_input"
             type="text"
             placeholder="Enter a message"
+            onInput={handleMessageChange}
             value={question}
-            onChange={handleMessageChange}
           />
 
           <span class="icon is-small is-right">
@@ -60,7 +107,7 @@ export default function ChatIsland() {
               onClick={handleSubmit}
             />
           </span>
-        </p>
+        </div>
       </div>
     </section>
   );
