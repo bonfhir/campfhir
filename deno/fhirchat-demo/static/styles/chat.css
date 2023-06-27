@@ -10296,6 +10296,8 @@ a.has-text-danger-dark:hover, a.has-text-danger-dark:focus {
 :root {
   color: #008B95;
   font: 100% "Raleway";
+  width: 100%;
+  box-sizing: border-box;
 }
 
 body {
@@ -10318,6 +10320,11 @@ body {
   justify-content: space-between;
   flex: 1;
   background: #FFFFFF;
+  place-content: end;
+}
+
+.suggestions_section {
+  margin-bottom: 10rem;
 }
 
 .footer_container {
@@ -10341,8 +10348,7 @@ body {
 }
 
 .styled_text_input {
-  width: 100%;
-  min-width: 560px;
+  width: 800px;
 }
 
 .control .icon {
@@ -10352,4 +10358,23 @@ body {
 
 .styled_input {
   color: #6A6A6A;
+}
+
+.user_prompt {
+  line-height: 19px;
+  letter-spacing: 0.005em;
+  color: #2D2D2D;
+}
+
+.fhir_agent_container {
+  display: flex;
+  background: #F5F5F5;
+  margin-bottom: 24px;
+  height: 60px;
+}
+
+.fhir_agent_prompt {
+  line-height: 19px;
+  letter-spacing: 0.005em;
+  color: #008B95;
 }

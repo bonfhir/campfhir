@@ -1,21 +1,20 @@
 import { signal, type Signal } from "@preact/signals";
 import { createContext } from "preact";
-
 import { initWebSocket } from "../helpers/websocket.ts";
 
 export type AppendToConversationFunction = (message: string) => void;
 export type SetQuestionFunction = (message: string) => void;
 export type SubmitQuestionFunction = (message: string) => void;
-export type closeConversationFunction = () => void;
+export type CloseConversationFunction = () => void;
 
 export type AIConversationContext = {
   question: Signal<string>;
   conversation: Signal<string[]>;
+  websocket: WebSocket;
   appendToConversation: AppendToConversationFunction;
   setQuestion: SetQuestionFunction;
   submitQuestion: SubmitQuestionFunction;
-  websocket: WebSocket;
-  closeConversation: closeConversationFunction;
+  closeConversation: CloseConversationFunction;
 };
 
 export type WSData = {
@@ -87,10 +86,9 @@ function createAIConversationContext(): AIConversationContext {
     }
   };
 
-  const closeConversation: closeConversationFunction = () => {
+  const closeConversation: CloseConversationFunction = () => {
     question.value = "";
     conversation.value = [];
-
     websocket.close();
   };
 
