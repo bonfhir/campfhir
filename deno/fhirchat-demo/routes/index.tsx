@@ -8,7 +8,7 @@ import ThoughtsActionsIsland from "../islands/ThoughtsActionsIsland.tsx";
 
 export default function Home() {
   return (
-    <>
+    <html>
       <body>
         <Head>
           <link rel="stylesheet" href="/styles/layout.css" />
@@ -43,6 +43,6 @@ export default function Home() {
           <Footer />
         </div>
       </body>
-    </>
+    </html>
   );
 }

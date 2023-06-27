@@ -10392,8 +10392,17 @@ body {
   text-align: left;
   padding: 30px;
   font-weight: 500;
+  animation: 1s slide-right;
 }
 
+@keyframes slide-right {
+  from {
+    margin-left: -100%;
+  }
+  to {
+    margin-left: 0%;
+  }
+}
 .close_button {
   font-family: Outfit;
   font-size: 16px;

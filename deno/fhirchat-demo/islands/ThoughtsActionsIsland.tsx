@@ -3,16 +3,21 @@ import { MOCK_THOUGHT_ACTIONS } from "../constants/mock_thought_actions.ts";
 import { AppState } from "../hooks/appContext.ts";
 
 export default function ThoughtsActionsIsland() {
-  const { thoughtActionPanelOpen } = useContext(AppState);
+  const { thoughtActionPanelOpen, setThoughtsActionsPanel } = useContext(
+    AppState,
+  );
 
   return (
     <aside
       class={`menu slide_out_container ${
-        thoughtActionPanelOpen ? "is-hidden" : "is-visible"
+        thoughtActionPanelOpen.value ? "is-visible" : "is-hidden"
       }`}
     >
       <div class="close_button control is-flex is-align-items-center mb-3">
-        <span class="icon is-medium">
+        <span
+          class="icon is-medium"
+          onClick={() => setThoughtsActionsPanel(false)}
+        >
           <img src={"../images/close.svg"} alt="close" />
         </span>
         CLOSE
@@ -28,22 +33,22 @@ export default function ThoughtsActionsIsland() {
       </p>
 
       {MOCK_THOUGHT_ACTIONS.map((item) => (
-        <ul class="mb-2">
-          <li class="slide_out_content_style is-flex is-align-items-center">
+        <div class="mb-2">
+          <div class="slide_out_content_style is-flex is-align-items-center">
             <span class="icon is-medium">
               <img src={"../images/thought.svg"} alt="thought avatar" />
             </span>
             {item.source}
-          </li>
+          </div>
           {item.thoughtsActions.map((tas) => (
-            <li class="slide_out_content_style is-flex is-align-items-center">
+            <div class="slide_out_content_style is-flex is-align-items-center">
               <span class="icon is-medium">
                 <img src={"../images/action.svg"} alt="action avatar" />
               </span>
               {tas}
-            </li>
+            </div>
           ))}
-        </ul>
+        </div>
       ))}
 
       <p class="slide_out_question my-5">
