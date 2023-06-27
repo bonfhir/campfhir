@@ -23,22 +23,40 @@
 ## Usage
 
 ### Start the webserver project:
+
 This will watch the project directory and restart as necessary.
+
 ```
 yarn chat
 ```
 
 ### Start the UI component:
+
 ```
 yarn chat-styles
 ```
 
 ### Format the deno TS sourcecode:
+
 ```
 yarn lint
 ```
 
 ### Clear the deno package cache:
+
 ```
 yarn clear-cache
 ```
+
+### Devcontainer CLI
+
+Sometimes, it's more convenient to run the code directly in the computer's directory instead of within the `devcontainer`.
+This can be achieved by [installing](https://code.visualstudio.com/docs/devcontainers/devcontainer-cli) and running the `devcontainer` CLI.
+
+Here is a sample command that can be used to run the `devcontainer` through the CLI:
+
+```shell
+devcontainer up --id-label name="Campfhir" --workspace-folder .
+```
+
+**Note: Hot refresh will only work if run using the `devcontainer` CLI**
