@@ -1,5 +1,7 @@
 import { useContext, useEffect } from "preact/hooks";
 import { AIConversationState } from "../hooks/aiConversationContext.ts";
+
+import { AppState } from "../hooks/appContext.ts";
 import { useTextWithTypeAnimation } from "../hooks/typingAnimation.ts";
 
 export default function ChatIsland() {
@@ -11,6 +13,8 @@ export default function ChatIsland() {
     submitQuestion,
     closeConversation,
   } = useContext(AIConversationState);
+
+  const { setThoughtsActionsPanel } = useContext(AppState);
 
   const userQuestion = conversation.value[0];
   const agentResponse = conversation.value[1];
@@ -75,20 +79,31 @@ export default function ChatIsland() {
         </ul>
       )}
 
-      {agentResponse && (
-        <ul>
-          <li class="fhir_agent_container">
-            <div class="is-flex is-align-items-center is-flex-direction-row">
-              <span class="icon is-medium">
-                <img src={"../images/agent-avatar.svg"} alt="user avatar" />
-              </span>
-              <p class="is-size-6 has-text-left has-text-weight-normal pl-5 is-align-self-center fhir_agent_prompt">
-                {displayText}
-              </p>
-            </div>
-          </li>
-        </ul>
-      )}
+      {/* {agentResponse && ( */}
+      <ul>
+        <li class="fhir_agent_container">
+          <div class="is-flex is-align-items-center is-flex-direction-row">
+            <span class="icon is-medium">
+              <img src={"../images/agent-avatar.svg"} alt="user avatar" />
+            </span>
+            <p class="is-size-6 has-text-left has-text-weight-normal pl-5 is-align-self-center fhir_agent_prompt">
+              {displayText} hiiiiiii
+            </p>
+          </div>
+          <div class="is-flex is-flex-direction-row is-align-items-center control">
+            {/* <span class="icon is-medium">
+              <img src={"../images/export.svg"} alt="export" />
+            </span> */}
+            <span
+              class="icon is-medium"
+              onClick={() => setThoughtsActionsPanel(true)}
+            >
+              <img src={"../images/settings.svg"} alt="settings" />
+            </span>
+          </div>
+        </li>
+      </ul>
+      {/* )} */}
 
       <div class="field styled_text_input">
         <div class="control has-icons-right">

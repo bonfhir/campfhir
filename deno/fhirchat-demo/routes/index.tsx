@@ -1,9 +1,10 @@
 // deno-lint-ignore-file
 import { Head } from "$fresh/runtime.ts";
+import Footer from "../components/Footer.tsx";
 import NavBar from "../components/NavBar.tsx";
 import ChatIsland from "../islands/ChatIsland.tsx";
 import SuggestionsIsland from "../islands/SuggestionsIsland.tsx";
-import Footer from "../components/Footer.tsx";
+import ThoughtsActionsIsland from "../islands/ThoughtsActionsIsland.tsx";
 
 export default function Home() {
   return (
@@ -17,6 +18,11 @@ export default function Home() {
             rel="stylesheet"
           >
           </link>
+          <link
+            href="https://fonts.googleapis.com/css?family=Outfit"
+            rel="stylesheet"
+          >
+          </link>
           <script
             defer
             src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"
@@ -26,6 +32,7 @@ export default function Home() {
         </Head>
 
         <div class="flex_wrapper is-flex is-flex-direction-column">
+          <ThoughtsActionsIsland />
           <NavBar />
 
           <div class="section_wrapper is-flex  is-flex-direction-column">
@@ -34,23 +41,6 @@ export default function Home() {
           </div>
 
           <Footer />
-        </div>
-
-        <div class="modal">
-          <div class="modal-background"></div>
-          <div class="modal-card">
-            <header class="modal-card-head">
-              <p class="modal-card-title">Modal title</p>
-              <button class="delete" aria-label="close"></button>
-            </header>
-            <section class="modal-card-body">
-              <h1>MODAL</h1>
-            </section>
-            <footer class="modal-card-foot">
-              <button class="button is-success">Save changes</button>
-              <button class="button">Cancel</button>
-            </footer>
-          </div>
         </div>
       </body>
     </>

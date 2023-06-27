@@ -1,5 +1,6 @@
 import { useContext } from "preact/hooks";
 import { AIConversationState } from "../hooks/aiConversationContext.ts";
+
 export default function SuggestionsIsland() {
   const { conversation } = useContext(AIConversationState);
 

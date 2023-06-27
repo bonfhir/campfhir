@@ -10371,10 +10371,71 @@ body {
   background: #F5F5F5;
   margin-bottom: 24px;
   height: 60px;
+  justify-content: space-between;
 }
 
 .fhir_agent_prompt {
   line-height: 19px;
   letter-spacing: 0.005em;
   color: #008B95;
+}
+
+.slide_out_container {
+  position: absolute;
+  overflow: auto;
+  height: 100%;
+  max-width: 75vh;
+  z-index: 99;
+  background: rgba(45, 45, 45, 0.8980392157);
+  color: #FFFFFF;
+  font-family: Raleway;
+  text-align: left;
+  padding: 30px;
+  font-weight: 500;
+}
+
+.close_button {
+  font-family: Outfit;
+  font-size: 16px;
+  line-height: 20px;
+  letter-spacing: 0.001em;
+}
+
+.slide_out_title {
+  font-family: Outfit;
+  font-size: 20px;
+  line-height: 25px;
+  letter-spacing: 0.0015em;
+}
+
+.slide_out_description {
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 19px;
+  letter-spacing: 0.005em;
+}
+
+.slide_out_question {
+  font-family: Outfit;
+  font-size: 16px;
+  line-height: 20px;
+  letter-spacing: 0.001em;
+  color: #E4A124;
+}
+
+.slide_out_feedback {
+  font-family: Outfit;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 20px;
+  letter-spacing: 0.001em;
+  margin-right: 24px;
+}
+
+.slide_out_content_style {
+  font-family: Raleway;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 18px;
+  letter-spacing: 0.005em;
 }
