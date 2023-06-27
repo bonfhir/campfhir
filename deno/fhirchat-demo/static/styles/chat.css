@@ -10392,6 +10392,7 @@ body {
   text-align: left;
   padding: 30px;
   font-weight: 500;
+  font-size: 16px;
   animation: 1s slide-right;
 }
 
@@ -10405,7 +10406,6 @@ body {
 }
 .close_button {
   font-family: Outfit;
-  font-size: 16px;
   line-height: 20px;
   letter-spacing: 0.001em;
 }
@@ -10418,7 +10418,6 @@ body {
 }
 
 .slide_out_description {
-  font-size: 16px;
   font-weight: 400;
   line-height: 19px;
   letter-spacing: 0.005em;
@@ -10426,7 +10425,6 @@ body {
 
 .slide_out_question {
   font-family: Outfit;
-  font-size: 16px;
   line-height: 20px;
   letter-spacing: 0.001em;
   color: #E4A124;
@@ -10434,7 +10432,6 @@ body {
 
 .slide_out_feedback {
   font-family: Outfit;
-  font-size: 16px;
   font-weight: 500;
   line-height: 20px;
   letter-spacing: 0.001em;
