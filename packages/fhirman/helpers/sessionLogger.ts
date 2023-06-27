@@ -3,15 +3,16 @@
 // it is implemented using the singleton pattern
 
 import { createWriteStream, WriteStream } from "fs";
-import { mkdir } from 'node:fs/promises';
+import { mkdir } from "node:fs/promises";
 
-const basePath = "/workspace/sessions/";
+const projectRoot = Deno.env.get("PROJECT_CWD");
+const basePath = `${projectRoot}/sessions/`;
 
 export class SessionLogger {
   private static instance: SessionLogger;
   private stream: WriteStream;
 
-  private constructor(sessionParams: object) {
+  private constructor(sessionParams: Record<string, unknown>) {
     this.ensureSessionDirectory();
 
     const fileName = `${basePath}FhirAssistant_${new Date().getTime()}.log`;
@@ -28,7 +29,7 @@ export class SessionLogger {
       return await mkdir(basePath);
     } catch (error) {
       if (error.code == "EEXIST") return true;
-      else throw(error);
+      else throw error;
     }
   }
 

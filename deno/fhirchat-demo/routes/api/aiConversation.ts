@@ -2,12 +2,12 @@ import { serve } from "https://deno.land/std@0.184.0/http/server.ts";
 import { type ChainValues } from "https://esm.sh/langchain/schema";
 
 import {
-  type AssistantAgent,
   createAssistantAgent,
-} from "/workspace/packages/fhirman/agents/assistant.ts";
-import { SessionLogger } from "/workspace/packages/fhirman/helpers/sessionLogger.ts";
+  type AssistantAgent,
+} from "$projectRoot/packages/fhirman/agents/assistant.ts";
+import { SessionLogger } from "$projectRoot/packages/fhirman/helpers/sessionLogger.ts";
 
-import { MODEL_OUTPUT_EVENT } from "/workspace/packages/fhirman/events/ModelOutputEmitter.ts";
+import { MODEL_OUTPUT_EVENT } from "$projectRoot/packages/fhirman/events/ModelOutputEmitter.ts";
 
 function handler(req: Request): Response {
   if (req.headers.get("upgrade") != "websocket") {
@@ -27,9 +27,9 @@ function handler(req: Request): Response {
         MODEL_OUTPUT_EVENT,
         (message, agentName, toolName) => {
           socket.send(
-            JSON.stringify({ log: { message, agentName, toolName } }),
+            JSON.stringify({ log: { message, agentName, toolName } })
           );
-        },
+        }
       );
     }
     if (event.data === "ping") {
