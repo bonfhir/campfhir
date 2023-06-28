@@ -3,13 +3,12 @@ import { type ChainValues } from "https://esm.sh/langchain/schema";
 import process from "process";
 
 import {
-  type AssistantAgent,
   createAssistantAgent,
-} from "/workspace/packages/fhirman/agents/assistant.ts";
-import { SessionLogger } from "/workspace/packages/fhirman/helpers/sessionLogger.ts";
-
+  type AssistantAgent,
+} from "$projectRoot/packages/fhirman/agents/assistant.ts";
+import { MODEL_OUTPUT_EVENT } from "$projectRoot/packages/fhirman/events/ModelOutputEmitter.ts";
+import { SessionLogger } from "$projectRoot/packages/fhirman/helpers/sessionLogger.ts";
 import { AGENT_MOCK_RESPONSES } from "../../constants/mock_responses.ts";
-import { MODEL_OUTPUT_EVENT } from "/workspace/packages/fhirman/events/ModelOutputEmitter.ts";
 
 function handler(req: Request): Response {
   if (req.headers.get("upgrade") != "websocket") {
@@ -29,9 +28,9 @@ function handler(req: Request): Response {
         MODEL_OUTPUT_EVENT,
         (message, agentName, toolName) => {
           socket.send(
-            JSON.stringify({ log: { message, agentName, toolName } }),
+            JSON.stringify({ log: { message, agentName, toolName } })
           );
-        },
+        }
       );
     }
     if (event.data === "ping") {
@@ -73,7 +72,7 @@ function handler(req: Request): Response {
       socket.send(
         JSON.stringify({
           response: AGENT_MOCK_RESPONSES[AGENT_MOCK_RESPONSES.length],
-        }),
+        })
       );
     }
   }

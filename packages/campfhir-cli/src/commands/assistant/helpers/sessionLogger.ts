@@ -4,13 +4,14 @@
 
 import { createWriteStream, WriteStream } from "fs";
 
-const basePath = "/workspace/sessions/";
+const projectRoot = Deno.env.get("PROJECT_CWD");
+const basePath = `${projectRoot}/sessions/`;
 
 export class SessionLogger {
   private static instance: SessionLogger;
   private stream: WriteStream;
 
-  private constructor(sessionParams: object) {
+  private constructor(sessionParams: Record<string, unknown>) {
     const fileName = `${basePath}FhirAssistant_${new Date().getTime()}.log`;
     this.stream = createWriteStream(fileName);
 
