@@ -1,11 +1,13 @@
 import { useContext } from "preact/hooks";
 import { MOCK_THOUGHT_ACTIONS } from "../constants/mock_thought_actions.ts";
+import { AIConversationState } from "../hooks/aiConversationContext.ts";
 import { AppState } from "../hooks/appContext.ts";
 
 export default function ThoughtsActionsIsland() {
   const { thoughtActionPanelOpen, setThoughtsActionsPanel } = useContext(
     AppState,
   );
+  const { lastQuestionAsked } = useContext(AIConversationState);
 
   return (
     <aside
@@ -28,9 +30,7 @@ export default function ThoughtsActionsIsland() {
         answer.
       </p>
 
-      <p class="slide_out_question mb-2">
-        You wrote: How many female patients were born before 1977?
-      </p>
+      <p class="slide_out_question mb-2">{lastQuestionAsked.value}</p>
 
       {MOCK_THOUGHT_ACTIONS.map((item) => (
         <div class="mb-2">

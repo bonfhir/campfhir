@@ -9,6 +9,7 @@ export type CloseConversationFunction = () => void;
 
 export type AIConversationContext = {
   question: Signal<string>;
+  lastQuestionAsked: Signal<string>;
   conversation: Signal<string[]>;
   websocket: WebSocket;
   appendToConversation: AppendToConversationFunction;
@@ -52,6 +53,7 @@ function createAIConversationContext(): AIConversationContext {
   });
   const question = signal<string>("");
   const conversation = signal<string[]>([]);
+  const lastQuestionAsked = signal<string>("");
 
   const smartAppendToConversation = (message: string) => {
     const lastIsLog = conversation.value[conversation.value.length - 1]
@@ -79,6 +81,7 @@ function createAIConversationContext(): AIConversationContext {
 
   const submitQuestion: SubmitQuestionFunction = (message: string) => {
     console.log("submitQuestion ws: ", websocket);
+    lastQuestionAsked.value = message;
     if (websocket.readyState === WebSocket.OPEN) {
       websocket.send(message);
     } else {
@@ -96,6 +99,7 @@ function createAIConversationContext(): AIConversationContext {
     websocket,
     question,
     conversation,
+    lastQuestionAsked,
     appendToConversation,
     setQuestion,
     submitQuestion,
