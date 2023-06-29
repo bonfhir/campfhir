@@ -28,9 +28,11 @@ export default function ChatIsland() {
   });
 
   const determineAgentDisplayText = (agentMessage?: Message) => {
+    const nullSafeAgentMessage = agentMessage?.message ?? "";
+
     return agentMessage?.id === mostRecentAgentResponse?.id
       ? displayText
-      : agentMessage?.message ?? "";
+      : nullSafeAgentMessage;
   };
 
   const handleMessageChange = (event: Event) => {

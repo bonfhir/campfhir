@@ -30,7 +30,7 @@ export function extractInteractions(
         agentMessage: currentAgentMessage,
       });
       currentAgentMessage = undefined;
-      currentAgentMessage = undefined;
+      currentUserMessage = undefined;
     }
 
     currentUserMessage = message;
