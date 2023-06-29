@@ -1,20 +1,20 @@
-import { signal, type Signal } from "@preact/signals";
+import { type Signal, signal } from "@preact/signals";
+import { Message, Sender } from "../types/conversation.ts";
 import { createContext } from "preact";
 import { initWebSocket } from "../helpers/websocket.ts";
+import * as uuid from "https://deno.land/std@0.192.0/uuid/mod.ts";
 
-export type AppendToConversationFunction = (message: string) => void;
+export type AppendToConversationFunction = (message: Message) => void;
 export type SetQuestionFunction = (message: string) => void;
 export type SubmitQuestionFunction = (message: string) => void;
 export type CloseConversationFunction = () => void;
 
 export type AIConversationContext = {
-  question: Signal<string>;
-  conversation: Signal<string[]>;
+  conversation: Signal<Array<Message>>;
   websocket: WebSocket;
   appendToConversation: AppendToConversationFunction;
-  setQuestion: SetQuestionFunction;
-  submitQuestion: SubmitQuestionFunction;
   closeConversation: CloseConversationFunction;
+  submitQuestion: SubmitQuestionFunction;
 };
 
 export type WSData = {
@@ -26,7 +26,7 @@ export type WSData = {
   };
 };
 
-function createAIConversationContext(): AIConversationContext {
+function createAIConversationState(): AIConversationContext {
   const websocket = initWebSocket("ws://localhost:8889/api/aiConversation", {
     open: () => console.log("WS OPENED"),
     close: () => console.log("WS CLOSE"),
@@ -37,11 +37,17 @@ function createAIConversationContext(): AIConversationContext {
       const data = JSON.parse(messageEvent.data) as WSData; // TODO unsafe
 
       if (data.response) {
-        smartAppendToConversation(`💡 ${data.response}`);
+        smartAppendToConversation(
+          `💡 ${data.response}`,
+          Sender.Assistant,
+        );
       } else if (data.log) {
         const { message, agentName, toolName } = data.log;
         if (!message.includes("Input") && !message.includes("Action")) {
-          smartAppendToConversation(`🧠 ${data.log.message}`);
+          smartAppendToConversation(
+            `🧠 ${data.log.message}`,
+            Sender.Assistant,
+          );
         } else {
           console.debug("Model silent log: ", message, agentName, toolName);
         }
@@ -50,35 +56,41 @@ function createAIConversationContext(): AIConversationContext {
       }
     },
   });
-  const question = signal<string>("");
-  const conversation = signal<string[]>([]);
+  const conversation = signal<Array<Message>>([]);
 
-  const smartAppendToConversation = (message: string) => {
-    const lastIsLog =
-      conversation.value[conversation.value.length - 1]?.startsWith("🧠");
+  const smartAppendToConversation = (message: string, sender: Sender) => {
+    const lastIsLog = conversation.value?.at(-1)?.message?.at(-1)?.startsWith(
+      "🧠",
+    );
+    const formattedMessage = {
+      id: uuid.v1.generate() as string,
+      message,
+      sender,
+    };
     if (lastIsLog) {
-      swapLastConversationLog(message);
+      swapLastConversationLog(formattedMessage);
     } else {
-      appendToConversation(message);
+      appendToConversation(formattedMessage);
     }
   };
 
   const appendToConversation: AppendToConversationFunction = (
-    message: string
+    message: Message,
   ) => {
     conversation.value = [...conversation.value, message];
   };
 
-  const swapLastConversationLog = (message: string) => {
+  const swapLastConversationLog = (message: Message) => {
     conversation.value = [...conversation.value.slice(0, -1), message];
-  };
-
-  const setQuestion: SetQuestionFunction = (message: string) => {
-    question.value = message;
   };
 
   const submitQuestion: SubmitQuestionFunction = (message: string) => {
     console.log("submitQuestion ws: ", websocket);
+    appendToConversation({
+      id: uuid.v1.generate() as string,
+      message,
+      sender: Sender.User,
+    });
     if (websocket.readyState === WebSocket.OPEN) {
       websocket.send(message);
     } else {
@@ -87,24 +99,21 @@ function createAIConversationContext(): AIConversationContext {
   };
 
   const closeConversation: CloseConversationFunction = () => {
-    question.value = "";
     conversation.value = [];
     websocket.close();
   };
 
   return {
     websocket,
-    question,
     conversation,
     appendToConversation,
-    setQuestion,
-    submitQuestion,
     closeConversation,
+    submitQuestion,
   };
 }
 
-const currentAiConversationState = createAIConversationContext();
+const currentAiConversationState = createAIConversationState();
 
-export const AIConversationState = createContext<AIConversationContext>(
-  currentAiConversationState
+export const AIConversationContext = createContext<AIConversationContext>(
+  currentAiConversationState,
 );
