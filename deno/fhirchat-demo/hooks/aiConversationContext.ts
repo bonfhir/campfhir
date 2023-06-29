@@ -1,4 +1,4 @@
-import { type Signal, signal } from "@preact/signals";
+import { signal, type Signal } from "@preact/signals";
 import { createContext } from "preact";
 import { initWebSocket } from "../helpers/websocket.ts";
 
@@ -56,8 +56,8 @@ function createAIConversationContext(): AIConversationContext {
   const lastQuestionAsked = signal<string>("");
 
   const smartAppendToConversation = (message: string) => {
-    const lastIsLog = conversation.value[conversation.value.length - 1]
-      ?.startsWith("🧠");
+    const lastIsLog =
+      conversation.value[conversation.value.length - 1]?.startsWith("🧠");
     if (lastIsLog) {
       swapLastConversationLog(message);
     } else {
@@ -66,7 +66,7 @@ function createAIConversationContext(): AIConversationContext {
   };
 
   const appendToConversation: AppendToConversationFunction = (
-    message: string,
+    message: string
   ) => {
     conversation.value = [...conversation.value, message];
   };
@@ -110,5 +110,5 @@ function createAIConversationContext(): AIConversationContext {
 const currentAiConversationState = createAIConversationContext();
 
 export const AIConversationState = createContext<AIConversationContext>(
-  currentAiConversationState,
+  currentAiConversationState
 );

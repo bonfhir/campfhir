@@ -4,7 +4,7 @@ import { writeAll } from "https://deno.land/std@0.188.0/streams/write_all.ts";
 import { decompress } from "https://deno.land/x/zip@v1.2.5/mod.ts";
 import postcssScss from "npm:postcss-scss";
 import postcss from "postcss/mod.js";
-import { config } from "/workspace/deno/fhirchat-demo/postcss.config.ts";
+import { config } from "$denoRoot/fhirchat-demo/postcss.config.ts";
 
 const STYLES_INPUT_DIRECTORY = "styles";
 const STYLES_DEPENDENCIES = [
