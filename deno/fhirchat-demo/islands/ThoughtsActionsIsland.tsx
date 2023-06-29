@@ -6,7 +6,7 @@ export default function ThoughtsActionsIsland() {
   const { thoughtActionPanelOpen, setThoughtsActionsPanel } = useContext(
     AppContext,
   );
-  const { lastQuestionAsked, storedThoughts } = useContext(
+  const { lastQuestionAsked, storedThoughts, finalAnswer } = useContext(
     AIConversationContext,
   );
 
@@ -52,9 +52,7 @@ export default function ThoughtsActionsIsland() {
         </div>
       ))}
 
-      <p class="slide_out_question my-5">
-        Answer: There are 287 female patients born before 1977.
-      </p>
+      <p class="slide_out_question my-5">{finalAnswer}</p>
 
       <p class="slide_out_title">Provide Feedback</p>
       <div class="is-flex is-flex-direction-row is-align-items-center">

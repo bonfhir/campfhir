@@ -16,6 +16,7 @@ export type AIConversationContext = {
   conversation: Signal<Array<Message>>;
   lastQuestionAsked: Signal<string>;
   storedThoughts: Signal<Array<Thought>>;
+  finalAnswer: Signal<string>;
   websocket: WebSocket;
   appendToConversation: AppendToConversationFunction;
   closeConversation: CloseConversationFunction;
@@ -63,6 +64,7 @@ function createAIConversationState(): AIConversationContext {
   const conversation = signal<Array<Message>>([]);
   const lastQuestionAsked = signal<string>("");
   const storedThoughts = signal<Thought[]>([]);
+  const finalAnswer = signal<string>("");
 
   const smartAppendToConversation = (
     message: string,
@@ -84,6 +86,7 @@ function createAIConversationState(): AIConversationContext {
       appendToConversation(formattedMessage);
     }
     if (thought) storedThoughts.value = [...storedThoughts.value, thought];
+    if (!thought) finalAnswer.value = message;
   };
 
   const appendToConversation: AppendToConversationFunction = (
@@ -121,6 +124,7 @@ function createAIConversationState(): AIConversationContext {
     conversation,
     lastQuestionAsked,
     storedThoughts,
+    finalAnswer,
     appendToConversation,
     closeConversation,
     submitQuestion,
