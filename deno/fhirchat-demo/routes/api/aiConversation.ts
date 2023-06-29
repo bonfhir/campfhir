@@ -60,12 +60,12 @@ function handler(req: Request): Response {
       }
 
       const message = AGENT_MOCK_RESPONSES[index];
-      const thoughts = MOCK_THOUGHT_ACTIONS[index];
+      const thought = MOCK_THOUGHT_ACTIONS[index];
 
       const data = JSON.stringify({
         log: {
           message,
-          thoughts,
+          thought,
           agentName: "mock agent",
         },
       });

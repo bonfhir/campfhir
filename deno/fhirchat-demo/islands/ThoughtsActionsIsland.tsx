@@ -1,14 +1,17 @@
 import { useContext } from "preact/hooks";
 import { AIConversationContext } from "../hooks/aiConversationContext.ts";
 import { AppContext } from "../hooks/appContext.ts";
+import { Sender } from "../types/conversation.ts";
 
 export default function ThoughtsActionsIsland() {
   const { thoughtActionPanelOpen, setThoughtsActionsPanel } = useContext(
     AppContext,
   );
-  const { lastQuestionAsked, storedThoughts, finalAnswer } = useContext(
+  const { lastQuestionAsked, storedThoughts, conversation } = useContext(
     AIConversationContext,
   );
+
+  const lastInteraction = conversation.value.at(-1);
 
   return (
     <aside
@@ -41,7 +44,7 @@ export default function ThoughtsActionsIsland() {
             </span>
             {item.source}
           </div>
-          {item.thoughtsActions?.map((thoughts_actions: string) => (
+          {item?.thoughtsActions?.map((thoughts_actions: string) => (
             <div class="slide_out_content_style is-flex is-align-items-center">
               <span class="icon is-medium">
                 <img src={"../images/action.svg"} alt="action avatar" />
@@ -52,7 +55,11 @@ export default function ThoughtsActionsIsland() {
         </div>
       ))}
 
-      <p class="slide_out_question my-5">{finalAnswer}</p>
+      {lastInteraction?.sender === Sender.Assistant && (
+        <p class="slide_out_question my-5">
+          {conversation.value.at(-1)?.message}
+        </p>
+      )}
 
       <p class="slide_out_title">Provide Feedback</p>
       <div class="is-flex is-flex-direction-row is-align-items-center">
