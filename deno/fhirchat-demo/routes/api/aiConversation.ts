@@ -3,8 +3,8 @@ import { type ChainValues } from "https://esm.sh/langchain/schema";
 import process from "process";
 
 import {
-  createAssistantAgent,
   type AssistantAgent,
+  createAssistantAgent,
 } from "$projectRoot/packages/fhirman/agents/assistant.ts";
 import { MODEL_OUTPUT_EVENT } from "$projectRoot/packages/fhirman/events/ModelOutputEmitter.ts";
 import { SessionLogger } from "$projectRoot/packages/fhirman/helpers/sessionLogger.ts";
@@ -26,11 +26,11 @@ function handler(req: Request): Response {
       assistant = await createAssistantAgent();
       assistant.events.on(
         MODEL_OUTPUT_EVENT,
-        (message, agentName, toolName) => {
+        (message: string, agentName: string, toolName: string) => {
           socket.send(
-            JSON.stringify({ log: { message, agentName, toolName } })
+            JSON.stringify({ log: { message, agentName, toolName } }),
           );
-        }
+        },
       );
     }
     if (event.data === "ping") {
@@ -49,7 +49,6 @@ function handler(req: Request): Response {
     const interval = setInterval(() => {
       if (index >= AGENT_MOCK_RESPONSES.length) {
         clearInterval(interval);
-        socket.close();
         return;
       }
 
@@ -72,13 +71,12 @@ function handler(req: Request): Response {
       socket.send(
         JSON.stringify({
           response: AGENT_MOCK_RESPONSES[AGENT_MOCK_RESPONSES.length],
-        })
+        }),
       );
     }
   }
 
   if (!process.env.OPENAI_API_KEY) {
-    // assign the mock to the handler
     socket.addEventListener("message", mockHandler);
   } else {
     socket.addEventListener("message", questionHandler);

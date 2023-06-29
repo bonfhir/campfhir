@@ -1,43 +1,56 @@
-import { useContext, useEffect } from "preact/hooks";
-import { AIConversationState } from "../hooks/aiConversationContext.ts";
+import { useContext, useEffect, useMemo } from "preact/hooks";
+import { signal } from "@preact/signals";
+import { AIConversationContext } from "../hooks/aiConversationContext.ts";
+import { Interaction, Message } from "../types/conversation.ts";
+import { extractInteractions } from "../helpers/extractConversationInteractions.ts";
+import UserMessage from "../components/UserMessage.tsx";
+import AgentMessage from "../components/AgentMessage.tsx";
 import { useTextWithTypeAnimation } from "../hooks/typingAnimation.ts";
 
 export default function ChatIsland() {
   const {
-    question,
     conversation,
-    setQuestion,
-    appendToConversation,
-    submitQuestion,
     closeConversation,
-  } = useContext(AIConversationState);
+    submitQuestion,
+  } = useContext(AIConversationContext);
 
-  const userQuestion = conversation.value[0];
-  const agentResponse = conversation.value[1];
+  const interactions: Array<Interaction> = useMemo(() =>
+    extractInteractions(
+      conversation.value,
+    ), [conversation.value]);
+
+  const userInput = signal<string>("");
+  const mostRecentAgentResponse = interactions.at(-1)?.agentMessage;
 
   const { displayText, resetTextAnimation } = useTextWithTypeAnimation({
-    text: agentResponse,
-    enabled: agentResponse !== "",
+    text: mostRecentAgentResponse?.message,
+    enabled: !!mostRecentAgentResponse?.message,
   });
+
+  const determineAgentDisplayText = (agentMessage?: Message) => {
+    const nullSafeAgentMessage = agentMessage?.message ?? "";
+
+    return agentMessage?.id === mostRecentAgentResponse?.id
+      ? displayText
+      : nullSafeAgentMessage;
+  };
 
   const handleMessageChange = (event: Event) => {
     event.preventDefault();
-    setQuestion((event.target as HTMLInputElement).value);
+    userInput.value = (event.target as HTMLInputElement).value;
   };
 
   function handleSubmit(event: Event) {
     event.preventDefault();
-    if (question.value === "") return;
-    else {
-      appendToConversation(question.value);
-      submitQuestion(question.value);
-      setQuestion("");
+    if (userInput.value) {
+      submitQuestion(userInput.value);
+      userInput.value = "";
     }
   }
 
   const handleUserKeyPress = (event: KeyboardEvent) => {
     const { key } = event;
-    const allowSubmission = key === "Enter" && question.value !== "";
+    const allowSubmission = key === "Enter" && userInput.value !== "";
     if (allowSubmission) handleSubmit(event);
   };
 
@@ -49,46 +62,25 @@ export default function ChatIsland() {
   });
 
   useEffect(() => {
-    return () => {
-      closeConversation();
-    };
+    return closeConversation;
   }, []);
 
   useEffect(() => {
-    if (agentResponse) resetTextAnimation();
+    if (mostRecentAgentResponse) resetTextAnimation();
   }, [conversation.value]);
 
   return (
     <section class="is-flex is-flex-direction-column is-justify-content-center  is-align-self-center">
-      {userQuestion && (
-        <ul>
-          <li>
-            <div class="is-flex is-flex-direction-row pb-5">
-              <span class="icon is-medium">
-                <img src={"../images/user-avatar.svg"} alt="user avatar" />
-              </span>
-              <p class="is-size-6 has-text-left has-text-weight-normal pl-5 is-align-self-center user_prompt">
-                {userQuestion}
-              </p>
-            </div>
-          </li>
-        </ul>
-      )}
+      {interactions.map(({ userMessage, agentMessage }: Interaction) => {
+        const agentDisplayText = determineAgentDisplayText(agentMessage);
 
-      {agentResponse && (
-        <ul>
-          <li class="fhir_agent_container">
-            <div class="is-flex is-align-items-center is-flex-direction-row">
-              <span class="icon is-medium">
-                <img src={"../images/agent-avatar.svg"} alt="user avatar" />
-              </span>
-              <p class="is-size-6 has-text-left has-text-weight-normal pl-5 is-align-self-center fhir_agent_prompt">
-                {displayText}
-              </p>
-            </div>
-          </li>
-        </ul>
-      )}
+        return (
+          <>
+            <UserMessage message={userMessage.message} />
+            <AgentMessage message={agentDisplayText} />
+          </>
+        );
+      })}
 
       <div class="field styled_text_input">
         <div class="control has-icons-right">
@@ -97,7 +89,7 @@ export default function ChatIsland() {
             type="text"
             placeholder="Enter a message"
             onInput={handleMessageChange}
-            value={question}
+            value={userInput}
           />
 
           <span class="icon is-small is-right">
