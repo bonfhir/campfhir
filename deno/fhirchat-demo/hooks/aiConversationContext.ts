@@ -69,8 +69,6 @@ function createAIConversationState(): AIConversationContext {
     sender: Sender,
     thought?: Thought,
   ) => {
-    console.log("thought is", thought);
-
     const lastIsLog = conversation.value
       ?.at(-1)
       ?.message?.at(-1)
@@ -86,8 +84,6 @@ function createAIConversationState(): AIConversationContext {
       appendToConversation(formattedMessage);
     }
     if (thought) storedThoughts.value = [...storedThoughts.value, thought];
-
-    console.log("storedThoughts are", storedThoughts.value);
   };
 
   const appendToConversation: AppendToConversationFunction = (
