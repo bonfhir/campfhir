@@ -1,8 +1,11 @@
-import { signal, type Signal } from "@preact/signals";
+import { type Signal, signal } from "@preact/signals";
 import { createContext } from "preact";
 import { initWebSocket } from "../helpers/websocket.ts";
 
-export type AppendToConversationFunction = (message: string) => void;
+export type AppendToConversationFunction = (
+  message: string,
+  thoughts?: string,
+) => void;
 export type SetQuestionFunction = (message: string) => void;
 export type SubmitQuestionFunction = (message: string) => void;
 export type CloseConversationFunction = () => void;
@@ -11,6 +14,7 @@ export type AIConversationContext = {
   question: Signal<string>;
   lastQuestionAsked: Signal<string>;
   conversation: Signal<string[]>;
+  storedThoughts: Signal<string[]>;
   websocket: WebSocket;
   appendToConversation: AppendToConversationFunction;
   setQuestion: SetQuestionFunction;
@@ -22,6 +26,7 @@ export type WSData = {
   response?: string;
   log?: {
     message: string;
+    thoughts: string;
     agentName: string;
     toolName?: string;
   };
@@ -42,7 +47,10 @@ function createAIConversationContext(): AIConversationContext {
       } else if (data.log) {
         const { message, agentName, toolName } = data.log;
         if (!message.includes("Input") && !message.includes("Action")) {
-          smartAppendToConversation(`🧠 ${data.log.message}`);
+          smartAppendToConversation(
+            `🧠 ${data.log.message}`,
+            `🧠 ${data.log.thoughts}`,
+          );
         } else {
           console.debug("Model silent log: ", message, agentName, toolName);
         }
@@ -54,21 +62,24 @@ function createAIConversationContext(): AIConversationContext {
   const question = signal<string>("");
   const conversation = signal<string[]>([]);
   const lastQuestionAsked = signal<string>("");
+  const storedThoughts = signal<string[]>([]);
 
-  const smartAppendToConversation = (message: string) => {
-    const lastIsLog =
-      conversation.value[conversation.value.length - 1]?.startsWith("🧠");
+  const smartAppendToConversation = (message: string, thoughts?: string) => {
+    const lastIsLog = conversation.value[conversation.value.length - 1]
+      ?.startsWith("🧠");
     if (lastIsLog) {
       swapLastConversationLog(message);
     } else {
-      appendToConversation(message);
+      appendToConversation(message, thoughts);
     }
   };
 
   const appendToConversation: AppendToConversationFunction = (
-    message: string
+    message: string,
+    thoughts?: string,
   ) => {
     conversation.value = [...conversation.value, message];
+    if (thoughts) storedThoughts.value = [...storedThoughts.value, thoughts];
   };
 
   const swapLastConversationLog = (message: string) => {
@@ -100,6 +111,7 @@ function createAIConversationContext(): AIConversationContext {
     question,
     conversation,
     lastQuestionAsked,
+    storedThoughts,
     appendToConversation,
     setQuestion,
     submitQuestion,
@@ -110,5 +122,5 @@ function createAIConversationContext(): AIConversationContext {
 const currentAiConversationState = createAIConversationContext();
 
 export const AIConversationState = createContext<AIConversationContext>(
-  currentAiConversationState
+  currentAiConversationState,
 );

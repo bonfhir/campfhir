@@ -3,12 +3,13 @@ import { type ChainValues } from "https://esm.sh/langchain/schema";
 import process from "process";
 
 import {
-  createAssistantAgent,
   type AssistantAgent,
+  createAssistantAgent,
 } from "$projectRoot/packages/fhirman/agents/assistant.ts";
 import { MODEL_OUTPUT_EVENT } from "$projectRoot/packages/fhirman/events/ModelOutputEmitter.ts";
 import { SessionLogger } from "$projectRoot/packages/fhirman/helpers/sessionLogger.ts";
 import { AGENT_MOCK_RESPONSES } from "../../constants/mock_responses.ts";
+import { MOCK_THOUGHT_ACTIONS } from "../../constants/mock_thought_actions.ts";
 
 function handler(req: Request): Response {
   if (req.headers.get("upgrade") != "websocket") {
@@ -26,11 +27,11 @@ function handler(req: Request): Response {
       assistant = await createAssistantAgent();
       assistant.events.on(
         MODEL_OUTPUT_EVENT,
-        (message, agentName, toolName) => {
+        (message, thoughts, agentName, toolName) => {
           socket.send(
-            JSON.stringify({ log: { message, agentName, toolName } })
+            JSON.stringify({ log: { message, thoughts, agentName, toolName } }),
           );
-        }
+        },
       );
     }
     if (event.data === "ping") {
@@ -54,9 +55,11 @@ function handler(req: Request): Response {
       }
 
       const message = AGENT_MOCK_RESPONSES[index];
+      const thoughts = MOCK_THOUGHT_ACTIONS[index];
       const data = JSON.stringify({
         log: {
           message,
+          thoughts,
           agentName: "mock agent",
         },
       });
@@ -72,7 +75,7 @@ function handler(req: Request): Response {
       socket.send(
         JSON.stringify({
           response: AGENT_MOCK_RESPONSES[AGENT_MOCK_RESPONSES.length],
-        })
+        }),
       );
     }
   }
