@@ -10,6 +10,7 @@ import { MODEL_OUTPUT_EVENT } from "$projectRoot/packages/fhirman/events/ModelOu
 import { SessionLogger } from "$projectRoot/packages/fhirman/helpers/sessionLogger.ts";
 import { AGENT_MOCK_RESPONSES } from "../../constants/mock_responses.ts";
 import { MOCK_THOUGHT_ACTIONS } from "../../constants/mock_thought_actions.ts";
+import { Thought } from "../../types/conversation.ts";
 
 function handler(req: Request): Response {
   if (req.headers.get("upgrade") != "websocket") {
@@ -27,9 +28,14 @@ function handler(req: Request): Response {
       assistant = await createAssistantAgent();
       assistant.events.on(
         MODEL_OUTPUT_EVENT,
-        (message, thoughts, agentName, toolName) => {
+        (
+          message: string,
+          thought: Thought,
+          agentName: string,
+          toolName: string,
+        ) => {
           socket.send(
-            JSON.stringify({ log: { message, thoughts, agentName, toolName } }),
+            JSON.stringify({ log: { message, thought, agentName, toolName } }),
           );
         },
       );
@@ -50,7 +56,6 @@ function handler(req: Request): Response {
     const interval = setInterval(() => {
       if (index >= AGENT_MOCK_RESPONSES.length) {
         clearInterval(interval);
-        socket.close();
         return;
       }
 
@@ -81,7 +86,6 @@ function handler(req: Request): Response {
   }
 
   if (!process.env.OPENAI_API_KEY) {
-    // assign the mock to the handler
     socket.addEventListener("message", mockHandler);
   } else {
     socket.addEventListener("message", questionHandler);

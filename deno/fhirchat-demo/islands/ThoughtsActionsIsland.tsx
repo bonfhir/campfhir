@@ -1,12 +1,14 @@
 import { useContext } from "preact/hooks";
-import { AIConversationState } from "../hooks/aiConversationContext.ts";
-import { AppState } from "../hooks/appContext.ts";
+import { AIConversationContext } from "../hooks/aiConversationContext.ts";
+import { AppContext } from "../hooks/appContext.ts";
 
 export default function ThoughtsActionsIsland() {
   const { thoughtActionPanelOpen, setThoughtsActionsPanel } = useContext(
-    AppState,
+    AppContext,
   );
-  const { lastQuestionAsked, storedThoughts } = useContext(AIConversationState);
+  const { lastQuestionAsked, storedThoughts } = useContext(
+    AIConversationContext,
+  );
 
   return (
     <aside

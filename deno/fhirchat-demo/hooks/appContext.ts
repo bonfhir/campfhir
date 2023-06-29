@@ -27,4 +27,4 @@ function createAppState(): AppContext {
 
 const currentAppState = createAppState();
 
-export const AppState = createContext<AppContext>(currentAppState);
+export const AppContext = createContext<AppContext>(currentAppState);

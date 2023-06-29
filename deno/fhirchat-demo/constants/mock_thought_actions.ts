@@ -8,14 +8,6 @@ export const MOCK_THOUGHT_ACTIONS = [
     ],
   },
   {
-    source: "FhirQuestion agent x KnownEndpoints tool",
-    thoughtsActions: [
-      "Thought: I need to find the ENDPOINT & PARAMETERs that would be used to query FHIR API Server to answer the question.",
-      "Action: KnownEndpoints",
-      "Action Input: How many female patients were born before 1977",
-    ],
-  },
-  {
     source: "FhirQuestion agent x EndpointParams tool",
     thoughtsActions: [
       "I need to find the ENDPOINT that is most relevant to the question.",
