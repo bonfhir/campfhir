@@ -1,5 +1,4 @@
 import { useContext } from "preact/hooks";
-import { MOCK_THOUGHT_ACTIONS } from "../constants/mock_thought_actions.ts";
 import { AIConversationState } from "../hooks/aiConversationContext.ts";
 import { AppState } from "../hooks/appContext.ts";
 
@@ -7,7 +6,7 @@ export default function ThoughtsActionsIsland() {
   const { thoughtActionPanelOpen, setThoughtsActionsPanel } = useContext(
     AppState,
   );
-  const { lastQuestionAsked } = useContext(AIConversationState);
+  const { lastQuestionAsked, storedThoughts } = useContext(AIConversationState);
 
   return (
     <aside
@@ -32,7 +31,7 @@ export default function ThoughtsActionsIsland() {
 
       <p class="slide_out_question mb-2">{lastQuestionAsked.value}</p>
 
-      {MOCK_THOUGHT_ACTIONS.map((item) => (
+      {storedThoughts.value.map((item) => (
         <div class="mb-2">
           <div class="slide_out_content_style is-flex is-align-items-center">
             <span class="icon is-medium">
@@ -40,12 +39,12 @@ export default function ThoughtsActionsIsland() {
             </span>
             {item.source}
           </div>
-          {item.thoughtsActions.map((tas) => (
+          {item.thoughtsActions?.map((thoughts_actions: string) => (
             <div class="slide_out_content_style is-flex is-align-items-center">
               <span class="icon is-medium">
                 <img src={"../images/action.svg"} alt="action avatar" />
               </span>
-              {tas}
+              {thoughts_actions}
             </div>
           ))}
         </div>

@@ -4,7 +4,7 @@ import { initWebSocket } from "../helpers/websocket.ts";
 
 export type AppendToConversationFunction = (
   message: string,
-  thoughts?: string,
+  thoughts?: any,
 ) => void;
 export type SetQuestionFunction = (message: string) => void;
 export type SubmitQuestionFunction = (message: string) => void;
@@ -14,7 +14,7 @@ export type AIConversationContext = {
   question: Signal<string>;
   lastQuestionAsked: Signal<string>;
   conversation: Signal<string[]>;
-  storedThoughts: Signal<string[]>;
+  storedThoughts: Signal<any[]>;
   websocket: WebSocket;
   appendToConversation: AppendToConversationFunction;
   setQuestion: SetQuestionFunction;
@@ -49,7 +49,7 @@ function createAIConversationContext(): AIConversationContext {
         if (!message.includes("Input") && !message.includes("Action")) {
           smartAppendToConversation(
             `🧠 ${data.log.message}`,
-            `🧠 ${data.log.thoughts}`,
+            data.log.thoughts,
           );
         } else {
           console.debug("Model silent log: ", message, agentName, toolName);
@@ -62,24 +62,23 @@ function createAIConversationContext(): AIConversationContext {
   const question = signal<string>("");
   const conversation = signal<string[]>([]);
   const lastQuestionAsked = signal<string>("");
-  const storedThoughts = signal<string[]>([]);
+  const storedThoughts = signal<any[]>([]);
 
-  const smartAppendToConversation = (message: string, thoughts?: string) => {
+  const smartAppendToConversation = (message: string, thoughts?: any) => {
     const lastIsLog = conversation.value[conversation.value.length - 1]
       ?.startsWith("🧠");
     if (lastIsLog) {
       swapLastConversationLog(message);
     } else {
-      appendToConversation(message, thoughts);
+      appendToConversation(message);
     }
+    if (thoughts) storedThoughts.value = [...storedThoughts.value, thoughts];
   };
 
   const appendToConversation: AppendToConversationFunction = (
     message: string,
-    thoughts?: string,
   ) => {
     conversation.value = [...conversation.value, message];
-    if (thoughts) storedThoughts.value = [...storedThoughts.value, thoughts];
   };
 
   const swapLastConversationLog = (message: string) => {

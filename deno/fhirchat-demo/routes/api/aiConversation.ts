@@ -56,6 +56,7 @@ function handler(req: Request): Response {
 
       const message = AGENT_MOCK_RESPONSES[index];
       const thoughts = MOCK_THOUGHT_ACTIONS[index];
+
       const data = JSON.stringify({
         log: {
           message,
@@ -71,7 +72,6 @@ function handler(req: Request): Response {
     }, 5000);
 
     if (event.data) {
-      console.log("Agent mock response:", response);
       socket.send(
         JSON.stringify({
           response: AGENT_MOCK_RESPONSES[AGENT_MOCK_RESPONSES.length],

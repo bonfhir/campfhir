@@ -92,12 +92,6 @@ export default function ChatIsland() {
               </p>
             </div>
             <div class="is-flex is-flex-direction-row is-align-items-center control">
-              {
-                /* <span class="icon is-medium">
-              <img src={"../images/export.svg"} alt="export" />
-            </span> */
-              }
-
               {!isTyping && (
                 <span
                   class="icon is-medium"

@@ -26,14 +26,6 @@ export const MOCK_THOUGHT_ACTIONS = [
   {
     source: "FhirQuestion agent x EndpointParams tool",
     thoughtsActions: [
-      "I need to find the ENDPOINT that is most relevant to the question.",
-      "Action: EndpointParams",
-      "Action Input: Patient",
-    ],
-  },
-  {
-    source: "FhirQuestion agent x EndpointParams tool",
-    thoughtsActions: [
       "I need to compare the FhirAPIExamples tool examples to find the input to the FhirAPIServer tool.",
       "Action: FhirAPIExamples",
       "Action Input: Patient",
