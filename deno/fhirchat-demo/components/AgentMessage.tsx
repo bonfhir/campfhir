@@ -10,7 +10,7 @@ export default function AgentMessage({ message }: Props) {
 
   return (
     <ul>
-      <li class="fhir_agent_container">
+      <li class="fhir_agent_container px-3">
         <div class="is-flex is-align-items-center is-flex-direction-row">
           <span class="icon is-medium">
             <img src={"../images/agent-avatar.svg"} alt="user avatar" />

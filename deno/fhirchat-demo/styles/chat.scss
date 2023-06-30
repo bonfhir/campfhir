@@ -92,6 +92,7 @@ body {
   background: $primary-background-color;
   margin-bottom: 24px;
   height: 60px;
+  width: 800px;
   justify-content: space-between;
 }
 
@@ -99,6 +100,7 @@ body {
   line-height: 19px;
   letter-spacing: 0.005em;
   color: $primary-color;
+  word-wrap: break-word;
 }
 
 .slide_out_container {
