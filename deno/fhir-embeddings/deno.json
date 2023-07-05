@@ -1,0 +1,7 @@
+{
+  "tasks": {
+    "store-embeddings": "deno run --allow-env=DENO_ENV --allow-run --allow-net --allow-read store.ts"
+  },
+  "importMap": "../import_map.json",
+  "compilerOptions": {}
+}
