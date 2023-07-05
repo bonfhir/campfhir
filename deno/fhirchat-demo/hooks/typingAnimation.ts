@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "preact/hooks";
 const TYPING_DELAY_IN_MS = 30;
 
 // Is added to the text length in calculations to add a pause after typing
-const POST_TEXT_CHARACTER_BUFFER = 50;
+const POST_TEXT_CHARACTER_BUFFER = 80;
 
 interface Props {
   enabled: boolean;

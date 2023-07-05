@@ -1,23 +1,20 @@
-import { useContext, useEffect, useMemo } from "preact/hooks";
 import { signal } from "@preact/signals";
-import { AIConversationContext } from "../hooks/aiConversationContext.ts";
-import { Interaction, Message } from "../types/conversation.ts";
-import { extractInteractions } from "../helpers/extractConversationInteractions.ts";
-import UserMessage from "../components/UserMessage.tsx";
+import { useContext, useEffect, useMemo } from "preact/hooks";
 import AgentMessage from "../components/AgentMessage.tsx";
+import UserMessage from "../components/UserMessage.tsx";
+import { extractInteractions } from "../helpers/extractConversationInteractions.ts";
+import { AIConversationContext } from "../hooks/aiConversationContext.ts";
 import { useTextWithTypeAnimation } from "../hooks/typingAnimation.ts";
+import { Interaction, Message } from "../types/conversation.ts";
 
 export default function ChatIsland() {
-  const {
-    conversation,
-    closeConversation,
-    submitQuestion,
-  } = useContext(AIConversationContext);
-
-  const interactions: Array<Interaction> = useMemo(() =>
-    extractInteractions(
-      conversation.value,
-    ), [conversation.value]);
+  const { conversation, closeConversation, submitQuestion } = useContext(
+    AIConversationContext,
+  );
+  const interactions: Array<Interaction> = useMemo(
+    () => extractInteractions(conversation.value),
+    [conversation.value],
+  );
 
   const userInput = signal<string>("");
   const mostRecentAgentResponse = interactions.at(-1)?.agentMessage;

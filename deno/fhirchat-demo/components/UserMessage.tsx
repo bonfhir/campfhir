@@ -6,7 +6,7 @@ export default function UserMessage({ message }: Props) {
   return (
     <ul>
       <li>
-        <div class="is-flex is-flex-direction-row pb-5">
+        <div class="is-flex is-flex-direction-row pb-5 px-3">
           <span class="icon is-medium">
             <img src={"../images/user-avatar.svg"} alt="user avatar" />
           </span>

@@ -13,3 +13,8 @@ export type Interaction = {
   userMessage: Message;
   agentMessage?: Message;
 };
+
+export type Thought = {
+  source: string;
+  thoughtsActions: Array<string>;
+};
