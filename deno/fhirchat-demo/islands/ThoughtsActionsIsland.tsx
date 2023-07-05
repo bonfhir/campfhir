@@ -61,7 +61,9 @@ export default function ThoughtsActionsIsland() {
         </p>
       )}
 
-      <p class="slide_out_title">Provide Feedback</p>
+      {/* disable in the meantime until this functionality is available */}
+      {
+        /* <p class="slide_out_title">Provide Feedback</p>
       <div class="is-flex is-flex-direction-row is-align-items-center">
         <span class="icon is-medium">
           <img src={"../images/thumb-up.svg"} alt="accurate answer" />
@@ -72,7 +74,8 @@ export default function ThoughtsActionsIsland() {
           <img src={"../images/thumb-down.svg"} alt="not accurate answer" />
         </span>
         <p class="slide_out_feedback">Not accurate</p>
-      </div>
+      </div> */
+      }
     </aside>
   );
 }

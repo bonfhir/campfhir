@@ -8,8 +8,8 @@ import {
 } from "$projectRoot/packages/fhirman/agents/assistant.ts";
 import { MODEL_OUTPUT_EVENT } from "$projectRoot/packages/fhirman/events/ModelOutputEmitter.ts";
 import { SessionLogger } from "$projectRoot/packages/fhirman/helpers/sessionLogger.ts";
-import { AGENT_MOCK_RESPONSES } from "../../constants/mock_responses.ts";
-import { MOCK_THOUGHT_ACTIONS } from "../../constants/mock_thought_actions.ts";
+import { AGENT_MOCK_RESPONSES } from "../../mocks/mock_responses.ts";
+import { MOCK_THOUGHT_ACTIONS } from "../../mocks/mock_thought_actions.ts";
 import { Thought } from "../../types/conversation.ts";
 
 function handler(req: Request): Response {
