@@ -1,7 +1,4 @@
 import { EventEmitter } from "node:events";
 
 export const MODEL_OUTPUT_EVENT = "modelOutput";
-export class ModelOutputEmitter extends EventEmitter {
-  // deno-lint-ignore no-explicit-any
-  on: any;
-}
+export class ModelOutputEmitter extends EventEmitter {}

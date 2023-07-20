@@ -1,13 +1,10 @@
-import { type Signal, signal } from "@preact/signals";
+import { signal, type Signal } from "@preact/signals";
 import * as uuid from "https://deno.land/std@0.192.0/uuid/mod.ts";
 import { createContext } from "preact";
 import { initWebSocket } from "../helpers/websocket.ts";
 import { Message, Sender, Thought } from "../types/conversation.ts";
 
-export type AppendToConversationFunction = (
-  message: Message,
-  thoughts?: Array<Thought>,
-) => void;
+export type AppendToConversationFunction = (message: Message) => void;
 export type SetQuestionFunction = (message: string) => void;
 export type SubmitQuestionFunction = (message: string) => void;
 export type CloseConversationFunction = () => void;
@@ -26,7 +23,6 @@ export type WSData = {
   response?: string;
   log?: {
     message: string;
-    thought: Thought;
     agentName: string;
     toolName?: string;
   };
@@ -47,14 +43,9 @@ function createAIConversationState(): AIConversationContext {
       } else if (data.log) {
         const { message, agentName, toolName } = data.log;
         if (!message.includes("Input") && !message.includes("Action")) {
-          smartAppendToConversation(
-            `🧠 ${data.log.message}`,
-            Sender.Assistant,
-            data.log.thought,
-          );
-        } else {
-          console.debug("Model silent log: ", message, agentName, toolName);
+          smartAppendToConversation(`🧠 ${message}`, Sender.Assistant);
         }
+        smartAppendToThoughts(message, agentName, toolName);
       } else {
         console.error("Invalid WSData structure: ", data);
       }
@@ -62,13 +53,9 @@ function createAIConversationState(): AIConversationContext {
   });
   const conversation = signal<Array<Message>>([]);
   const lastQuestionAsked = signal<string>("");
-  const storedThoughts = signal<Array<Thought>>([]);
+  const storedThoughts = signal<Array<Message>>([]);
 
-  const smartAppendToConversation = (
-    message: string,
-    sender: Sender,
-    thought?: Thought,
-  ) => {
+  const smartAppendToConversation = (message: string, sender: Sender) => {
     const lastIsLog = conversation.value
       ?.at(-1)
       ?.message?.at(-1)
@@ -83,17 +70,49 @@ function createAIConversationState(): AIConversationContext {
     } else {
       appendToConversation(formattedMessage);
     }
-    if (thought) storedThoughts.value = [...storedThoughts.value, thought];
   };
 
   const appendToConversation: AppendToConversationFunction = (
-    message: Message,
+    message: Message
   ) => {
     conversation.value = [...conversation.value, message];
   };
 
   const swapLastConversationLog = (message: Message) => {
     conversation.value = [...conversation.value.slice(0, -1), message];
+  };
+
+  const smartAppendToThoughts = (
+    thoughtString: string,
+    agentName: string,
+    toolName: string
+  ) => {
+    const lastThought = storedThoughts.value.at(-1);
+    const source = makeSourceLabel(agentName, toolName);
+    if (lastThought?.source === source) {
+      lastThought.thoughtsActions = [
+        ...lastThought.thoughtsActions,
+        thoughtString,
+      ];
+      storedThoughts.value = [
+        ...storedThoughts.value.slice(0, -1),
+        lastThought,
+      ];
+    } else {
+      storedThoughts.value = [
+        ...storedThoughts.value,
+        {
+          source: makeSourceLabel(agentName, toolName),
+          thoughtsActions: [thoughtString],
+        },
+      ];
+    }
+  };
+
+  const makeSourceLabel = (agentName: string, toolName: string): string => {
+    let label = `${agentName}`;
+    if (toolName) label += ` x ${toolName}`;
+    return label;
   };
 
   const submitQuestion: SubmitQuestionFunction = (message: string) => {
@@ -130,5 +149,5 @@ function createAIConversationState(): AIConversationContext {
 const currentAiConversationState = createAIConversationState();
 
 export const AIConversationContext = createContext<AIConversationContext>(
-  currentAiConversationState,
+  currentAiConversationState
 );

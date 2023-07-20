@@ -11,23 +11,19 @@ export default function Home() {
     <html>
       <body>
         <Head>
-          <link rel="stylesheet" href="/styles/layout.css" />
           <link rel="stylesheet" href="/styles/chat.css" />
           <link
             href="https://fonts.googleapis.com/css?family=Raleway"
             rel="stylesheet"
-          >
-          </link>
+          ></link>
           <link
             href="https://fonts.googleapis.com/css?family=Outfit"
             rel="stylesheet"
-          >
-          </link>
+          ></link>
           <script
             defer
             src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"
-          >
-          </script>
+          ></script>
           <title>FHIR Chat</title>
         </Head>
 
