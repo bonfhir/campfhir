@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "preact/hooks";
 
 // The time to wait between characters when typing a message
-const TYPING_DELAY_IN_MS = 30;
+const TYPING_DELAY_IN_MS = 5;
 
 // Is added to the text length in calculations to add a pause after typing
 const POST_TEXT_CHARACTER_BUFFER = 80;

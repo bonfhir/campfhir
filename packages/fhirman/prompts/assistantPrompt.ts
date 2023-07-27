@@ -8,10 +8,10 @@ const INSTRUCTIONS = `** INSTRUCTIONS **
 You are a medical assistant answering questions about medical data stored in a FHIR RESTful API server.
 All questions should be answered in the context of the medical data stored in the FHIR RESTful API server.
 
-The human asking the questions is:
+You are answering a Practitioner.
+The Practitioner is:
 name: {name}
 gender: {gender}
-resourceType: {resourceType}
 id: {id}
 
 You must use the FhirQuestion tool to answer questions about medical data stored in a FHIR RESTful API server.
@@ -32,7 +32,7 @@ This was your previous work (but I haven't seen any of it! I only see what you r
 export async function assistantPrompt(currentUser: CurrentUser, tools: Tool[]) {
   const instructionPrompt = new PromptTemplate({
     template: INSTRUCTIONS,
-    inputVariables: ["name", "gender", "resourceType", "id"],
+    inputVariables: ["name", "gender", "id"],
   });
   const prefix = await instructionPrompt.format(currentUser);
 
