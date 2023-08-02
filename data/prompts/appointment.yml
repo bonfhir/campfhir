@@ -12,3 +12,8 @@
         practitioner: 69f79094-577b-4825-8ba8-0e587b390269,
         date: 2021-12-21,
       }
+- prompt: What patient do I have an appointment with next
+  completion:
+    endpoint: Appointment
+    params:
+      { date: 2023-07-27, practitioner: 69f79094-577b-4825-8ba8-0e587b390269 }

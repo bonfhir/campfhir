@@ -5,6 +5,7 @@ import { buildFhirRestfulClientAdapter } from "@bonfhir/medplum/r4b";
 import { MedplumClient } from "@medplum/core";
 
 import { JsonObject } from "langchain/tools";
+import { COMMON_KEYS } from "./commonKeys.ts";
 import { RESOURCE_KEYS } from "./resourceKeys.ts";
 
 let medplum: MedplumClient;
@@ -17,7 +18,7 @@ async function medplumClient(): Promise<MedplumClient> {
 
     await medplum.startClientLogin(
       process.env.MEDPLUM_CLIENT_ID!,
-      process.env.MEDPLUM_CLIENT_SECRET!,
+      process.env.MEDPLUM_CLIENT_SECRET!
     );
   }
 
@@ -57,16 +58,19 @@ export function minimizeFhirResponse(endpoint: string, response: JsonObject) {
 
 function filterByResourceKeys(
   resource: JsonObject,
-  endpoint: string,
+  endpoint: string
 ): JsonObject {
-  const resourceKeys = RESOURCE_KEYS[endpoint.toLowerCase()];
-  if (!resourceKeys) {
+  const resourceKeys = [
+    ...RESOURCE_KEYS[endpoint.toLowerCase()],
+    ...COMMON_KEYS,
+  ];
+  if (resourceKeys.length === COMMON_KEYS.length) {
     throw new Error(`No resource keys for endpoint: ${endpoint}`);
   }
 
   return Object.fromEntries(
     Object.entries(resource).filter(([key, _value]) =>
       resourceKeys.includes(key)
-    ),
+    )
   );
 }
