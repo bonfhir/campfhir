@@ -9,11 +9,11 @@ import { Interaction, Message } from "../types/conversation.ts";
 
 export default function ChatIsland() {
   const { conversation, closeConversation, submitQuestion } = useContext(
-    AIConversationContext,
+    AIConversationContext
   );
   const interactions: Array<Interaction> = useMemo(
     () => extractInteractions(conversation.value),
-    [conversation.value],
+    [conversation.value]
   );
 
   const userInput = signal<string>("");
@@ -74,7 +74,10 @@ export default function ChatIsland() {
         return (
           <>
             <UserMessage message={userMessage.message} />
-            <AgentMessage message={agentDisplayText} />
+            <AgentMessage
+              message={agentDisplayText}
+              iconPath={agentMessage?.iconPath}
+            />
           </>
         );
       })}
