@@ -6,3 +6,7 @@
   completion:
     endpoint: Organization
     params: { name: PCP251859 }
+- prompt: Provide information about the PHYSICIANS OF NORTH WORCESTER COUNTY clinic?
+  completion:
+    endpoint: Organization
+    params: { name: PHYSICIANS OF NORTH WORCESTER COUNTY }

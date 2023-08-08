@@ -38,7 +38,7 @@
         _id: 69f79094-577b-4825-8ba8-0e587b390269,
         _revinclude: DiagnosticReport.subject,
       }
-- prompt: How many patients does organization with ID e7032a1a-c323-4922-876c-834ac249c3a1 has
+- prompt: How many patients does clinic with Organization ID e7032a1a-c323-4922-876c-834ac249c3a1 has
   completion:
     endpoint: Patient
-    params: { organization: e7032a1a-c323-4922-876c-834ac249c3a1, _summary: count }
+    params: { organization: Organization/7032a1a-c323-4922-876c-834ac249c3a1, _summary: count }

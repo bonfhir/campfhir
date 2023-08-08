@@ -2,18 +2,18 @@
   completion:
     endpoint: Appointment
     params:
-      { _summary: count, practitioner: 69f79094-577b-4825-8ba8-0e587b390269 }
+      { _summary: count, practitioner: Practitioner/69f79094-577b-4825-8ba8-0e587b390269 }
 - prompt: How many appointments on 2021-12-21 for practitioner having id 69f79094-577b-4825-8ba8-0e587b390269
   completion:
     endpoint: Appointment
     params:
       {
         _summary: count,
-        practitioner: 69f79094-577b-4825-8ba8-0e587b390269,
+        practitioner: Practitioner/69f79094-577b-4825-8ba8-0e587b390269,
         date: 2021-12-21,
       }
-- prompt: What patient do I have an appointment with next
+- prompt: What appointment do practitioner ID 69f79094-577b-4825-8ba8-0e587b390269 have
   completion:
     endpoint: Appointment
     params:
-      { date: 2023-07-27, practitioner: 69f79094-577b-4825-8ba8-0e587b390269 }
+      { status: booked, practitioner: Practitioner/69f79094-577b-4825-8ba8-0e587b390269 }

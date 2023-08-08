@@ -41,7 +41,12 @@ If you are asked for an unknown ENDPOINT or PARAMETER you should answer: "Sorry,
 
 When a question is repeated with the mention that the previous answer was wrong, you must find a different answer by thinking of a different strategy.
 `;
-const EXTRA_INSTRUCTIONS = `** PARAMETER CHEATS **
+const EXTRA_INSTRUCTIONS = `**FHIR Synonyms**
+when looking for word -> search FHIR synonym
+clinic -> Organization
+clinician -> Practitioner
+
+**ENDPOINT & PARAMETER CHEATS **
 
 To find a resource by ID, use the _id parameter.
 The resource identifier is not the ID field, but the combination of the resource type and the ID field.  The identifier parameter must not be used in answers.

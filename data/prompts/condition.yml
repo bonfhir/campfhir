@@ -1,4 +1,4 @@
 - prompt: How many patients currently have Alzheimer
   completion:
     endpoint: Condition
-    params: { clinical-status: active, code:text: Alzheimer,  _summary: count }
+    params: { clinical-status: active, code:text: Alzheimer's disease (disorder),  _summary: count }
