@@ -1,6 +1,7 @@
 import { signal, type Signal } from "@preact/signals";
 import * as uuid from "https://deno.land/std@0.192.0/uuid/mod.ts";
 import { createContext } from "preact";
+import { AGENT_AVATAR, THINKING } from "../constants/icons.ts";
 import { initWebSocket } from "../helpers/websocket.ts";
 import { Message, Sender, Thought } from "../types/conversation.ts";
 
@@ -39,11 +40,15 @@ function createAIConversationState(): AIConversationContext {
       const data = JSON.parse(messageEvent.data) as WSData; // TODO unsafe
 
       if (data.response) {
-        smartAppendToConversation(`💡 ${data.response}`, Sender.Assistant);
+        smartAppendToConversation(
+          data.response,
+          Sender.Assistant,
+          AGENT_AVATAR
+        );
       } else if (data.log) {
         const { message, agentName, toolName } = data.log;
         if (!message.includes("Input") && !message.includes("Action")) {
-          smartAppendToConversation(`🧠 ${message}`, Sender.Assistant);
+          smartAppendToConversation(message, Sender.Assistant, THINKING);
         }
         smartAppendToThoughts(message, agentName, toolName);
       } else {
@@ -55,16 +60,19 @@ function createAIConversationState(): AIConversationContext {
   const lastQuestionAsked = signal<string>("");
   const storedThoughts = signal<Array<Message>>([]);
 
-  const smartAppendToConversation = (message: string, sender: Sender) => {
-    const lastIsLog = conversation.value
-      ?.at(-1)
-      ?.message?.at(-1)
-      ?.startsWith("🧠");
+  const smartAppendToConversation = (
+    message: string,
+    sender: Sender,
+    iconPath: string
+  ) => {
+    const lastIsLog = conversation.value?.at(-1)?.iconPath == THINKING;
     const formattedMessage = {
       id: uuid.v1.generate() as string,
       message,
       sender,
+      iconPath,
     };
+    console.log("SmartAppend: ", message, iconPath, lastIsLog);
     if (lastIsLog) {
       swapLastConversationLog(formattedMessage);
     } else {
@@ -118,6 +126,7 @@ function createAIConversationState(): AIConversationContext {
   const submitQuestion: SubmitQuestionFunction = (message: string) => {
     console.log("submitQuestion ws: ", websocket);
     lastQuestionAsked.value = message;
+    storedThoughts.value = [];
     appendToConversation({
       id: uuid.v1.generate() as string,
       message,

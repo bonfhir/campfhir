@@ -1,0 +1,5 @@
+- prompt: How many pending invoices for practitioner with ID 69f79094-577b-4825-8ba8-0e587b390269
+  completion:
+    endpoint: Invoice
+    params:
+      { _summary: count, status: issued, performer: Practitioner/69f79094-577b-4825-8ba8-0e587b390269 }

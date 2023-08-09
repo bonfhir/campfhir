@@ -7,6 +7,7 @@ export type Message = {
   id: string;
   sender: Sender;
   message: string;
+  iconPath: string | null;
 };
 
 export type Interaction = {

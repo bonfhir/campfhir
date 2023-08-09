@@ -22,6 +22,10 @@
   completion:
     endpoint: Patient
     params: { birthdate: gt1975-01-01 }
+- prompt: Find patients aged over 50 years old
+  completion:
+    endpoint: Patient
+    params: { birthdate: lt1973-07-27 }
 - prompt: Find patient having ID 69f79094-577b-4825-8ba8-0e587b390269
   completion:
     endpoint: Patient
@@ -34,3 +38,7 @@
         _id: 69f79094-577b-4825-8ba8-0e587b390269,
         _revinclude: DiagnosticReport.subject,
       }
+- prompt: How many patients does clinic with Organization ID e7032a1a-c323-4922-876c-834ac249c3a1 has
+  completion:
+    endpoint: Patient
+    params: { organization: Organization/7032a1a-c323-4922-876c-834ac249c3a1, _summary: count }

@@ -148,7 +148,9 @@ export class EndpointParams extends Tool {
   }
 
   async _call(input: string): Promise<string> {
-    return JSON.stringify(this.paramsForBase(input));
+    const params = this.paramsForBase(input);
+    console.log("EndpointParams: ", input, params);
+    return JSON.stringify(params);
   }
 
   protected paramsForBase(base: string): string[][] {
@@ -244,6 +246,7 @@ const searchParamsWhitelist = [
   "birthdate",
   "category",
   "class",
+  "code:text",
   "condition",
   "date",
   "diagnosis",
@@ -258,6 +261,7 @@ const searchParamsWhitelist = [
   "location-period",
   "location",
   "name",
+  "organization",
   "participant-type",
   "participant",
   "patient",

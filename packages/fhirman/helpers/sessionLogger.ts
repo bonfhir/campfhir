@@ -6,7 +6,7 @@ import { createWriteStream, WriteStream } from "fs";
 import { mkdir } from "node:fs/promises";
 
 const projectRoot = Deno.env.get("PROJECT_CWD");
-const basePath = `${projectRoot}/sessions/`;
+const basePath = `${projectRoot}/fhirchatSessions/`;
 
 export class SessionLogger {
   private static instance: SessionLogger;
